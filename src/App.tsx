@@ -30,15 +30,13 @@ export const App: React.FC = () => {
           <Button size="icon">Icon</Button>
         </div>
 
-        <Button
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-        >
+        <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
           Toggle theme (current: {theme})
         </Button>
 
         <p className="text-muted-foreground">
-          If you see styled buttons above with proper colors, the design system is working!
-          Toggle theme to verify dark mode.
+          If you see styled buttons above with proper colors, the design system is working! Toggle
+          theme to verify dark mode.
         </p>
       </div>
     </div>
