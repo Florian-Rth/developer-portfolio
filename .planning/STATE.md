@@ -11,24 +11,24 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 1 of 8 (Design System Foundation)
-Plan: 3 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed TypeScript path alias configuration synchronized with Vite
+Last activity: 2026-01-23 — Completed ThemeProvider and useTheme hook implementation
 
-Progress: [█████░░░░░] 50% (3/6 plans complete in phase 1)
+Progress: [██████░░░░] 83% (5/6 plans complete in phase 1)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 7 min
-- Total execution time: 0.4 hours
+- Total plans completed: 5
+- Average duration: 4 min
+- Total execution time: 0.3 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Design System Foundation | 3 | 13m | 4.3m |
+| 1. Design System Foundation | 5 | 15m | 3.0m |
 | 2. Layout & Navigation | 0 | 0 | - |
 | 3. About Section | 0 | 0 | - |
 | 4. Career Timeline | 0 | 0 | - |
@@ -38,8 +38,8 @@ Progress: [█████░░░░░] 50% (3/6 plans complete in phase 1)
 | 8. 3D Animoji | 0 | 0 | - |
 
 **Recent Trend:**
-- Last 3 plans: 4.3m avg
-- Trend: 📈 (steady progress)
+- Last 3 plans: 3.0m avg
+- Trend: 📈 (accelerating)
 
 *Updated after each plan completion*
 
@@ -49,6 +49,21 @@ Progress: [█████░░░░░] 50% (3/6 plans complete in phase 1)
 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
+
+**2026-01-23 - Theme Management (Plan 01-05):**
+- React Context API sufficient for theme state management (no additional state library needed)
+- System theme detection via window.matchMedia('(prefers-color-scheme: dark)') for OS preference respect
+- localStorage with configurable storageKey prop for flexible theme persistence
+- CSS class-based theming (.light/.dark on html element) works with Tailwind's dark mode
+- Barrel exports pattern for cleaner imports (hooks/use-theme re-exports from components)
+- CSS files must use relative imports in Vite, not path aliases (@styles/* doesn't work)
+
+**2026-01-23 - Design Tokens (Plan 01-04):**
+- Oklch color space provides better perceptual uniformity than HSL
+- Tailwind CSS v4 uses @import syntax instead of @tailwind directives
+- Dark mode selector requires explicit .dark prefix on all color token overrides
+- Design tokens defined as CSS custom properties enable consistent theming across components
+- Nova and Zinc color scales selected for neutral tones (replace default gray)
 
 **2026-01-23 - TypeScript Path Aliases (Plan 01-03):**
 - TypeScript baseUrl must be set to "." (project root) for path mappings to work
@@ -74,7 +89,7 @@ None yet.
 ### Blockers/Concerns
 
 **Current concerns:**
-- None - TypeScript and Vite configurations synchronized, ready for next plan
+- None - Theme system complete and functional, ready for component installation verification
 
 **Known issues:**
 - esbuild shows CSS warning about "file" property (false positive, not blocking)
@@ -82,7 +97,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23 14:04 UTC
-Stopped at: Completed plan 01-03 (TypeScript path aliases synchronized with Vite)
+Last session: 2026-01-23 14:08 UTC
+Stopped at: Completed plan 01-05 (ThemeProvider and useTheme hook implementation)
 Resume file: None
-Next plan: 01-04 (Create globals.css with design tokens)
+Next plan: 01-06 (Verify component installation works by adding Button component)
