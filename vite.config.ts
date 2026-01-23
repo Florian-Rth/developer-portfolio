@@ -1,7 +1,7 @@
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -24,6 +24,7 @@ export default defineConfig({
       "@layouts": path.resolve(__dirname, "./src/layouts"),
       "@types": path.resolve(__dirname, "./src/types"),
       "@constants": path.resolve(__dirname, "./src/constants"),
+      "@styles": path.resolve(__dirname, "./src/styles"),
     },
   },
 });

@@ -27,7 +27,8 @@
       "@features/*": ["./src/features/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@types/*": ["./src/types/*"],
-      "@constants/*": ["./src/constants/*"]
+      "@constants/*": ["./src/constants/*"],
+      "@styles/*": ["./src/styles/*"]
     },
 
     /* Linting */
