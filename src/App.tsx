@@ -24,7 +24,7 @@ const textStyle: React.CSSProperties = {
 
 export const App: React.FC = () => {
   return (
-    <div style={containerStyle}>
+    <div className="bg-background text-foreground p-4" style={containerStyle}>
       <h1 style={headingStyle}>Developer Portfolio</h1>
       <p style={textStyle}>Coming soon...</p>
     </div>
