@@ -13,6 +13,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <ThemeProvider defaultTheme="system" storageKey="portfolio-theme">
+      <App />
+    </ThemeProvider>
   </StrictMode>,
 );
