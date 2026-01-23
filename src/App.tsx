@@ -1,4 +1,5 @@
 import type React from "react";
+import { useTheme } from "@hooks/use-theme";
 
 const containerStyle: React.CSSProperties = {
   display: "flex",
@@ -23,10 +24,18 @@ const textStyle: React.CSSProperties = {
 };
 
 export const App: React.FC = () => {
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className="bg-background text-foreground p-4" style={containerStyle}>
       <h1 style={headingStyle}>Developer Portfolio</h1>
       <p style={textStyle}>Coming soon...</p>
+      <button
+        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+      >
+        Toggle theme (current: {theme})
+      </button>
     </div>
   );
 };
