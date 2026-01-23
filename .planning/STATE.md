@@ -11,24 +11,24 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 1 of 8 (Design System Foundation)
-Plan: 5 of 6 in current phase
-Status: In progress
-Last activity: 2026-01-23 — Completed ThemeProvider and useTheme hook implementation
+Plan: 6 of 6 in current phase
+Status: Phase complete
+Last activity: 2026-01-23 — Validated shadcn CLI infrastructure by installing Button component
 
-Progress: [██████░░░░] 83% (5/6 plans complete in phase 1)
+Progress: [█████████] 100% (6/6 plans complete in phase 1)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 4 min
-- Total execution time: 0.3 hours
+- Total plans completed: 6
+- Average duration: 3.5 min
+- Total execution time: 0.4 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Design System Foundation | 5 | 15m | 3.0m |
+| 1. Design System Foundation | 6 | 21m | 3.5m |
 | 2. Layout & Navigation | 0 | 0 | - |
 | 3. About Section | 0 | 0 | - |
 | 4. Career Timeline | 0 | 0 | - |
@@ -50,13 +50,13 @@ Progress: [██████░░░░] 83% (5/6 plans complete in phase 1)
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-**2026-01-23 - Theme Management (Plan 01-05):**
-- React Context API sufficient for theme state management (no additional state library needed)
-- System theme detection via window.matchMedia('(prefers-color-scheme: dark)') for OS preference respect
-- localStorage with configurable storageKey prop for flexible theme persistence
-- CSS class-based theming (.light/.dark on html element) works with Tailwind's dark mode
-- Barrel exports pattern for cleaner imports (hooks/use-theme re-exports from components)
-- CSS files must use relative imports in Vite, not path aliases (@styles/* doesn't work)
+**2026-01-23 - Component Installation Validation (Plan 01-06):**
+- shadcn CLI's Nova style registry doesn't have all components available yet - fallback to new-york style required
+- shadcn CLI creates literal directory names from path aliases (e.g., @components/) instead of resolving them - manual file move to src/ required
+- Radix UI primitives used instead of Base UI due to Nova registry limitations (component structure same, just different primitives)
+- Named export pattern must be enforced manually - shadcn CLI defaults to default exports
+- Component installation pattern established: Run CLI, move files to src/, fix exports, apply Biome formatting
+- class-variance-authority (cva) library used for component variant management
 
 **2026-01-23 - Design Tokens (Plan 01-04):**
 - Oklch color space provides better perceptual uniformity than HSL
@@ -89,15 +89,16 @@ None yet.
 ### Blockers/Concerns
 
 **Current concerns:**
-- None - Theme system complete and functional, ready for component installation verification
+- None - Design System Foundation phase complete, ready for Phase 2 (Layout & Navigation)
 
 **Known issues:**
 - esbuild shows CSS warning about "file" property (false positive, not blocking)
 - .claude/hooks/gsd-check-update.js has linting issues (pre-existing, not in scope)
+- Nova style registry incomplete - may need to use new-york style for some components
 
 ## Session Continuity
 
-Last session: 2026-01-23 15:12 UTC
-Stopped at: Completed plan 01-04 (Design tokens with Tailwind CSS v4)
+Last session: 2026-01-23 14:18 UTC
+Stopped at: Completed plan 01-06 (Validated shadcn CLI infrastructure)
 Resume file: None
-Next plan: 01-06 (Verify component installation works by adding Button component)
+Next phase: 02 - Layout & Navigation
