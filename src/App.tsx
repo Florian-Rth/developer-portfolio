@@ -1,5 +1,5 @@
-import type React from "react";
 import { useTheme } from "@hooks/use-theme";
+import type React from "react";
 
 const containerStyle: React.CSSProperties = {
   display: "flex",
@@ -31,6 +31,7 @@ export const App: React.FC = () => {
       <h1 style={headingStyle}>Developer Portfolio</h1>
       <p style={textStyle}>Coming soon...</p>
       <button
+        type="button"
         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
         className="px-4 py-2 bg-primary text-primary-foreground rounded"
       >
