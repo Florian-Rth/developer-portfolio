@@ -67,17 +67,22 @@ Plans:
 1. Fixed header is visible at the top of the page with navigation links to all sections
 2. Footer is visible at the bottom with social links and copyright information
 3. Clicking navigation links smoothly scrolls to the corresponding section
-4. Navigation is responsive and works on mobile devices (hamburger menu or similar)
+4. Navigation is responsive and works on mobile devices (floating bottom nav, not hamburger)
 5. Main layout container manages section spacing and overall page structure appropriately
 
-**Plans**: TBD (refined during planning)
+**Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 02-01: Create fixed header component with navigation links
+- [ ] 02-01: Create fixed header with scroll transformations and animated logo
 - [ ] 02-02: Create footer component with social links
-- [ ] 02-03: Implement smooth scroll behavior between sections
-- [ ] 02-04: Create mobile responsive navigation
-- [ ] 02-05: Create main layout container and integrate header/footer
+- [ ] 02-03: Create desktop navigation with active state and progress line
+- [ ] 02-04: Create mobile bottom navigation with floating pill and progress ring
+- [ ] 02-05: Create main layout container and integrate all components
+
+**Notes:**
+- Uses Motion (Framer Motion) for polished animations
+- Custom navigation design: creative navbar with animated logo, progress indicators
+- Mobile: floating bottom pill with semantic icons (not hamburger menu)
 
 ### Phase 3: About Section
 
