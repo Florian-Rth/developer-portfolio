@@ -152,6 +152,7 @@ Dialog.Content = Content;
 ```
 
 **Usage:**
+
 ```tsx
 import { Dialog } from "./components/ui/Dialog";
 
@@ -159,12 +160,13 @@ import { Dialog } from "./components/ui/Dialog";
   <Dialog.Header>Title</Dialog.Header>
   <Dialog.Content>Body</Dialog.Content>
   <Dialog.Footer>Actions</Dialog.Footer>
-</Dialog>
+</Dialog>;
 ```
 
 #### 9.4 File Content Structure
 
 **Main Component (Dialog.tsx)**
+
 ```typescript
 import type React from "react";
 import { DialogProvider } from "./DialogProvider";
@@ -186,6 +188,7 @@ export const Dialog: React.FC<DialogProps> = ({ children, isOpen, onClose }) => 
 ```
 
 **Context (DialogContext.tsx)**
+
 ```typescript
 import { createContext } from "react";
 
@@ -194,10 +197,13 @@ type DialogContextValue = {
   onClose: () => void;
 };
 
-export const DialogContext = createContext<DialogContextValue | null>(null);
+export const DialogContext = createContext<DialogContextValue | null>(
+  null,
+);
 ```
 
 **Provider + Hook (DialogProvider.tsx)**
+
 ```typescript
 import { useContext } from "react";
 import { DialogContext } from "./DialogContext";
@@ -226,6 +232,7 @@ export const useDialogContext = (): DialogContextValue => {
 ```
 
 **Sub-Component (Header.tsx)**
+
 ```typescript
 import type React from "react";
 
@@ -237,6 +244,7 @@ export const Header: React.FC<HeaderProps> = ({ children }) => {
 ```
 
 **Sub-Component with Context (Close.tsx)**
+
 ```typescript
 import { useDialogContext } from "./DialogProvider";
 
@@ -247,6 +255,7 @@ export const Close = () => {
 ```
 
 **Assembly File (index.ts)**
+
 ```typescript
 import { Dialog } from "./Dialog";
 import { Header } from "./Header";
@@ -266,18 +275,19 @@ export { Dialog };
 
 Establish consistent naming for common patterns:
 
-| Component | Parts | File Names |
-|-----------|-------|------------|
-| Dialog | Header, Content, Footer, Close | Header.tsx, Content.tsx, ... |
-| Card | Header, Content, Footer, Image | Header.tsx, Content.tsx, ... |
-| Form | Field, Label, Input, Error | Field.tsx, Label.tsx, ... |
-| Tabs | List, Tab, Panels, Panel | List.tsx, Tab.tsx, ... |
+| Component | Parts                          | File Names                   |
+| --------- | ------------------------------ | ---------------------------- |
+| Dialog    | Header, Content, Footer, Close | Header.tsx, Content.tsx, ... |
+| Card      | Header, Content, Footer, Image | Header.tsx, Content.tsx, ... |
+| Form      | Field, Label, Input, Error     | Field.tsx, Label.tsx, ...    |
+| Tabs      | List, Tab, Panels, Panel       | List.tsx, Tab.tsx, ...       |
 
 #### 9.6 Testing Strategy
 
 **Location:** `Dialog/__tests__/Dialog.test.tsx`
 
 **Structure:**
+
 ```typescript
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -319,13 +329,15 @@ describe("Dialog", () => {
 #### 9.7 Best Practices
 
 **DO:**
+
 - ✅ Keep sub-components simple and focused
 - ✅ Separate Context.tsx (definition) and Provider.tsx (provider + hook)
-- ✅ Write tests in __tests__/ folder
+- ✅ Write tests in **tests**/ folder
 - ✅ Export only the main component with attached parts from index.ts
 - ✅ Use inline styles
 
 **DON'T:**
+
 - ❌ Put multiple components in one file (except index.ts)
 - ❌ Use default exports
 - ❌ Export individual parts from index.ts
@@ -333,53 +345,8 @@ describe("Dialog", () => {
 ## Project Management Approach
 
 - Work in multiple phases
-- Each phase gets its own markdown file (phase-\*.md) containing:
-  - Phase target/goal
-  - Implementation plan
-  - Important notes and considerations
 - After each completed task, review and update CLAUDE.md with important learnings
 - Remove unnecessary information from CLAUDE.md to keep it lean
-
-## Project Phases
-
-### ✅ Phase 0: Project Planning (COMPLETED)
-
-- **Goal**: Configure project guidelines and define Phase 1
-- **Deliverables**:
-  - CLAUDE.md with coding standards
-  - phase-1.md with implementation plan
-  - README.md with project overview
-
-### ✅ Phase 1: Project Initialization (COMPLETED)
-
-- **Goal**: Set up basic React + TypeScript + Vite project structure
-- **Deliverables**:
-  - Vite + React + TypeScript project
-  - React Compiler enabled
-  - Biome configured
-  - Vitest + Testing Library configured
-  - Feature-based folder structure
-  - Clean App.tsx with inline styles
-  - 5 tests passing
-- **Documentation**: [phase-1.md](./phase-1.md)
-
-### 📋 Phase 2: Core Layout & Design System Foundation (PLANNED)
-
-- **Goal**: Create basic layout structure and design system primitives
-- **Planned Tasks**:
-  - Define design tokens (colors, typography, spacing)
-  - Create primitive components (Button, Input, Card, etc.)
-  - Set up main layout components (Header, Footer, Main)
-  - Create theme provider
-  - Write tests for all components
-
-### Phase 3: Portfolio Content Sections (PLANNED)
-
-- **Goal**: Implement main portfolio sections (About, Projects, Skills, Contact)
-
-### Phase 4: Polish & Optimization (PLANNED)
-
-- **Goal**: Final touches, performance optimization, and deployment preparation
 
 ## Git Information
 
