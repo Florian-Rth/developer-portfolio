@@ -120,6 +120,44 @@ npm run build-storybook
 - **Tags**: Add `autodocs` tag for automatic documentation generation
 - **Layout**: Use `layout: "centered"` for UI components
 
+### 8.1 UI Component Development Workflow
+
+When implementing new UI components, follow this workflow for visual inspection and testing:
+
+**Workflow Steps:**
+
+1. **Write the Component**: Implement the component following coding standards
+2. **Write a Story**: Create a `.stories.tsx` file next to the component
+3. **Start Storybook**: Run `npm run storybook` in background mode
+4. **Visual Inspection**: Use Playwright MCP to inspect the component
+   - Navigate to the story URL (typically http://localhost:6006)
+   - Take accessibility snapshot to verify structure
+   - Optionally take screenshot for visual verification
+5. **Adjust**: Make any necessary adjustments based on observations
+6. **Stop Storybook**: Clean up background process when done
+
+**Storybook URL Pattern:**
+
+- Storybook runs on http://localhost:6006
+- Individual story URLs: `http://localhost:6006/?path=/story/{title}`
+  - Example: `http://localhost:6006/?path=/story/ui-button--default`
+
+**URL Construction Rules:**
+
+- Lowercase the title from the meta object
+- Replace `/` with `-`
+- Replace spaces with `-`
+- Append `--{story-name}`
+
+**Playwright MCP Tools:**
+
+- `browser_navigate` - Navigate to Storybook URL
+- `browser_snapshot` - **Primary tool** - Get accessibility tree (LLM-friendly)
+- `browser_take_screenshot` - Optional visual verification
+- `browser_click` - Interact with components
+- `browser_evaluate` - Run JavaScript in browser
+- `browser_close` - Clean up browser session
+
 ### 9. Code Quality
 
 Clean Code principles and best practices are paramount:
