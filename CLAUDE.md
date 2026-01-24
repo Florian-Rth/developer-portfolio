@@ -94,7 +94,33 @@ Spec and Test Driven Development (TDD):
 
 This workflow ensures code quality and catches issues early.
 
-### 8. Code Quality
+### 8. Storybook
+
+Storybook is configured for component development and documentation.
+
+#### Running Storybook
+
+```bash
+npm run storybook
+```
+
+#### Building Storybook
+
+```bash
+npm run build-storybook
+```
+
+#### Story Conventions
+
+- **File Location**: Place stories next to components: `Component.stories.tsx`
+- **Format**: Use CSF3 (Component Story Format 3)
+- **Exports**: Named exports only (no default exports)
+- **Meta Object**: Use `satisfies Meta<typeof Component>` for type safety
+- **Title Pattern**: Use hierarchical naming (e.g., "UI/Button", "Features/Auth/LoginForm")
+- **Tags**: Add `autodocs` tag for automatic documentation generation
+- **Layout**: Use `layout: "centered"` for UI components
+
+### 9. Code Quality
 
 Clean Code principles and best practices are paramount:
 
@@ -103,11 +129,11 @@ Clean Code principles and best practices are paramount:
 - Single responsibility principle
 - DRY (Don't Repeat Yourself)
 
-### 9. Composition Pattern
+### 10. Composition Pattern
 
 The Composition Pattern is the primary architectural pattern for building complex UI components.
 
-#### 9.1 Component Structure
+#### 10.1 Component Structure
 
 - **Multi-File Organization**: Each part of a compound component lives in its own file
 - **Component Folder**: All parts organized in a folder named after the component
@@ -116,7 +142,7 @@ The Composition Pattern is the primary architectural pattern for building comple
 - **Arrow Functions**: All components use arrow functions
 - **Type Safety**: Full TypeScript support with proper typing
 
-#### 9.2 File Structure
+#### 10.2 File Structure
 
 ```
 Dialog/
@@ -132,7 +158,7 @@ Dialog/
     └── Dialog.test.tsx  # Tests for all parts
 ```
 
-#### 9.3 Naming Convention
+#### 10.3 Naming Convention
 
 ```typescript
 // File names: PascalCase, matching the exported component
@@ -163,7 +189,7 @@ import { Dialog } from "./components/ui/Dialog";
 </Dialog>;
 ```
 
-#### 9.4 File Content Structure
+#### 10.4 File Content Structure
 
 **Main Component (Dialog.tsx)**
 
@@ -271,7 +297,7 @@ Dialog.Close = Close;
 export { Dialog };
 ```
 
-#### 9.5 Common Sub-Component Names
+#### 10.5 Common Sub-Component Names
 
 Establish consistent naming for common patterns:
 
@@ -282,7 +308,7 @@ Establish consistent naming for common patterns:
 | Form      | Field, Label, Input, Error     | Field.tsx, Label.tsx, ...    |
 | Tabs      | List, Tab, Panels, Panel       | List.tsx, Tab.tsx, ...       |
 
-#### 9.6 Testing Strategy
+#### 10.6 Testing Strategy
 
 **Location:** `Dialog/__tests__/Dialog.test.tsx`
 
@@ -326,7 +352,7 @@ describe("Dialog", () => {
 
 **Coverage:** Rendering, styles, context consumption, integration, edge cases.
 
-#### 9.7 Best Practices
+#### 10.7 Best Practices
 
 **DO:**
 
