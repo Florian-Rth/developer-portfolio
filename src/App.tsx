@@ -1,44 +1,32 @@
-import { Button } from "@components/ui/button";
-import { useTheme } from "@hooks/use-theme";
 import type React from "react";
+import { Layout } from "./components/layout";
 
-const containerStyle: React.CSSProperties = {
-  minHeight: "100vh",
-};
+const Section: React.FC<{
+  id: string;
+  title: string;
+  className?: string;
+}> = ({ id, title, className = "" }) => (
+  <section
+    id={id}
+    className={`min-h-screen flex items-center justify-center ${className}`}
+  >
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <h2 className="text-4xl font-bold mb-4">{title}</h2>
+      <p className="text-muted-foreground">
+        This section will be implemented in a future phase.
+      </p>
+    </div>
+  </section>
+);
 
 export const App: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-
   return (
-    <div className="min-h-screen bg-background text-foreground p-8" style={containerStyle}>
-      <div className="max-w-md mx-auto space-y-4">
-        <h1 className="text-2xl font-bold">Design System Test</h1>
-
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="default">Default Button</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-        </div>
-
-        <div className="flex gap-2">
-          <Button size="default">Default Size</Button>
-          <Button size="sm">Small</Button>
-          <Button size="lg">Large</Button>
-          <Button size="icon">Icon</Button>
-        </div>
-
-        <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-          Toggle theme (current: {theme})
-        </Button>
-
-        <p className="text-muted-foreground">
-          If you see styled buttons above with proper colors, the design system is working! Toggle
-          theme to verify dark mode.
-        </p>
-      </div>
-    </div>
+    <Layout>
+      <Section id="about" title="About" className="bg-background" />
+      <Section id="career" title="Career Timeline" className="bg-muted/30" />
+      <Section id="skills" title="Skills & Technologies" className="bg-background" />
+      <Section id="projects" title="Projects" className="bg-muted/30" />
+      <Section id="contact" title="Contact" className="bg-background" />
+    </Layout>
   );
 };
