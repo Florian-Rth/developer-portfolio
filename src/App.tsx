@@ -1,44 +1,27 @@
-import { Button } from "@components/ui/button";
-import { useTheme } from "@hooks/use-theme";
+import { Layout } from "@components/Layout";
 import type React from "react";
 
-const containerStyle: React.CSSProperties = {
-  minHeight: "100vh",
-};
-
 export const App: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-
   return (
-    <div className="min-h-screen bg-background text-foreground p-8" style={containerStyle}>
-      <div className="max-w-md mx-auto space-y-4">
-        <h1 className="text-2xl font-bold">Design System Test</h1>
+    <Layout>
+      <section id="home" className="min-h-[80vh] flex items-center justify-center">
+        <h1 className="text-4xl font-bold text-center">Welcome</h1>
+      </section>
 
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="default">Default Button</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-        </div>
+      <section id="about" className="min-h-screen py-20">
+        <h2 className="text-3xl font-bold mb-8">Über mich</h2>
+        <p className="text-muted-foreground">Content coming soon...</p>
+      </section>
 
-        <div className="flex gap-2">
-          <Button size="default">Default Size</Button>
-          <Button size="sm">Small</Button>
-          <Button size="lg">Large</Button>
-          <Button size="icon">Icon</Button>
-        </div>
+      <section id="projects" className="min-h-screen py-20">
+        <h2 className="text-3xl font-bold mb-8">Projekte</h2>
+        <p className="text-muted-foreground">Content coming soon...</p>
+      </section>
 
-        <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-          Toggle theme (current: {theme})
-        </Button>
-
-        <p className="text-muted-foreground">
-          If you see styled buttons above with proper colors, the design system is working! Toggle
-          theme to verify dark mode.
-        </p>
-      </div>
-    </div>
+      <section id="contact" className="min-h-screen py-20">
+        <h2 className="text-3xl font-bold mb-8">Kontakt</h2>
+        <p className="text-muted-foreground">Content coming soon...</p>
+      </section>
+    </Layout>
   );
 };
