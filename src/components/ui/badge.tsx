@@ -27,8 +27,7 @@ export const Badge = ({
   className,
   variant,
   ...props
-}: React.ComponentProps<"div"> &
-  VariantProps<typeof badgeVariants>) => {
+}: React.ComponentProps<"div"> & VariantProps<typeof badgeVariants>) => {
   return (
     <div
       data-slot="badge"
