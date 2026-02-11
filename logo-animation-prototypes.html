@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlorianRth Logo Animation Prototypes</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #F5F0E8;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 60px;
+  }
+  .proto {
+    max-width: 900px;
+    margin: 0 auto 80px;
+    text-align: center;
+  }
+  .proto h2 {
+    color: #999;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .proto p {
+    color: #bbb;
+    font-size: 11px;
+    margin-bottom: 24px;
+  }
+  .proto .canvas {
+    background: #F5F0E8;
+    border: 1px solid #e0dbd3;
+    border-radius: 12px;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  button.replay {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid #ccc;
+    color: #999;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  button.replay:hover { border-color: #999; color: #666; }
+
+  /* ====== ANIMATION 1: Classic Stroke Draw-On ====== */
+  .anim1-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 80px;
+    fill: none;
+    stroke: url(#grad1);
+    stroke-width: 2;
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    animation: draw1 3s ease forwards;
+  }
+  @keyframes draw1 {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ====== ANIMATION 2: Stroke Draw + Fill Fade ====== */
+  .anim2-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 80px;
+    fill: url(#grad2);
+    fill-opacity: 0;
+    stroke: url(#grad2);
+    stroke-width: 1.5;
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    animation: draw2stroke 2.5s ease forwards, draw2fill 1s ease 2s forwards;
+  }
+  @keyframes draw2stroke {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes draw2fill {
+    to { fill-opacity: 1; stroke-width: 0; }
+  }
+
+  /* ====== ANIMATION 3: Letter by Letter ====== */
+  .anim3-letter {
+    font-family: 'Pacifico', cursive;
+    font-size: 80px;
+    fill: none;
+    stroke: url(#grad3);
+    stroke-width: 2;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+  }
+  .anim3-letter:nth-child(1)  { animation: draw3 0.4s ease forwards 0.0s; }
+  .anim3-letter:nth-child(2)  { animation: draw3 0.4s ease forwards 0.25s; }
+  .anim3-letter:nth-child(3)  { animation: draw3 0.4s ease forwards 0.5s; }
+  .anim3-letter:nth-child(4)  { animation: draw3 0.4s ease forwards 0.7s; }
+  .anim3-letter:nth-child(5)  { animation: draw3 0.4s ease forwards 0.9s; }
+  .anim3-letter:nth-child(6)  { animation: draw3 0.4s ease forwards 1.1s; }
+  .anim3-letter:nth-child(7)  { animation: draw3 0.4s ease forwards 1.3s; }
+  .anim3-letter:nth-child(8)  { animation: draw3 0.4s ease forwards 1.5s; }
+  .anim3-letter:nth-child(9)  { animation: draw3 0.4s ease forwards 1.7s; }
+  .anim3-letter:nth-child(10) { animation: draw3 0.4s ease forwards 1.9s; }
+  @keyframes draw3 {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ====== ANIMATION 4: Gradient Reveal with Glow ====== */
+  .anim4-container {
+    position: relative;
+    display: inline-block;
+  }
+  .anim4-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 80px;
+    fill: url(#grad4);
+    clip-path: inset(0 100% 0 0);
+    animation: reveal4 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+  .anim4-glow {
+    font-family: 'Pacifico', cursive;
+    font-size: 80px;
+    fill: none;
+    stroke: url(#grad4);
+    stroke-width: 3;
+    filter: url(#blur4);
+    opacity: 0;
+    animation: glow4 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+  @keyframes reveal4 {
+    to { clip-path: inset(0 0% 0 0); }
+  }
+  @keyframes glow4 {
+    0% { opacity: 0; clip-path: inset(0 100% 0 0); }
+    50% { opacity: 0.6; }
+    100% { opacity: 0; clip-path: inset(0 0% 0 0); }
+  }
+</style>
+</head>
+<body>
+
+<h1>FlorianRth — Logo Animation Prototypes</h1>
+
+<!-- ====== 1: Classic Stroke Draw-On ====== -->
+<div class="proto" id="proto1">
+  <h2>Animation 1 — Classic Draw-On</h2>
+  <p>Dünner Stroke zeichnet den Text wie mit einem Stift. Clean & minimal.</p>
+  <div class="canvas">
+    <svg viewBox="0 0 600 120" width="100%" id="svg1">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#B8A9D4" />
+          <stop offset="50%" stop-color="#E8B4A0" />
+          <stop offset="100%" stop-color="#D4929B" />
+        </linearGradient>
+      </defs>
+      <text x="300" y="85" text-anchor="middle" class="anim1-text">FlorianRth</text>
+    </svg>
+  </div>
+  <button class="replay" onclick="replay(1)">↻ Replay</button>
+</div>
+
+<!-- ====== 2: Stroke Draw + Fill Fade ====== -->
+<div class="proto" id="proto2">
+  <h2>Animation 2 — Draw-On + Fill Fade</h2>
+  <p>Stroke zeichnet erst, dann füllt sich der Text mit dem Gradient. Zweistufig.</p>
+  <div class="canvas">
+    <svg viewBox="0 0 600 120" width="100%" id="svg2">
+      <defs>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#B8A9D4" />
+          <stop offset="50%" stop-color="#E8B4A0" />
+          <stop offset="100%" stop-color="#D4929B" />
+        </linearGradient>
+      </defs>
+      <text x="300" y="85" text-anchor="middle" class="anim2-text">FlorianRth</text>
+    </svg>
+  </div>
+  <button class="replay" onclick="replay(2)">↻ Replay</button>
+</div>
+
+<!-- ====== 3: Letter by Letter ====== -->
+<div class="proto" id="proto3">
+  <h2>Animation 3 — Letter by Letter</h2>
+  <p>Jeder Buchstabe wird einzeln nacheinander geschrieben. Sequentiell.</p>
+  <div class="canvas">
+    <svg viewBox="0 0 600 120" width="100%" id="svg3">
+      <defs>
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#B8A9D4" />
+          <stop offset="50%" stop-color="#E8B4A0" />
+          <stop offset="100%" stop-color="#D4929B" />
+        </linearGradient>
+      </defs>
+      <!-- Letters positioned manually for Pacifico spacing -->
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="82">F</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="138">l</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="172">o</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="222">r</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="262">i</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="290">a</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="340">n</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="392">R</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="440">t</tspan></text>
+      <text y="85" font-family="Pacifico, cursive" font-size="80" class="anim3-letter"><tspan x="472">h</tspan></text>
+    </svg>
+  </div>
+  <button class="replay" onclick="replay(3)">↻ Replay</button>
+</div>
+
+<!-- ====== 4: Gradient Reveal with Glow ====== -->
+<div class="proto" id="proto4">
+  <h2>Animation 4 — Gradient Wipe + Glow</h2>
+  <p>Text wird von links nach rechts enthüllt mit einem leuchtenden Glow-Effekt an der Kante.</p>
+  <div class="canvas">
+    <svg viewBox="0 0 600 120" width="100%" id="svg4">
+      <defs>
+        <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#B8A9D4" />
+          <stop offset="50%" stop-color="#E8B4A0" />
+          <stop offset="100%" stop-color="#D4929B" />
+        </linearGradient>
+        <filter id="blur4">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+        </filter>
+      </defs>
+      <text x="300" y="85" text-anchor="middle" class="anim4-glow">FlorianRth</text>
+      <text x="300" y="85" text-anchor="middle" class="anim4-text">FlorianRth</text>
+    </svg>
+  </div>
+  <button class="replay" onclick="replay(4)">↻ Replay</button>
+</div>
+
+<script>
+const replay = (n) => {
+  const container = document.querySelector(`#proto${n} .canvas`);
+  const svg = document.querySelector(`#svg${n}`);
+  const clone = svg.cloneNode(true);
+  clone.id = `svg${n}`;
+  svg.remove();
+  container.appendChild(clone);
+};
+</script>
+
+</body>
+</html>
