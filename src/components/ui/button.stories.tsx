@@ -58,6 +58,6 @@ export const Sizes: Story = {
 export const AsChild: Story = {
   args: {
     asChild: true,
-    children: <a href="#">Link styled as button</a>,
+    children: <a href="https://example.com">Link styled as button</a>,
   },
 };

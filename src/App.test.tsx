@@ -5,24 +5,20 @@ import { App } from "./App";
 describe("App", () => {
   it("should render the heading", () => {
     render(<App />);
-    const heading = screen.getByText("Developer Portfolio");
+    const heading = screen.getByText("Design System Test");
     expect(heading).toBeInTheDocument();
   });
 
-  it("should render the coming soon text", () => {
+  it("should render button variants", () => {
     render(<App />);
-    const text = screen.getByText("Coming soon...");
-    expect(text).toBeInTheDocument();
+    expect(screen.getByText("Default Button")).toBeInTheDocument();
+    expect(screen.getByText("Secondary")).toBeInTheDocument();
+    expect(screen.getByText("Outline")).toBeInTheDocument();
   });
 
-  it("should have the correct container style", () => {
-    const { container } = render(<App />);
-    const div = container.firstChild as HTMLElement;
-    expect(div).toHaveStyle({
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-    });
+  it("should render the theme toggle button", () => {
+    render(<App />);
+    const toggleButton = screen.getByRole("button", { name: /Toggle theme/ });
+    expect(toggleButton).toBeInTheDocument();
   });
 });
