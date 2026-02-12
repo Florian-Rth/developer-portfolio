@@ -1,7 +1,7 @@
 import type React from "react";
 import { useAppBarContext } from "./AppBarProvider";
 import { DarkModeToggle } from "./DarkModeToggle";
-import { MobileNavLinks } from "./NavLinks";
+import { MobileNavLinks } from "./MobileNavLinks";
 
 type MobileMenuProps = {
   className?: string;

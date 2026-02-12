@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@components/theme-provider";
+import { ThemeProvider } from "@components/ThemeProvider";
 import { render, screen } from "@testing-library/react";
 import type React from "react";
 import { describe, expect, it } from "vitest";

@@ -4,7 +4,8 @@ import { Divider } from "./Divider";
 import { Logo } from "./Logo";
 import { MenuButton } from "./MenuButton";
 import { MobileMenu } from "./MobileMenu";
-import { MobileNavLinks, NavLinks } from "./NavLinks";
+import { MobileNavLinks } from "./MobileNavLinks";
+import { NavLinks } from "./NavLinks";
 
 type AppBarType = typeof AppBarComponent & {
   Logo: typeof Logo;
