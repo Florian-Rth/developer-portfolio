@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 8" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="brush-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B8A9D4" stop-opacity="0"/>
+      <stop offset="15%" stop-color="#B8A9D4" stop-opacity="0.35"/>
+      <stop offset="35%" stop-color="#E8B4A0" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#E8B4A0" stop-opacity="0.55"/>
+      <stop offset="65%" stop-color="#D4929B" stop-opacity="0.5"/>
+      <stop offset="85%" stop-color="#D4929B" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#D4929B" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M0,4 C20,3.2 45,4.8 80,3.8 C120,2.6 160,4.5 220,3.5 C280,2.8 320,4.8 400,3.6 C460,2.5 520,4.6 580,4.2 C640,3.6 700,2.8 760,3.8 C820,4.6 880,3.2 940,4.0 C1000,4.8 1060,3.0 1120,3.6 C1180,4.2 1240,3.4 1300,4.0 C1360,4.6 1400,3.4 1440,3.8" 
+    fill="none" 
+    stroke="url(#brush-gradient)" 
+    stroke-width="2.5" 
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+  <path d="M0,4.2 C30,3.6 60,4.4 100,3.4 C150,2.8 200,5.0 260,4.0 C320,3.0 380,4.6 440,3.8 C500,3.0 560,4.8 620,4.0 C680,3.2 740,4.4 800,3.6 C860,4.2 920,3.0 980,4.2 C1040,5.0 1100,3.2 1160,3.8 C1220,4.4 1280,3.0 1340,3.8 C1380,4.4 1420,3.6 1440,4.0"
+    fill="none"
+    stroke="url(#brush-gradient)"
+    stroke-width="1.2"
+    stroke-linecap="round"
+    stroke-opacity="0.4"/>
+</svg>

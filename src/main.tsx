@@ -1,9 +1,8 @@
-import { ThemeProvider } from "@components/theme-provider";
+import { ThemeProvider } from "@components/ThemeProvider";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./index.css";
-import "./styles/globals.css";
 
 const rootElement = document.getElementById("root");
 
