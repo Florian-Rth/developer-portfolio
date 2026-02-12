@@ -1,3 +1,4 @@
+import { cn } from "@lib/utils";
 import type React from "react";
 
 type TaglineProps = {
@@ -5,9 +6,9 @@ type TaglineProps = {
   className?: string;
 };
 
-export const Tagline: React.FC<TaglineProps> = ({ children, className = "" }) => {
+export const Tagline: React.FC<TaglineProps> = ({ children, className }) => {
   return (
-    <p className={`text-muted-foreground text-base md:text-lg mt-4 max-w-md ${className}`}>
+    <p className={cn("text-muted-foreground text-base md:text-lg mt-4 max-w-md", className)}>
       {children}
     </p>
   );

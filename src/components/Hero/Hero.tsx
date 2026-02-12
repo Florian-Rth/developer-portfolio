@@ -1,3 +1,4 @@
+import { cn } from "@lib/utils";
 import type React from "react";
 
 type HeroProps = {
@@ -5,12 +6,12 @@ type HeroProps = {
   className?: string;
 };
 
-export const Hero: React.FC<HeroProps> = ({ children, className = "" }) => {
+export const Hero: React.FC<HeroProps> = ({ children, className }) => {
   return (
     <section
       id="home"
       aria-label="Hero"
-      className={`relative min-h-screen bg-background overflow-visible ${className}`}
+      className={cn("relative min-h-screen bg-background overflow-visible", className)}
     >
       {children}
     </section>

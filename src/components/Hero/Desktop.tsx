@@ -1,3 +1,4 @@
+import { cn } from "@lib/utils";
 import type React from "react";
 
 type DesktopProps = {
@@ -5,10 +6,13 @@ type DesktopProps = {
   className?: string;
 };
 
-export const Desktop: React.FC<DesktopProps> = ({ children, className = "" }) => {
+export const Desktop: React.FC<DesktopProps> = ({ children, className }) => {
   return (
     <div
-      className={`hidden md:flex flex-col items-center justify-center text-center min-h-screen pt-[var(--appbar-height-desktop)] pb-24 px-4 ${className}`}
+      className={cn(
+        "relative hidden md:flex flex-col items-center text-center min-h-screen px-4 pt-[38vh]",
+        className,
+      )}
     >
       {children}
     </div>
