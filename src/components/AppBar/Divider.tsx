@@ -6,13 +6,13 @@ type DividerProps = {
 
 export const Divider: React.FC<DividerProps> = ({ className = "" }) => {
   return (
-    <div
-      className={`h-[2px] w-full ${className}`}
-      style={{
-        background:
-          "linear-gradient(135deg, var(--gradient-lavender), var(--gradient-peach), var(--gradient-dusty-rose))",
-      }}
-      aria-hidden="true"
-    />
+    <div className={`w-full ${className}`} aria-hidden="true">
+      <img
+        src="/brush-divider-thin.svg"
+        alt=""
+        className="w-full h-[12px] block"
+        style={{ pointerEvents: "none" }}
+      />
+    </div>
   );
 };
