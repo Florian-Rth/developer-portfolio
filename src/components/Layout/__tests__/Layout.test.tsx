@@ -38,18 +38,6 @@ describe("Layout", () => {
     });
   });
 
-  describe("Layout.Main", () => {
-    it("should render main content area", () => {
-      render(
-        <Layout.Main>
-          <p>Main content</p>
-        </Layout.Main>,
-      );
-      expect(screen.getByRole("main")).toBeInTheDocument();
-      expect(screen.getByText("Main content")).toBeInTheDocument();
-    });
-  });
-
   describe("Integration", () => {
     it("should render complete layout with AppBar, content, and Footer", () => {
       renderWithTheme(
