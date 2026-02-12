@@ -10,81 +10,93 @@ const renderWithTheme = (ui: React.ReactElement) => {
 
 describe("AppBar", () => {
   describe("Main Component", () => {
-    it("should render the AppBar", () => {
-      renderWithTheme(<AppBar />);
+    it("should render the header", () => {
+      renderWithTheme(
+        <AppBar>
+          <AppBar.Desktop>
+            <AppBar.Logo />
+          </AppBar.Desktop>
+        </AppBar>,
+      );
       expect(screen.getByRole("banner")).toBeInTheDocument();
-    });
-
-    it("should render the logo", () => {
-      renderWithTheme(<AppBar />);
-      const logos = screen.getAllByText("FlorianRth");
-      expect(logos.length).toBeGreaterThan(0);
     });
   });
 
   describe("AppBar.Logo", () => {
     it("should render the logo text", () => {
-      render(<AppBar.Logo />);
+      renderWithTheme(
+        <AppBar>
+          <AppBar.Logo />
+        </AppBar>,
+      );
       expect(screen.getByText("FlorianRth")).toBeInTheDocument();
-    });
-
-    it("should be a link", () => {
-      render(<AppBar.Logo />);
-      const link = screen.getByRole("link");
-      expect(link).toHaveAttribute("href", "#home");
     });
   });
 
-  describe("AppBar.NavLinks", () => {
-    it("should render left navigation links", () => {
-      render(<AppBar.NavLinks position="left" />);
-      expect(screen.getByText("Home")).toBeInTheDocument();
-      expect(screen.getByText("Über mich")).toBeInTheDocument();
-    });
-
-    it("should render right navigation links", () => {
-      render(<AppBar.NavLinks position="right" />);
-      expect(screen.getByText("Projekte")).toBeInTheDocument();
-      expect(screen.getByText("Kontakt")).toBeInTheDocument();
+  describe("AppBar.NavLink", () => {
+    it("should render a nav link", () => {
+      renderWithTheme(
+        <AppBar>
+          <AppBar.NavLink href="#test">Test Link</AppBar.NavLink>
+        </AppBar>,
+      );
+      expect(screen.getByText("Test Link")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Test Link" })).toHaveAttribute("href", "#test");
     });
   });
 
   describe("AppBar.DarkModeToggle", () => {
-    it("should render the toggle button", () => {
-      renderWithTheme(<AppBar.DarkModeToggle />);
-      const button = screen.getByRole("button");
-      expect(button).toBeInTheDocument();
-    });
-
-    it("should have accessible label", () => {
-      renderWithTheme(<AppBar.DarkModeToggle />);
-      const button = screen.getByRole("button");
-      expect(button).toHaveAttribute("aria-label");
+    it("should render the dark mode toggle", () => {
+      renderWithTheme(
+        <AppBar>
+          <AppBar.DarkModeToggle />
+        </AppBar>,
+      );
+      expect(screen.getByRole("button", { name: /switch to/i })).toBeInTheDocument();
     });
   });
 
   describe("AppBar.Divider", () => {
     it("should render the divider", () => {
-      const { container } = render(<AppBar.Divider />);
-      const divider = container.querySelector("div");
-      expect(divider).toBeInTheDocument();
-      expect(divider).toHaveAttribute("aria-hidden", "true");
+      renderWithTheme(
+        <AppBar>
+          <AppBar.Divider />
+        </AppBar>,
+      );
+      expect(screen.getByRole("banner").querySelector("img")).toBeInTheDocument();
     });
   });
 
-  describe("Integration", () => {
-    it("should render complete AppBar with all parts", () => {
-      renderWithTheme(<AppBar />);
-      const logos = screen.getAllByText("FlorianRth");
-      expect(logos.length).toBeGreaterThan(0);
-      expect(screen.getByText("Home")).toBeInTheDocument();
-      expect(screen.getByText("Projekte")).toBeInTheDocument();
+  describe("AppBar.MenuButton", () => {
+    it("should render the menu button on mobile", () => {
+      renderWithTheme(
+        <AppBar>
+          <AppBar.MenuButton />
+        </AppBar>,
+      );
+      expect(screen.getByRole("button", { name: /open menu/i })).toBeInTheDocument();
     });
+  });
 
-    it("should show mobile menu button on mobile", () => {
-      renderWithTheme(<AppBar />);
-      const menuButton = screen.getByRole("button", { name: /menu/i });
-      expect(menuButton).toBeInTheDocument();
+  describe("Composition", () => {
+    it("should render a fully composed AppBar", () => {
+      renderWithTheme(
+        <AppBar>
+          <AppBar.Desktop>
+            <AppBar.Nav>
+              <AppBar.NavLink href="#home">Home</AppBar.NavLink>
+            </AppBar.Nav>
+            <AppBar.Logo />
+            <AppBar.Nav>
+              <AppBar.NavLink href="#contact">Kontakt</AppBar.NavLink>
+            </AppBar.Nav>
+          </AppBar.Desktop>
+          <AppBar.Divider />
+        </AppBar>,
+      );
+      expect(screen.getByText("FlorianRth")).toBeInTheDocument();
+      expect(screen.getByText("Home")).toBeInTheDocument();
+      expect(screen.getByText("Kontakt")).toBeInTheDocument();
     });
   });
 });

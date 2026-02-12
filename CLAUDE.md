@@ -167,18 +167,19 @@ Clean Code principles and best practices are paramount:
 - Single responsibility principle
 - DRY (Don't Repeat Yourself)
 
-### 10. Composition Pattern
+### 10. Composition Pattern (STRICT)
 
-The Composition Pattern is the primary architectural pattern for building complex UI components.
+**True Composition is mandatory.** The consumer always composes the layout from atomic building blocks. Components NEVER render default layouts internally or use `children || (fallback)` patterns.
 
-#### 10.1 Component Structure
+#### 10.1 Core Rules
 
-- **Multi-File Organization**: Each part of a compound component lives in its own file
-- **Component Folder**: All parts organized in a folder named after the component
-- **Named Exports**: Each part uses named exports
-- **Property Attachment**: Sub-components attached as properties via index.ts (e.g., `Dialog.Header`)
-- **Arrow Functions**: All components use arrow functions
-- **Type Safety**: Full TypeScript support with proper typing
+1. **Consumer composes everything** — the parent decides what goes where
+2. **No config props that control layout** — no `position="left"`, no `variant="mobile"`
+3. **No default children / fallback content** — `children` is always required, never optional with a default
+4. **Each sub-component is a dumb building block** — it renders its children/content, nothing more
+5. **Property Attachment via index.ts** — sub-components attached as `Parent.Child`
+6. **One component per file** — no exceptions (except index.ts for assembly)
+7. **Arrow functions only, named exports only**
 
 #### 10.2 File Structure
 
@@ -215,16 +216,40 @@ Dialog.Header = Header;
 Dialog.Content = Content;
 ```
 
-**Usage:**
+**Usage — True Composition:**
 
 ```tsx
-import { Dialog } from "./components/ui/Dialog";
+// ✅ CORRECT: Consumer composes the layout
+<AppBar>
+  <AppBar.Desktop>
+    <AppBar.Nav>
+      <AppBar.DarkModeToggle />
+      <AppBar.NavLink href="#home">Home</AppBar.NavLink>
+    </AppBar.Nav>
+    <AppBar.Logo />
+    <AppBar.Nav>
+      <AppBar.NavLink href="#contact">Kontakt</AppBar.NavLink>
+    </AppBar.Nav>
+  </AppBar.Desktop>
 
-<Dialog isOpen={true} onClose={handleClose}>
-  <Dialog.Header>Title</Dialog.Header>
-  <Dialog.Content>Body</Dialog.Content>
-  <Dialog.Footer>Actions</Dialog.Footer>
-</Dialog>;
+  <AppBar.Mobile>
+    <AppBar.Logo />
+    <AppBar.MenuButton />
+  </AppBar.Mobile>
+
+  <AppBar.Divider />
+</AppBar>
+
+// ❌ WRONG: Component renders its own default layout
+<AppBar />  // ← NO! Where is the composition?
+
+// ❌ WRONG: Config props controlling layout
+<NavLinks position="left" />  // ← NO! Use composition instead
+
+// ❌ WRONG: Fallback children
+export const AppBar = ({ children }) => {
+  return <header>{children || <DefaultLayout />}</header>;  // ← NO!
+};
 ```
 
 #### 10.4 File Content Structure
@@ -394,17 +419,22 @@ describe("Dialog", () => {
 
 **DO:**
 
-- ✅ Keep sub-components simple and focused
+- ✅ Keep sub-components simple and focused (dumb building blocks)
+- ✅ Let the consumer compose the layout
 - ✅ Separate Context.tsx (definition) and Provider.tsx (provider + hook)
 - ✅ Write tests in **tests**/ folder
 - ✅ Export only the main component with attached parts from index.ts
-- ✅ Use inline styles
+- ✅ Make `children` required (not optional) on container components
+- ✅ Use className prop for style overrides
 
 **DON'T:**
 
+- ❌ Render default layouts inside components (no `children || <Default />`)
+- ❌ Use config props that control layout (no `position="left"`, `variant="x"`)
 - ❌ Put multiple components in one file (except index.ts)
 - ❌ Use default exports
 - ❌ Export individual parts from index.ts
+- ❌ Make components that "just work" without composition — the consumer MUST compose
 
 ## Project Management Approach
 

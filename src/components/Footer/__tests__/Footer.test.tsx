@@ -5,15 +5,20 @@ import { Footer } from "../index";
 describe("Footer", () => {
   describe("Main Component", () => {
     it("should render the footer", () => {
-      render(<Footer />);
+      render(
+        <Footer>
+          <Footer.Copyright />
+        </Footer>,
+      );
       expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     });
   });
 
   describe("Footer.Copyright", () => {
-    it("should render the copyright text", () => {
+    it("should render the copyright text with current year", () => {
       render(<Footer.Copyright />);
-      expect(screen.getByText(/2026 Florian Rätsch/)).toBeInTheDocument();
+      const currentYear = new Date().getFullYear();
+      expect(screen.getByText(new RegExp(`${currentYear} Florian Rätsch`))).toBeInTheDocument();
     });
   });
 
@@ -39,10 +44,16 @@ describe("Footer", () => {
     });
   });
 
-  describe("Integration", () => {
+  describe("Composition", () => {
     it("should render complete footer with all parts", () => {
-      render(<Footer />);
-      expect(screen.getByText(/2026 Florian Rätsch/)).toBeInTheDocument();
+      render(
+        <Footer>
+          <Footer.Copyright />
+          <Footer.SocialLinks />
+        </Footer>,
+      );
+      const currentYear = new Date().getFullYear();
+      expect(screen.getByText(new RegExp(`${currentYear} Florian Rätsch`))).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /github/i })).toBeInTheDocument();
     });
   });
