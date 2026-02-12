@@ -11,7 +11,7 @@ const renderWithTheme = (ui: React.ReactElement) => {
 describe("App", () => {
   it("should render the hero section with name", () => {
     renderWithTheme(<App />);
-    const headings = screen.getAllByRole("heading", { level: 1, name: "Florian Rätsch" });
+    const headings = screen.getAllByRole("heading", { level: 1, name: /Florian Rätsch/ });
     expect(headings.length).toBeGreaterThan(0);
   });
 
