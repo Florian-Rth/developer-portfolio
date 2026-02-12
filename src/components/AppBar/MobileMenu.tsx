@@ -17,9 +17,9 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
   };
 
   return (
-    <div
-      className={`fixed inset-0 top-[65px] z-40 bg-background md:hidden ${className}`}
-      aria-modal="true"
+    <dialog
+      className={`fixed inset-0 top-[var(--appbar-height-mobile)] z-40 bg-background md:hidden ${className}`}
+      open
       aria-label="Mobile navigation menu"
     >
       <div className="flex flex-col items-center justify-center h-full gap-8 pb-20">
@@ -28,6 +28,6 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ className = "" }) => {
           <DarkModeToggle />
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };

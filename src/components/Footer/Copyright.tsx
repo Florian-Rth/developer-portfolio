@@ -5,5 +5,10 @@ type CopyrightProps = {
 };
 
 export const Copyright: React.FC<CopyrightProps> = ({ className = "" }) => {
-  return <p className={`text-sm text-muted-foreground ${className}`}>&copy; 2026 Florian Rätsch</p>;
+  const currentYear = new Date().getFullYear();
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`}>
+      &copy; {currentYear} Florian Rätsch
+    </p>
+  );
 };
