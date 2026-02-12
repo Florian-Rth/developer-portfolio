@@ -1,3 +1,4 @@
+import { cn } from "@lib/utils";
 import type React from "react";
 
 type NavLinkProps = {
@@ -7,12 +8,15 @@ type NavLinkProps = {
   className?: string;
 };
 
-export const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className = "" }) => {
+export const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className }) => {
   return (
     <a
       href={href}
       onClick={onClick}
-      className={`font-sans font-medium text-foreground hover:text-accent transition-colors ${className}`}
+      className={cn(
+        "font-sans font-medium text-foreground hover:text-accent transition-colors",
+        className,
+      )}
     >
       {children}
     </a>
