@@ -10,12 +10,12 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({ className = "" }
     <div
       data-testid="section-divider"
       aria-hidden="true"
-      className={`absolute bottom-0 left-0 right-0 w-full ${className}`}
+      className={`absolute -bottom-8 left-0 right-0 w-full ${className}`}
     >
       <img
         src={sectionDivider}
         alt=""
-        className="w-full h-[60px] md:h-[80px] block object-cover"
+        className="w-full block"
         style={{ pointerEvents: "none" }}
       />
     </div>

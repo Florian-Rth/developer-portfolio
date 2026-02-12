@@ -1,31 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
   <defs>
-    <linearGradient id="brushGradient" x1="0%" y1="50%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#E8B4A0" />
-      <stop offset="50%" stop-color="#D4929B" />
-      <stop offset="100%" stop-color="#B8A9D4" />
+    <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E8B4A0" stop-opacity="0.3"/>
+      <stop offset="15%" stop-color="#E8B4A0" stop-opacity="0.7"/>
+      <stop offset="38%" stop-color="#D4929B" stop-opacity="0.75"/>
+      <stop offset="62%" stop-color="#C4A0BD" stop-opacity="0.6"/>
+      <stop offset="82%" stop-color="#B8A9D4" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#9FAAD4" stop-opacity="0.25"/>
     </linearGradient>
+    <filter id="brush" x="-3%" y="-10%" width="106%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.015 0.04" numOctaves="5" seed="12" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
   </defs>
-  <!-- Organic brush stroke path - variable width, 2-3 large waves -->
-  <!-- Starts thin on left, gets expressive in middle, tapers right -->
-  <path
-    d="M0,45
-       C60,42 120,38 180,35
-       Q280,28 380,32
-       C480,36 520,48 600,52
-       Q720,58 800,50
-       C880,42 960,36 1040,38
-       Q1140,42 1200,45
-       C1280,48 1360,46 1440,44
-       L1440,48
-       C1360,50 1280,53 1200,50
-       Q1140,47 1040,44
-       C960,42 880,50 800,56
-       Q720,64 600,58
-       C520,54 480,42 380,38
-       Q280,34 180,42
-       C120,46 60,50 0,52
-       Z"
-    fill="url(#brushGradient)"
-  />
+
+  <!-- Main stroke: ascending left→right (~95 left to ~30 right baseline) -->
+  <path d="
+    M-20,95
+    C40,88 90,72 160,58
+    C240,40 300,34 380,40
+    C460,48 500,62 560,66
+    C620,70 660,58 720,44
+    C790,28 840,20 920,24
+    C1000,30 1040,42 1100,46
+    C1160,50 1200,40 1260,30
+    C1320,20 1380,18 1460,20
+
+    L1460,38
+
+    C1380,38 1320,36 1260,48
+    C1200,62 1160,68 1100,66
+    C1040,62 1000,50 920,44
+    C840,38 790,46 720,62
+    C660,78 620,82 560,80
+    C500,76 460,64 380,56
+    C300,48 240,56 160,76
+    C90,92 40,102 -20,110
+    Z
+  " fill="url(#bg)" filter="url(#brush)"/>
+
+  <!-- Bristle fragments -->
+  <path d="
+    M30,90 C60,82 100,68 150,58 C180,52 210,48 240,44
+    M350,38 C380,36 420,40 450,46
+    M700,46 C730,38 760,28 800,24
+    M1050,42 C1080,44 1110,46 1140,44
+    M1300,24 C1330,22 1360,20 1400,20
+  " fill="none" stroke="url(#bg)" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round" filter="url(#brush)"/>
+
+  <path d="
+    M80,84 C120,70 180,54 260,44
+    M500,58 C540,64 580,68 610,70
+    M850,22 C890,24 930,30 960,34
+    M1200,38 C1240,32 1280,26 1310,22
+  " fill="none" stroke="url(#bg)" stroke-width="1" stroke-opacity="0.35" stroke-linecap="round" filter="url(#brush)"/>
 </svg>

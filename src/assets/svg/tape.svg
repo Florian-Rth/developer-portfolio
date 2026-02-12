@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" fill="none">
+  <defs>
+    <linearGradient id="tapeGrad" x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B8A9D4" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#B8A9D4" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#B8A9D4" stop-opacity="0.45"/>
+    </linearGradient>
+    <!-- Subtle texture for tape feel -->
+    <filter id="tapeTexture">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" seed="2"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+      <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply"/>
+    </filter>
+  </defs>
+  <!-- Main tape shape - slightly irregular edges like real tape -->
+  <path
+    d="M3,4 Q10,2 20,3.5 Q40,5.5 60,4 Q80,2.5 100,4.5 Q112,5.5 118,3.5 L117,24 Q110,25.5 100,23.5 Q80,21.5 60,24 Q40,26 20,24 Q10,23 2,25 Z"
+    fill="url(#tapeGrad)"
+    filter="url(#tapeTexture)"
+  />
+  <!-- Subtle center fold line -->
+  <path
+    d="M8,14 Q30,12.5 60,14 Q90,15.5 115,13.5"
+    stroke="#B8A9D4"
+    stroke-opacity="0.15"
+    stroke-width="0.5"
+    fill="none"
+  />
+</svg>
