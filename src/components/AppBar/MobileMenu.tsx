@@ -15,16 +15,21 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ children, className = ""
     setMobileMenuOpen(false);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <dialog
       className={`fixed inset-0 top-[var(--appbar-height-mobile)] z-40 bg-background md:hidden ${className}`}
       open
       aria-label="Mobile navigation menu"
       onClick={handleChildClick}
+      onKeyDown={handleKeyDown}
     >
-      <div className="flex flex-col items-center justify-center h-full gap-8 pb-20">
-        {children}
-      </div>
+      <div className="flex flex-col items-center justify-center h-full gap-8 pb-20">{children}</div>
     </dialog>
   );
 };

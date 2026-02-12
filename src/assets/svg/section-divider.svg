@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="brushGradient" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#E8B4A0" />
+      <stop offset="50%" stop-color="#D4929B" />
+      <stop offset="100%" stop-color="#B8A9D4" />
+    </linearGradient>
+  </defs>
+  <!-- Organic brush stroke path - variable width, 2-3 large waves -->
+  <!-- Starts thin on left, gets expressive in middle, tapers right -->
+  <path
+    d="M0,45
+       C60,42 120,38 180,35
+       Q280,28 380,32
+       C480,36 520,48 600,52
+       Q720,58 800,50
+       C880,42 960,36 1040,38
+       Q1140,42 1200,45
+       C1280,48 1360,46 1440,44
+       L1440,48
+       C1360,50 1280,53 1200,50
+       Q1140,47 1040,44
+       C960,42 880,50 800,56
+       Q720,64 600,58
+       C520,54 480,42 380,38
+       Q280,34 180,42
+       C120,46 60,50 0,52
+       Z"
+    fill="url(#brushGradient)"
+  />
+</svg>

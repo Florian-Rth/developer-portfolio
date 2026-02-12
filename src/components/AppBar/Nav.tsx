@@ -6,9 +6,5 @@ type NavProps = {
 };
 
 export const Nav: React.FC<NavProps> = ({ children, className = "" }) => {
-  return (
-    <nav className={`flex items-center gap-8 ${className}`}>
-      {children}
-    </nav>
-  );
+  return <nav className={`flex items-center gap-8 ${className}`}>{children}</nav>;
 };

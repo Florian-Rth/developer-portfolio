@@ -34,10 +34,18 @@ export const Layout: React.FC<LayoutProps> = ({ children, className = "" }) => {
         <AppBar.Divider />
 
         <AppBar.MobileMenu>
-          <AppBar.NavLink href="#home" className="text-2xl">Home</AppBar.NavLink>
-          <AppBar.NavLink href="#about" className="text-2xl">Über mich</AppBar.NavLink>
-          <AppBar.NavLink href="#projects" className="text-2xl">Projekte</AppBar.NavLink>
-          <AppBar.NavLink href="#contact" className="text-2xl">Kontakt</AppBar.NavLink>
+          <AppBar.NavLink href="#home" className="text-2xl">
+            Home
+          </AppBar.NavLink>
+          <AppBar.NavLink href="#about" className="text-2xl">
+            Über mich
+          </AppBar.NavLink>
+          <AppBar.NavLink href="#projects" className="text-2xl">
+            Projekte
+          </AppBar.NavLink>
+          <AppBar.NavLink href="#contact" className="text-2xl">
+            Kontakt
+          </AppBar.NavLink>
           <AppBar.DarkModeToggle />
         </AppBar.MobileMenu>
       </AppBar>

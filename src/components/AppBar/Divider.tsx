@@ -1,5 +1,5 @@
-import type React from "react";
 import brushDivider from "@assets/svg/brush-divider-thin.svg";
+import type React from "react";
 
 type DividerProps = {
   className?: string;
