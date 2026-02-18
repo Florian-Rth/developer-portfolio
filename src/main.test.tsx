@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { App } from "./App";
 
 describe("main", () => {
-  let rootElement: HTMLElement | null;
+  var rootElement: HTMLElement | null;
 
   beforeEach(() => {
     rootElement = document.getElementById("root");

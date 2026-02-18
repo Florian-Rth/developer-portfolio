@@ -9,10 +9,10 @@ const renderWithTheme = (ui: React.ReactElement) => {
 };
 
 describe("App", () => {
-  it("should render the welcome heading", () => {
+  it("should render the hero section with name", () => {
     renderWithTheme(<App />);
-    const heading = screen.getByText("Welcome");
-    expect(heading).toBeInTheDocument();
+    const headings = screen.getAllByRole("heading", { level: 1, name: /Florian Rätsch/ });
+    expect(headings.length).toBeGreaterThan(0);
   });
 
   it("should render all navigation sections", () => {

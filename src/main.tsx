@@ -1,3 +1,4 @@
+import { SplashScreen } from "@components/SplashScreen";
 import { ThemeProvider } from "@components/ThemeProvider";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -13,7 +14,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="portfolio-theme">
-      <App />
+      <SplashScreen.Wrapper>
+        <App />
+      </SplashScreen.Wrapper>
     </ThemeProvider>
   </StrictMode>,
 );
