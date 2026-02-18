@@ -180,3 +180,63 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Splash Screen Logo Animation */
+.splash-logo-text {
+  font-family: var(--font-script);
+  font-size: 80px;
+  fill-opacity: 0;
+  stroke-width: 1.5;
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: splashStroke 8s linear forwards, splashFill 1s ease 2s forwards;
+}
+
+@keyframes splashStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes splashFill {
+  to {
+    fill-opacity: 1;
+    stroke-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-logo-text {
+    animation: none;
+    fill-opacity: 1;
+    stroke-width: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Splash Screen Exit Transition (Scale + Fade) */
+.splash-screen-exit {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms
+    cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.splash-screen-exit-active {
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-screen-exit {
+    transition: opacity 300ms ease;
+    transform: none;
+  }
+
+  .splash-screen-exit-active {
+    transform: none;
+  }
+}
