@@ -54,7 +54,7 @@ describe("About", () => {
           <About.Watermark />
         </About>,
       );
-      expect(screen.getByText("ABOUT")).toBeInTheDocument();
+      expect(screen.getByText("about")).toBeInTheDocument();
     });
 
     it("should render mobile watermark text", () => {
@@ -72,7 +72,7 @@ describe("About", () => {
           <About.Watermark />
         </About>,
       );
-      const desktopWatermark = screen.getByText("ABOUT");
+      const desktopWatermark = screen.getByText("about");
       const mobileWatermark = screen.getByText("about");
       expect(desktopWatermark).toHaveAttribute("aria-hidden", "true");
       expect(mobileWatermark).toHaveAttribute("aria-hidden", "true");
@@ -84,7 +84,7 @@ describe("About", () => {
           <About.Watermark />
         </About>,
       );
-      const desktopWatermark = screen.getByText("ABOUT");
+      const desktopWatermark = screen.getByText("about");
       const mobileWatermark = screen.getByText("about");
       expect(desktopWatermark).toHaveClass("select-none");
       expect(mobileWatermark).toHaveClass("select-none");
@@ -96,7 +96,7 @@ describe("About", () => {
           <About.Watermark />
         </About>,
       );
-      const desktopWatermark = screen.getByText("ABOUT");
+      const desktopWatermark = screen.getByText("about");
       const mobileWatermark = screen.getByText("about");
       expect(desktopWatermark).toHaveClass("pointer-events-none");
       expect(mobileWatermark).toHaveClass("pointer-events-none");
@@ -108,7 +108,7 @@ describe("About", () => {
           <About.Watermark className="custom-watermark" />
         </About>,
       );
-      const container = screen.getByText("ABOUT").parentElement;
+      const container = screen.getByText("about").parentElement;
       expect(container).toHaveClass("custom-watermark");
     });
   });
@@ -787,7 +787,7 @@ describe("About", () => {
       );
 
       expect(screen.getByRole("region", { name: "About" })).toBeInTheDocument();
-      expect(screen.getByText("ABOUT")).toBeInTheDocument();
+      expect(screen.getByText("about")).toBeInTheDocument();
       expect(screen.getByText("about")).toBeInTheDocument();
       expect(screen.getByText("Content goes here")).toBeInTheDocument();
     });
