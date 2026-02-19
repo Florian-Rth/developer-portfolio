@@ -4,6 +4,7 @@ import { BrushDivider } from "./BrushDivider";
 import { BrushUnderline } from "./BrushUnderline";
 import { CodeSnippet } from "./CodeSnippet";
 import { Counter } from "./Counter";
+import { InfoText } from "./InfoText";
 import { PhotoCard } from "./PhotoCard";
 import { PullQuote } from "./PullQuote";
 import { Story } from "./Story";
@@ -21,6 +22,7 @@ type AboutType = typeof AboutComponent & {
   TextHighlight: typeof TextHighlight;
   CodeSnippet: typeof CodeSnippet;
   Counter: typeof Counter;
+  InfoText: typeof InfoText;
 };
 
 const About = AboutComponent as AboutType;
@@ -34,5 +36,6 @@ About.Story = Story;
 About.TextHighlight = TextHighlight;
 About.CodeSnippet = CodeSnippet;
 About.Counter = Counter;
+About.InfoText = InfoText;
 
 export { About };

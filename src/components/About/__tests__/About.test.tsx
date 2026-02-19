@@ -716,6 +716,67 @@ describe("About", () => {
     });
   });
 
+  describe("About.InfoText", () => {
+    it("should render info text content", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText>Personal info text here.</About.InfoText>
+        </About>,
+      );
+      expect(screen.getByText("Personal info text here.")).toBeInTheDocument();
+    });
+
+    it("should render as a paragraph element", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText>Info text</About.InfoText>
+        </About>,
+      );
+      const paragraph = screen.getByText("Info text");
+      expect(paragraph.tagName).toBe("P");
+    });
+
+    it("should have text-secondary color class", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText>Styled text</About.InfoText>
+        </About>,
+      );
+      const paragraph = screen.getByText("Styled text");
+      expect(paragraph).toHaveClass("text-text-secondary");
+    });
+
+    it("should have max-width class", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText>Limited width text</About.InfoText>
+        </About>,
+      );
+      const paragraph = screen.getByText("Limited width text");
+      expect(paragraph).toHaveClass("max-w-[480px]");
+    });
+
+    it("should accept custom className", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText className="custom-info">Custom text</About.InfoText>
+        </About>,
+      );
+      const paragraph = screen.getByText("Custom text");
+      expect(paragraph).toHaveClass("custom-info");
+    });
+
+    it("should have DM Sans font class", () => {
+      renderWithTheme(
+        <About>
+          <About.InfoText>Font test</About.InfoText>
+        </About>,
+      );
+      const paragraph = screen.getByText("Font test");
+      expect(paragraph).toHaveClass("font-dm-sans");
+    });
+  });
+
   describe("Composition", () => {
     it("should render a composed About section with Watermark", () => {
       renderWithTheme(

@@ -15,6 +15,9 @@ export const About: React.FC<AboutProps> = ({ children, className }) => {
         "relative bg-background overflow-hidden",
         "px-5 py-15 md:py-30 md:px-10",
         "max-w-[1200px] mx-auto",
+        // CSS Grid: 1 column mobile, 2 columns desktop
+        "grid grid-cols-1 lg:grid-cols-2",
+        "gap-y-8 lg:gap-x-[60px] lg:gap-y-10",
         className,
       )}
     >
