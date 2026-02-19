@@ -21,3 +21,28 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
+
+class MockIntersectionObserver {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = "";
+  readonly thresholds: readonly number[] = [];
+
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+}
+
+Object.defineProperty(window, "IntersectionObserver", {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
+
+Object.defineProperty(global, "IntersectionObserver", {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
