@@ -241,7 +241,7 @@ export const CodeSnippet: React.FC<CodeSnippetProps> = ({ className }) => {
   return (
     <div
       data-testid="code-snippet"
-      className={cn("rounded-xl max-w-[480px] w-full", className)}
+      className={cn("rounded-xl max-w-full lg:max-w-[480px] w-full", className)}
       style={{
         backgroundColor: "#1E1B19",
         boxShadow: "0 8px 32px rgba(0,0,0,0.15)",

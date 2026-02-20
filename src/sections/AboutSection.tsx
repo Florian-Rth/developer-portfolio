@@ -61,7 +61,9 @@ export const AboutSection: React.FC = () => {
 
       {/* Row 2: PullQuote - spans full width */}
       <ScrollReveal delay={150} className="relative col-span-full lg:-translate-x-[1%]">
-        <About.PullQuote>Code is my canvas, pixels are my paint.</About.PullQuote>
+        <About.PullQuote attribution="Steve Jobs">
+          Design is not just what it looks like. Design is how it works.
+        </About.PullQuote>
         {/* Annotation 3: "Love this font!" - left side, all screens */}
         <About.Annotation
           text="Love this font!"
@@ -90,7 +92,7 @@ export const AboutSection: React.FC = () => {
       {/* Row 3, Column 2: CodeSnippet */}
       <ScrollReveal
         delay={450}
-        className="relative justify-self-center lg:justify-self-end lg:-translate-x-[2%] lg:-translate-y-[1%]"
+        className="relative w-full justify-self-center lg:justify-self-end lg:-translate-x-[2%] lg:-translate-y-[1%]"
       >
         <About.CodeSnippet className="lg:rotate-[2deg]" />
         {/* Annotation 4: "Playful self-intro code 😄" - bottom center, desktop only */}
@@ -111,8 +113,7 @@ export const AboutSection: React.FC = () => {
         />
       </ScrollReveal>
 
-      {/* Row 4: BrushDivider - spans full width */}
-      <About.BrushDivider />
+      {/* BrushDivider removed */}
     </About>
   );
 };
