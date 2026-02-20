@@ -54,10 +54,10 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({ className }) => 
           </filter>
         </defs>
 
-        {/* White fill below wave — follows wave bottom contour */}
+        {/* Fill below wave matches About section bg — creates seamless transition */}
         <path
           d="M-20,110 C40,102 90,92 160,76 C240,56 300,48 380,56 C460,64 500,76 560,80 C620,82 660,78 720,62 C790,46 840,38 920,44 C1000,50 1040,62 1100,66 C1160,68 1200,62 1260,48 C1320,36 1380,38 1460,38 L1460,260 L-20,260 Z"
-          fill="#fffdf9"
+          fill="transparent"
         />
 
         {/* Brush wave stroke */}

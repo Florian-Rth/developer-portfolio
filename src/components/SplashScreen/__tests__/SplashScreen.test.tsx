@@ -1,5 +1,5 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { SplashScreen } from "../index";
 
 describe("SplashScreen", () => {
@@ -134,11 +134,18 @@ describe("SplashScreen", () => {
   });
 
   describe("SplashScreen.Wrapper", () => {
-    beforeEach(() => {
-      sessionStorage.clear();
+    const originalLocation = window.location;
+
+    afterEach(() => {
+      Object.defineProperty(window, "location", { value: originalLocation, writable: true });
     });
 
-    it("should show splash screen on first visit", () => {
+    it("should show splash screen by default", () => {
+      Object.defineProperty(window, "location", {
+        value: { ...originalLocation, search: "" },
+        writable: true,
+      });
+
       render(
         <SplashScreen.Wrapper>
           <div>Main App</div>
@@ -149,8 +156,11 @@ describe("SplashScreen", () => {
       expect(screen.getByText("Main App")).toBeInTheDocument();
     });
 
-    it("should not show splash screen if already shown in session", () => {
-      sessionStorage.setItem("splash-screen-shown", "true");
+    it("should not show splash screen when nosplash query param is set", () => {
+      Object.defineProperty(window, "location", {
+        value: { ...originalLocation, search: "?nosplash" },
+        writable: true,
+      });
 
       render(
         <SplashScreen.Wrapper>
@@ -162,7 +172,12 @@ describe("SplashScreen", () => {
       expect(screen.getByText("Main App")).toBeInTheDocument();
     });
 
-    it("should set sessionStorage flag after completion", async () => {
+    it("should hide splash screen after completion", async () => {
+      Object.defineProperty(window, "location", {
+        value: { ...originalLocation, search: "" },
+        writable: true,
+      });
+
       render(
         <SplashScreen.Wrapper>
           <div>Main App</div>
@@ -174,15 +189,12 @@ describe("SplashScreen", () => {
       });
 
       await waitFor(() => {
-        expect(sessionStorage.getItem("splash-screen-shown")).toBe("true");
+        expect(screen.queryByRole("img", { name: "FlorianRth Logo" })).not.toBeInTheDocument();
       });
     });
   });
 
   describe("Integration", () => {
-    beforeEach(() => {
-      sessionStorage.clear();
-    });
 
     it("should render complete splash screen with all parts", () => {
       render(

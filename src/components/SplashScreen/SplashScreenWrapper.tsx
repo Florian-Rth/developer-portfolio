@@ -9,7 +9,10 @@ type SplashScreenWrapperProps = {
 };
 
 export const SplashScreenWrapper: React.FC<SplashScreenWrapperProps> = ({ children }) => {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !params.has("nosplash");
+  });
 
   const handleSplashComplete = () => {
     setShowSplash(false);
