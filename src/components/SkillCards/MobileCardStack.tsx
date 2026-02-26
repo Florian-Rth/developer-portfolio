@@ -9,8 +9,16 @@ const SWIPE_THRESHOLD = 80;
 const STACK_SIZE = 3;
 const FLY_DISTANCE = 600;
 
-/** Target card width: 75 vw, capped at the native card width so it never blows up */
-const calcCardScale = () => Math.min(window.innerWidth * 0.75, CARD_W) / CARD_W;
+/**
+ * Target card width: 65 vw, clamped between 180 px and 280 px.
+ * — 180 px minimum keeps the card readable on very small screens
+ * — 280 px maximum prevents it overwhelming large phones / tablets
+ * Examples: 390 px iPhone → 254 px (scale ≈ 1.15)
+ *           320 px SE    → 208 px (scale ≈ 0.95)
+ *           768 px iPad  → 280 px (scale ≈ 1.27, capped)
+ */
+const calcCardScale = () =>
+  Math.min(Math.max(window.innerWidth * 0.65, 180), 280) / CARD_W;
 
 type MobileCardStackProps = {
   onSelect: (skill: Skill) => void;
