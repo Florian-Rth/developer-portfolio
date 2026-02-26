@@ -2,12 +2,15 @@ import type { Skill } from "@/data/skills";
 import { skills } from "@/data/skills";
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "framer-motion";
 import type React from "react";
-import { useCallback, useState } from "react";
-import { SkillCard } from "./SkillCard";
+import { useCallback, useEffect, useState } from "react";
+import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
 
 const SWIPE_THRESHOLD = 80;
 const STACK_SIZE = 3;
 const FLY_DISTANCE = 600;
+
+/** Target card width: 75 vw, capped at the native card width so it never blows up */
+const calcCardScale = () => Math.min(window.innerWidth * 0.75, CARD_W) / CARD_W;
 
 type MobileCardStackProps = {
   onSelect: (skill: Skill) => void;
@@ -17,6 +20,17 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
   const [queue, setQueue] = useState<Skill[]>(skills);
   const [isDragging, setIsDragging] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [cardScale, setCardScale] = useState(calcCardScale);
+
+  // Keep scale in sync when the viewport resizes
+  useEffect(() => {
+    const onResize = () => setCardScale(calcCardScale());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const cardW = CARD_W * cardScale;
+  const cardH = CARD_H * cardScale;
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
@@ -52,10 +66,8 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       const swipedFast = Math.abs(info.velocity.x) > 500;
 
       if (swipedFar || swipedFast) {
-        const dir = info.offset.x > 0 ? "right" : "left";
-        flyOff(dir);
+        flyOff(info.offset.x > 0 ? "right" : "left");
       } else {
-        // Snap back with spring
         animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
       }
     },
@@ -79,17 +91,15 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
         {currentIndex + 1} / {skills.length}
       </p>
 
-      {/* Card stack — fluid width, nearly full screen */}
-      <div
-        className="relative w-[88vw] max-w-[360px]"
-        style={{ height: "calc(88vw * 1.45)", maxHeight: 522 }}
-      >
+      {/* Card stack — sized to match the zoomed card */}
+      <div className="relative" style={{ width: cardW, height: cardH }}>
+
         {/* Background cards */}
         <AnimatePresence>
           {behind.map((skill, i) => (
             <motion.div
               key={skill.id}
-              className="absolute inset-0 pointer-events-none"
+              className="absolute top-0 left-0 pointer-events-none"
               initial={{
                 y: (i + 1) * -7,
                 scale: 1 - (i + 1) * 0.04,
@@ -104,7 +114,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
               }}
               transition={{ type: "spring", stiffness: 250, damping: 25 }}
             >
-              <SkillCard skill={skill} className="w-full h-full" />
+              <SkillCard skill={skill} scale={cardScale} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -112,7 +122,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
         {/* Top card — draggable */}
         <motion.div
           key={current.id}
-          className="absolute inset-0 touch-none"
+          className="absolute top-0 left-0 touch-none"
           style={{
             x,
             rotate,
@@ -128,7 +138,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           onDragEnd={handleDragEnd}
           onTap={handleTap}
         >
-          <SkillCard skill={current} className="w-full h-full" />
+          <SkillCard skill={current} scale={cardScale} />
         </motion.div>
       </div>
 
