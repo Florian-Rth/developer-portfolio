@@ -161,7 +161,6 @@ const CardMesh: React.FC<CardMeshProps> = ({ skill, position, onSelect }) => {
         color="#2d2a26"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/DMSans-Bold.ttf"
         maxWidth={CARD_W - 0.2}
       >
         {skill.name}
@@ -294,10 +293,15 @@ export const CardScatter3D: React.FC<CardScatter3DProps> = ({ className }) => {
         }}
       >
         <Canvas
-          camera={{ position: [0, 0, 10], fov: 50 }}
-          style={{ width: "100%", height: "100%" }}
+          camera={{ position: [0, 2, 12], fov: 45 }}
+          style={{ width: "100%", height: "100%", background: "#f5f0e8" }}
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={
+            <mesh>
+              <planeGeometry args={[20, 20]} />
+              <meshBasicMaterial color="#f5f0e8" />
+            </mesh>
+          }>
             <Scene scattered={scattered} onSelectSkill={handleSelectSkill} />
           </Suspense>
         </Canvas>
