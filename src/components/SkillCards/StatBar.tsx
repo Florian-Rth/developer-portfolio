@@ -13,7 +13,7 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, color, className
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <span className="font-sans text-[11px] font-medium uppercase tracking-wide text-foreground/70 w-[60px] shrink-0">
+      <span className="font-sans text-[10px] font-medium uppercase tracking-wide text-foreground/70 w-[52px] shrink-0">
         {label}
       </span>
       <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">

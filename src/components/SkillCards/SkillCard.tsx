@@ -54,7 +54,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       ref={cardRef}
       type="button"
       className={cn(
-        "w-[200px] h-[280px] md:w-[200px] md:h-[280px]",
+        "w-[220px] h-[320px] md:w-[240px] md:h-[340px]",
         "rounded-xl cursor-pointer select-none",
         "flex flex-col overflow-hidden",
         "transition-shadow duration-300",
@@ -95,19 +95,14 @@ export const SkillCard: React.FC<SkillCardProps> = ({
 
       {/* Stats */}
       <div className="px-3 flex flex-col gap-0.5 flex-1 min-h-0">
-        <StatBar label="Power" value={skill.stats.power} color={catColor} />
+        <StatBar label="Mastery" value={skill.stats.power} color={catColor} />
         <StatBar label="Speed" value={skill.stats.speed} color={catColor} />
-        <StatBar label="Versatil" value={skill.stats.versatility} color={catColor} />
+        <StatBar label="Range" value={skill.stats.versatility} color={catColor} />
         <StatBar label="Impact" value={skill.stats.impact} color={catColor} />
       </div>
 
-      {/* Separator */}
-      <div className="mx-3 my-1 h-px bg-foreground/10" />
-
-      {/* Flavour Text */}
-      <p className="px-3 pb-2.5 font-script text-[10px] text-foreground/50 italic line-clamp-2 leading-tight">
-        {skill.flavourText}
-      </p>
+      {/* Bottom padding */}
+      <div className="pb-3" />
     </button>
   );
 
