@@ -79,34 +79,37 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
         {currentIndex + 1} / {skills.length}
       </p>
 
-      {/* Card stack */}
-      <div className="relative" style={{ width: 220, height: 320 }}>
-        {/* Background cards — peek behind, animate forward when top card leaves */}
+      {/* Card stack — fluid width, nearly full screen */}
+      <div
+        className="relative w-[88vw] max-w-[360px]"
+        style={{ height: "calc(88vw * 1.45)", maxHeight: 522 }}
+      >
+        {/* Background cards */}
         <AnimatePresence>
           {behind.map((skill, i) => (
             <motion.div
               key={skill.id}
               className="absolute inset-0 pointer-events-none"
               initial={{
-                y: (i + 1) * -6,
+                y: (i + 1) * -7,
                 scale: 1 - (i + 1) * 0.04,
                 opacity: 1 - (i + 1) * 0.15,
                 zIndex: STACK_SIZE - i,
               }}
               animate={{
-                y: (i + 1) * -6,
+                y: (i + 1) * -7,
                 scale: 1 - (i + 1) * 0.04,
                 opacity: 1 - (i + 1) * 0.15,
                 zIndex: STACK_SIZE - i,
               }}
               transition={{ type: "spring", stiffness: 250, damping: 25 }}
             >
-              <SkillCard skill={skill} />
+              <SkillCard skill={skill} className="w-full h-full" />
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Top card — draggable, flies off on swipe */}
+        {/* Top card — draggable */}
         <motion.div
           key={current.id}
           className="absolute inset-0 touch-none"
@@ -125,7 +128,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           onDragEnd={handleDragEnd}
           onTap={handleTap}
         >
-          <SkillCard skill={current} />
+          <SkillCard skill={current} className="w-full h-full" />
         </motion.div>
       </div>
 
