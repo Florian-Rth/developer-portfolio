@@ -72,14 +72,31 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ skill, onClose }) =>
           {/* Drawer — Desktop: right, Mobile: bottom */}
           <motion.div
             className={cn(
-              "fixed z-[999] bg-[var(--surface,#f5f0e8)] overflow-y-auto",
-              "max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:h-[60vh] max-md:rounded-t-2xl",
-              "md:top-0 md:right-0 md:h-full md:w-[380px]",
+              "fixed z-[999] bg-[var(--surface,#f5f0e8)]",
+              "max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:h-[70vh] max-md:rounded-t-2xl max-md:overflow-hidden",
+              "md:top-0 md:right-0 md:h-full md:w-[380px] md:overflow-y-auto",
             )}
-            style={{ boxShadow: "-4px 0 40px rgba(0,0,0,0.12)" }}
+            style={{ boxShadow: isMobile ? "0 -4px 40px rgba(0,0,0,0.12)" : "-4px 0 40px rgba(0,0,0,0.12)" }}
             {...drawerAnimation}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
+            {/* Mobile drag handle + swipe-to-close zone */}
+            {isMobile && (
+              <motion.div
+                className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0, bottom: 0.4 }}
+                onDragEnd={(_: unknown, info: { offset: { y: number }; velocity: { y: number } }) => {
+                  if (info.offset.y > 100 || info.velocity.y > 500) onClose();
+                }}
+              >
+                <div className="w-10 h-1 rounded-full bg-foreground/20" />
+              </motion.div>
+            )}
+
+            {/* Scrollable content */}
+            <div className="overflow-y-auto h-full pb-8">
             {/* Header */}
             <div className="flex items-center justify-between px-6 pt-6 pb-3">
               <div>
@@ -101,9 +118,9 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ skill, onClose }) =>
 
             {/* Stats */}
             <div className="px-6 pt-4 flex flex-col gap-2">
-              <StatBar label="Power" value={skill.stats.power} color={catColor} />
+              <StatBar label="Mastery" value={skill.stats.power} color={catColor} />
               <StatBar label="Speed" value={skill.stats.speed} color={catColor} />
-              <StatBar label="Versatil" value={skill.stats.versatility} color={catColor} />
+              <StatBar label="Range" value={skill.stats.versatility} color={catColor} />
               <StatBar label="Impact" value={skill.stats.impact} color={catColor} />
             </div>
 
@@ -130,7 +147,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ skill, onClose }) =>
             </div>
 
             {/* Detail sections */}
-            <div className="px-6 pb-8 flex flex-col gap-4">
+            <div className="px-6 pb-4 flex flex-col gap-4">
               <div>
                 <h4 className="font-sans text-xs font-semibold uppercase tracking-wide text-foreground/50 mb-1">
                   Gelernt:
@@ -148,6 +165,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ skill, onClose }) =>
                 </p>
               </div>
             </div>
+            </div>{/* end scrollable */}
           </motion.div>
         </>
       )}

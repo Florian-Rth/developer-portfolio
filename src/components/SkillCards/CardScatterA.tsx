@@ -2,12 +2,12 @@ import type { Skill } from "@/data/skills";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
-import { useCallback, useMemo, useState } from "react";
-import { DetailDrawer } from "./DetailDrawer";
+import { useCallback, useMemo } from "react";
 import { SkillCard } from "./SkillCard";
 
 type CardScatterAProps = {
   skills: Skill[];
+  onSelect?: (skill: Skill) => void;
   className?: string;
 };
 
@@ -37,21 +37,14 @@ const generatePositions = (count: number) => {
   });
 };
 
-export const CardScatterA: React.FC<CardScatterAProps> = ({ skills: allSkills, className }) => {
-  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
-
+export const CardScatterA: React.FC<CardScatterAProps> = ({ skills: allSkills, onSelect, className }) => {
   const positions = useMemo(() => generatePositions(allSkills.length), [allSkills.length]);
 
   const handleSelect = useCallback((skill: Skill) => {
-    setSelectedSkill(skill);
-  }, []);
-
-  const handleCloseDrawer = useCallback(() => {
-    setSelectedSkill(null);
-  }, []);
+    onSelect?.(skill);
+  }, [onSelect]);
 
   return (
-    <>
       <div
         className={cn(
           "relative w-full flex items-center justify-center",
@@ -99,7 +92,5 @@ export const CardScatterA: React.FC<CardScatterAProps> = ({ skills: allSkills, c
         </div>
       </div>
 
-      <DetailDrawer skill={selectedSkill} onClose={handleCloseDrawer} />
-    </>
   );
 };
