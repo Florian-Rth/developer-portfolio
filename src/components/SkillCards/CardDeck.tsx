@@ -3,17 +3,22 @@ import { cn } from "@lib/utils";
 import { motion } from "framer-motion";
 import type React from "react";
 import { useMemo } from "react";
-import { SkillCard } from "./SkillCard";
+import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
 
 type CardDeckProps = {
   onScatter: () => void;
   className?: string;
+  /** Scale factor forwarded to each SkillCard. Container adjusts proportionally. Default: 1 */
+  cardScale?: number;
 };
 
 const DECK_SIZE = 7;
 
-export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className }) => {
+export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className, cardScale = 1 }) => {
   const deckSkills = useMemo(() => skills.slice(0, DECK_SIZE), []);
+
+  const containerW = CARD_W * cardScale;
+  const containerH = CARD_H * cardScale;
 
   return (
     <div className={cn("flex flex-col items-center justify-center gap-6", className)}>
@@ -22,7 +27,7 @@ export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className }) => {
         whileHover={{ y: -8 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         onClick={onScatter}
-        style={{ width: 200, height: 280 }}
+        style={{ width: containerW, height: containerH }}
       >
         {deckSkills.map((skill, i) => {
           const rotation = (i - Math.floor(DECK_SIZE / 2)) * 1.5;
@@ -42,7 +47,7 @@ export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
             >
-              <SkillCard skill={skill} />
+              <SkillCard skill={skill} scale={cardScale} />
             </motion.div>
           );
         })}

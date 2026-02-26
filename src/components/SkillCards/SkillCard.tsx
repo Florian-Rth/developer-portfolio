@@ -1,7 +1,6 @@
 import type { Skill } from "@/data/skills";
 import { categoryColors, rarityColors } from "@/data/skills";
 import { cn } from "@lib/utils";
-import { motion } from "framer-motion";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
@@ -9,12 +8,17 @@ import { CategoryBadge } from "./CategoryBadge";
 import { RarityBadge } from "./RarityBadge";
 import { StatBar } from "./StatBar";
 
+// Native design size — zoom handles all scaling externally
+const CARD_W = 220;
+const CARD_H = 320;
+
 type SkillCardProps = {
   skill: Skill;
   style?: React.CSSProperties;
   onSelect?: () => void;
   className?: string;
-  draggable?: boolean;
+  /** Proportional scale applied via CSS zoom — scales text, padding, borders, everything */
+  scale?: number;
 };
 
 export const SkillCard: React.FC<SkillCardProps> = ({
@@ -22,7 +26,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   style,
   onSelect,
   className,
-  draggable = false,
+  scale = 1,
 }) => {
   const cardRef = useRef<HTMLButtonElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -54,7 +58,8 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       ref={cardRef}
       type="button"
       className={cn(
-        "w-[220px] h-[320px] md:w-[240px] md:h-[340px]",
+        // Default size — overrideable via className (e.g. "w-full h-full" in MobileCardStack)
+        "w-[220px] h-[320px]",
         "rounded-xl cursor-pointer select-none",
         "flex flex-col overflow-hidden",
         "transition-shadow duration-300",
@@ -62,6 +67,8 @@ export const SkillCard: React.FC<SkillCardProps> = ({
         className,
       )}
       style={{
+        // zoom scales all internal content proportionally — text, padding, borders, artwork
+        zoom: scale,
         backgroundColor: "var(--surface, #f5f0e8)",
         border: `2px solid ${rColors.border}`,
         boxShadow: isHovered
@@ -106,19 +113,8 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     </button>
   );
 
-  if (draggable) {
-    return (
-      <motion.div
-        drag
-        dragMomentum={false}
-        dragElastic={0.1}
-        whileDrag={{ scale: 1.05, zIndex: 50 }}
-        style={{ position: "absolute" }}
-      >
-        {cardContent}
-      </motion.div>
-    );
-  }
-
+  // CSS zoom scales layout box too — no wrapper needed
   return cardContent;
 };
+
+export { CARD_W, CARD_H };

@@ -72,9 +72,11 @@ describe("SkillCards", () => {
       expect(screen.getByText(testSkill.name)).toBeInTheDocument();
     });
 
-    it("should render flavour text", () => {
+    it("should render category and rarity badges", () => {
       render(<SkillCard skill={testSkill} />);
-      expect(screen.getByText(testSkill.flavourText)).toBeInTheDocument();
+      // CategoryBadge and RarityBadge should both be present on the card
+      expect(screen.getByText(/frontend/i)).toBeInTheDocument();
+      expect(screen.getByText(/legendary/i)).toBeInTheDocument();
     });
 
     it("should call onSelect when clicked", () => {
@@ -86,9 +88,10 @@ describe("SkillCards", () => {
 
     it("should render stats for the skill", () => {
       render(<SkillCard skill={testSkill} />);
-      expect(screen.getByText("Power")).toBeInTheDocument();
+      // Display labels as defined in SkillCard StatBar calls
+      expect(screen.getByText("Mastery")).toBeInTheDocument();
       expect(screen.getByText("Speed")).toBeInTheDocument();
-      expect(screen.getByText("Versatil")).toBeInTheDocument();
+      expect(screen.getByText("Range")).toBeInTheDocument();
       expect(screen.getByText("Impact")).toBeInTheDocument();
     });
   });
