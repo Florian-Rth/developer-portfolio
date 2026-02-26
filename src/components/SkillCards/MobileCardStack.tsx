@@ -1,12 +1,13 @@
 import type { Skill } from "@/data/skills";
 import { skills } from "@/data/skills";
-import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-motion";
+import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "framer-motion";
 import type React from "react";
 import { useCallback, useState } from "react";
 import { SkillCard } from "./SkillCard";
 
 const SWIPE_THRESHOLD = 80;
-const STACK_SIZE = 3; // cards visible behind top card
+const STACK_SIZE = 3;
+const FLY_DISTANCE = 600;
 
 type MobileCardStackProps = {
   onSelect: (skill: Skill) => void;
@@ -15,10 +16,11 @@ type MobileCardStackProps = {
 export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) => {
   const [queue, setQueue] = useState<Skill[]>(skills);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 0, 200], [-18, 0, 18]);
-  const opacity = useTransform(x, [-200, -80, 0, 80, 200], [0.5, 1, 1, 1, 0.5]);
+  const rotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
+  const cardOpacity = useTransform(x, [-FLY_DISTANCE / 2, -80, 0, 80, FLY_DISTANCE / 2], [0, 1, 1, 1, 0]);
 
   const cycleCard = useCallback(() => {
     setQueue((prev) => {
@@ -26,78 +28,113 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       return [...rest, first];
     });
     x.set(0);
+    setIsSwiping(false);
   }, [x]);
 
+  const flyOff = useCallback(
+    (direction: "left" | "right") => {
+      setIsSwiping(true);
+      const target = direction === "right" ? FLY_DISTANCE : -FLY_DISTANCE;
+      animate(x, target, {
+        type: "spring",
+        stiffness: 300,
+        damping: 28,
+        onComplete: cycleCard,
+      });
+    },
+    [x, cycleCard],
+  );
+
   const handleDragEnd = useCallback(
-    (_: unknown, info: { offset: { x: number } }) => {
+    (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
       setIsDragging(false);
-      if (Math.abs(info.offset.x) > SWIPE_THRESHOLD) {
-        cycleCard();
+      const swipedFar = Math.abs(info.offset.x) > SWIPE_THRESHOLD;
+      const swipedFast = Math.abs(info.velocity.x) > 500;
+
+      if (swipedFar || swipedFast) {
+        const dir = info.offset.x > 0 ? "right" : "left";
+        flyOff(dir);
       } else {
-        x.set(0);
+        // Snap back with spring
+        animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
       }
     },
-    [cycleCard, x],
+    [flyOff, x],
   );
 
   const handleTap = useCallback(() => {
-    if (!isDragging) {
+    if (!isDragging && !isSwiping) {
       onSelect(queue[0]);
     }
-  }, [isDragging, onSelect, queue]);
+  }, [isDragging, isSwiping, onSelect, queue]);
 
   const current = queue[0];
   const behind = queue.slice(1, 1 + STACK_SIZE);
+  const currentIndex = skills.findIndex((s) => s.id === current.id);
 
   return (
     <div className="flex flex-col items-center gap-6">
       {/* Counter */}
       <p className="font-sans text-xs text-foreground/40 tracking-widest uppercase">
-        {skills.indexOf(current) + 1} / {skills.length}
+        {currentIndex + 1} / {skills.length}
       </p>
 
       {/* Card stack */}
       <div className="relative" style={{ width: 220, height: 320 }}>
-        {/* Background cards (static, stacked look) */}
-        {behind.map((skill, i) => (
-          <div
-            key={skill.id}
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              transform: `translateY(${(i + 1) * -6}px) scale(${1 - (i + 1) * 0.04})`,
-              zIndex: STACK_SIZE - i,
-              opacity: 1 - (i + 1) * 0.15,
-            }}
-          >
-            <SkillCard skill={skill} />
-          </div>
-        ))}
-
-        {/* Top card — draggable */}
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={current.id}
-            className="absolute inset-0 cursor-grab active:cursor-grabbing"
-            style={{ x, rotate, opacity, zIndex: STACK_SIZE + 1 }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.8}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={handleDragEnd}
-            onTap={handleTap}
-            whileTap={{ scale: isDragging ? 1 : 1.02 }}
-          >
-            <SkillCard skill={current} />
-          </motion.div>
+        {/* Background cards — peek behind, animate forward when top card leaves */}
+        <AnimatePresence>
+          {behind.map((skill, i) => (
+            <motion.div
+              key={skill.id}
+              className="absolute inset-0 pointer-events-none"
+              initial={{
+                y: (i + 1) * -6,
+                scale: 1 - (i + 1) * 0.04,
+                opacity: 1 - (i + 1) * 0.15,
+                zIndex: STACK_SIZE - i,
+              }}
+              animate={{
+                y: (i + 1) * -6,
+                scale: 1 - (i + 1) * 0.04,
+                opacity: 1 - (i + 1) * 0.15,
+                zIndex: STACK_SIZE - i,
+              }}
+              transition={{ type: "spring", stiffness: 250, damping: 25 }}
+            >
+              <SkillCard skill={skill} />
+            </motion.div>
+          ))}
         </AnimatePresence>
+
+        {/* Top card — draggable, flies off on swipe */}
+        <motion.div
+          key={current.id}
+          className="absolute inset-0 touch-none"
+          style={{
+            x,
+            rotate,
+            opacity: cardOpacity,
+            zIndex: STACK_SIZE + 1,
+            cursor: isDragging ? "grabbing" : "grab",
+          }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.6}
+          dragMomentum={false}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={handleDragEnd}
+          onTap={handleTap}
+        >
+          <SkillCard skill={current} />
+        </motion.div>
       </div>
 
       {/* Swipe hint */}
       <div className="flex items-center gap-4 text-foreground/30">
         <span className="font-sans text-xs">← swipe</span>
-        <span className="font-sans text-xs">·</span>
+        <span className="font-script text-sm">·</span>
         <span className="font-sans text-xs">tap to open</span>
-        <span className="font-sans text-xs">·</span>
+        <span className="font-script text-sm">·</span>
         <span className="font-sans text-xs">swipe →</span>
       </div>
     </div>
