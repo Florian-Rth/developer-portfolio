@@ -113,7 +113,7 @@ describe("Skills", () => {
         </Skills>,
       );
       const watermark = document.querySelector("[aria-hidden='true']");
-      expect(watermark?.textContent).toContain("SKILLS");
+      expect(watermark?.textContent).toContain("skills");
     });
 
     it("should be non-interactive (pointer-events-none, select-none)", () => {
