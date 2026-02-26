@@ -1,6 +1,6 @@
 import { cn } from "@lib/utils";
 import { useCallback, useRef } from "react";
-import type React from "react";
+import React from "react";
 import { SkillTag } from "./SkillTag";
 import { useCardHover } from "./hooks/useCardHover";
 import { useTextScramble } from "./hooks/useTextScramble";
@@ -61,7 +61,9 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     >
       {/* 3D Scene area - 70% height */}
       <div className="relative w-full" style={{ height: "70%" }}>
-        {children}
+        {React.isValidElement(children)
+          ? React.cloneElement(children as React.ReactElement<{ isHovered?: boolean }>, { isHovered })
+          : children}
       </div>
 
       {/* Text area */}
