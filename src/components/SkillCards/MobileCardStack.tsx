@@ -58,9 +58,8 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       setIsSwiping(true);
       const target = direction === "right" ? FLY_DISTANCE : -FLY_DISTANCE;
       animate(x, target, {
-        type: "spring",
-        stiffness: 300,
-        damping: 28,
+        duration: 0.22,
+        ease: "easeOut",
         onComplete: cycleCard,
       });
     },
@@ -76,7 +75,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       if (swipedFar || swipedFast) {
         flyOff(info.offset.x > 0 ? "right" : "left");
       } else {
-        animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
+        animate(x, 0, { type: "spring", stiffness: 600, damping: 35 });
       }
     },
     [flyOff, x],
@@ -120,7 +119,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
                 opacity: 1 - (i + 1) * 0.15,
                 zIndex: STACK_SIZE - i,
               }}
-              transition={{ type: "spring", stiffness: 250, damping: 25 }}
+              transition={{ type: "spring", stiffness: 500, damping: 32 }}
             >
               <SkillCard skill={skill} scale={cardScale} />
             </motion.div>
