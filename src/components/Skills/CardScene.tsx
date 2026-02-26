@@ -9,7 +9,7 @@ type CardSceneProps = {
 
 export const CardScene: React.FC<CardSceneProps> = ({ component: SceneComponent, className }) => {
   return (
-    <div className={cn("relative w-full h-full", className)}>
+    <div className={cn("relative w-full h-full bg-surface/60", className)}>
       <Canvas camera={{ fov: 40, position: [0, 0, 4] }} style={{ background: "transparent" }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[2, 3, 2]} intensity={0.8} />

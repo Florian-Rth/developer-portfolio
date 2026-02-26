@@ -13,7 +13,7 @@ export const About: React.FC<AboutProps> = ({ children, className }) => {
       aria-label="About"
       className={cn(
         "relative bg-background",
-        "px-5 pt-28 pb-15 md:pt-52 md:pb-30 md:px-10",
+        "px-5 pt-36 pb-15 md:px-10 md:pt-52 md:pb-30 lg:pt-60",
         "max-w-[1200px] mx-auto",
         // CSS Grid: 1 column mobile, 2 columns desktop
         "grid grid-cols-1 lg:grid-cols-2",
