@@ -9,16 +9,15 @@ const SWIPE_THRESHOLD = 80;
 const STACK_SIZE = 3;
 const FLY_DISTANCE = 600;
 
-/**
- * Target card width: 65 vw, clamped between 180 px and 280 px.
- * — 180 px minimum keeps the card readable on very small screens
- * — 280 px maximum prevents it overwhelming large phones / tablets
- * Examples: 390 px iPhone → 254 px (scale ≈ 1.15)
- *           320 px SE    → 208 px (scale ≈ 0.95)
- *           768 px iPad  → 280 px (scale ≈ 1.27, capped)
- */
 const calcCardScale = () =>
   Math.min(Math.max(window.innerWidth * 0.65, 180), 280) / CARD_W;
+
+type ExitingCard = {
+  skill: Skill;
+  startX: number;
+  startRotation: number;
+  direction: "left" | "right";
+};
 
 type MobileCardStackProps = {
   onSelect: (skill: Skill) => void;
@@ -27,10 +26,9 @@ type MobileCardStackProps = {
 export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) => {
   const [queue, setQueue] = useState<Skill[]>(skills);
   const [isDragging, setIsDragging] = useState(false);
-  const [isSwiping, setIsSwiping] = useState(false);
+  const [exitingCard, setExitingCard] = useState<ExitingCard | null>(null);
   const [cardScale, setCardScale] = useState(calcCardScale);
 
-  // Keep scale in sync when the viewport resizes
   useEffect(() => {
     const onResize = () => setCardScale(calcCardScale());
     window.addEventListener("resize", onResize);
@@ -44,28 +42,6 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
   const rotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
   const cardOpacity = useTransform(x, [-FLY_DISTANCE / 2, -80, 0, 80, FLY_DISTANCE / 2], [0, 1, 1, 1, 0]);
 
-  const cycleCard = useCallback(() => {
-    setQueue((prev) => {
-      const [first, ...rest] = prev;
-      return [...rest, first];
-    });
-    x.set(0);
-    setIsSwiping(false);
-  }, [x]);
-
-  const flyOff = useCallback(
-    (direction: "left" | "right") => {
-      setIsSwiping(true);
-      const target = direction === "right" ? FLY_DISTANCE : -FLY_DISTANCE;
-      animate(x, target, {
-        duration: 0.22,
-        ease: "easeOut",
-        onComplete: cycleCard,
-      });
-    },
-    [x, cycleCard],
-  );
-
   const handleDragEnd = useCallback(
     (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
       setIsDragging(false);
@@ -73,19 +49,36 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       const swipedFast = Math.abs(info.velocity.x) > 500;
 
       if (swipedFar || swipedFast) {
-        flyOff(info.offset.x > 0 ? "right" : "left");
+        const dir = info.offset.x > 0 ? "right" : "left";
+
+        // Snapshot current card + position for the fly-off overlay
+        setExitingCard({
+          skill: queue[0],
+          startX: x.get(),
+          startRotation: Math.max(-20, Math.min(20, (x.get() / 200) * 20)),
+          direction: dir,
+        });
+
+        // Immediately cycle the queue — next card slides forward right now
+        setQueue((prev) => {
+          const [first, ...rest] = prev;
+          return [...rest, first];
+        });
+
+        // Reset x so the new top card starts from centre
+        x.set(0);
       } else {
         animate(x, 0, { type: "spring", stiffness: 600, damping: 35 });
       }
     },
-    [flyOff, x],
+    [queue, x],
   );
 
   const handleTap = useCallback(() => {
-    if (!isDragging && !isSwiping) {
+    if (!isDragging && !exitingCard) {
       onSelect(queue[0]);
     }
-  }, [isDragging, isSwiping, onSelect, queue]);
+  }, [isDragging, exitingCard, onSelect, queue]);
 
   const current = queue[0];
   const behind = queue.slice(1, 1 + STACK_SIZE);
@@ -98,10 +91,10 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
         {currentIndex + 1} / {skills.length}
       </p>
 
-      {/* Card stack — sized to match the zoomed card */}
+      {/* Card stack */}
       <div className="relative" style={{ width: cardW, height: cardH }}>
 
-        {/* Background cards */}
+        {/* Background cards — animate immediately when queue changes */}
         <AnimatePresence>
           {behind.map((skill, i) => (
             <motion.div
@@ -126,7 +119,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           ))}
         </AnimatePresence>
 
-        {/* Top card — draggable */}
+        {/* New top card — mounts instantly when queue updates */}
         <motion.div
           key={current.id}
           className="absolute top-0 left-0 touch-none"
@@ -147,6 +140,31 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
         >
           <SkillCard skill={current} scale={cardScale} />
         </motion.div>
+
+        {/* Fly-off overlay — old card continues flying out independently */}
+        <AnimatePresence>
+          {exitingCard && (
+            <motion.div
+              key={`exit-${exitingCard.skill.id}`}
+              className="absolute top-0 left-0 pointer-events-none"
+              style={{ zIndex: STACK_SIZE + 2 }}
+              initial={{
+                x: exitingCard.startX,
+                rotate: exitingCard.startRotation,
+                opacity: 1,
+              }}
+              animate={{
+                x: exitingCard.direction === "right" ? FLY_DISTANCE : -FLY_DISTANCE,
+                rotate: exitingCard.direction === "right" ? 30 : -30,
+                opacity: 0,
+              }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              onAnimationComplete={() => setExitingCard(null)}
+            >
+              <SkillCard skill={exitingCard.skill} scale={cardScale} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Swipe hint */}
