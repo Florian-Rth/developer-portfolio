@@ -1,45 +1,26 @@
-import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { useFrame } from "@react-three/fiber";
 import type React from "react";
-import { useRef } from "react";
-import type * as THREE from "three";
-
-const Octahedron = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.6;
-      meshRef.current.rotation.x += delta * 0.3;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef}>
-      <octahedronGeometry args={[0.6, 0]} />
-      <meshStandardMaterial
-        color="#D4929B"
-        emissive="#D4929B"
-        emissiveIntensity={0.15}
-        flatShading
-      />
-    </mesh>
-  );
-};
 
 export const CSharpArtwork: React.FC = () => {
   return (
     <div
-      className="w-full h-full rounded-lg overflow-hidden"
-      style={{ backgroundColor: "#1a1816" }}
+      className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center"
+      style={{ backgroundColor: "#1E1B19" }}
     >
-      <Canvas camera={{ position: [0, 0, 2], fov: 45 }} style={{ width: "100%", height: "100%" }}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[2, 2, 2]} intensity={1} />
-        <Octahedron />
-        <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} />
-      </Canvas>
+      <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* C letter arc */}
+        <path
+          d="M62 28C55.5 22 46.5 20 38 23C26 27.5 20 41 24.5 53C29 65 43 71 55 66.5C60 64.5 64 61 66 56"
+          stroke="#D4929B"
+          strokeWidth="6"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {/* Hash / sharp symbol */}
+        <line x1="58" y1="38" x2="58" y2="62" stroke="#D4929B" strokeWidth="3" strokeLinecap="round" />
+        <line x1="68" y1="38" x2="68" y2="62" stroke="#D4929B" strokeWidth="3" strokeLinecap="round" />
+        <line x1="53" y1="46" x2="73" y2="46" stroke="#D4929B" strokeWidth="3" strokeLinecap="round" />
+        <line x1="53" y1="54" x2="73" y2="54" stroke="#D4929B" strokeWidth="3" strokeLinecap="round" />
+      </svg>
     </div>
   );
 };

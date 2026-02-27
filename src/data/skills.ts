@@ -3,7 +3,7 @@
 
 export type SkillRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type SkillCategory = 'frontend' | 'backend' | 'devops' | 'tools';
-export type ArtworkType = 'r3f' | 'svg' | 'code-block' | 'animation' | 'icon';
+export type ArtworkType = 'svg' | 'code-block' | 'animation' | 'icon';
 
 export type SkillStats = {
   power: number;       // Overall mastery (1-10)
@@ -35,7 +35,7 @@ export const skills: Skill[] = [
     name: 'React',
     category: 'frontend',
     rarity: 'legendary',
-    artwork: 'r3f',
+    artwork: 'svg',
     stats: { power: 9, speed: 9, versatility: 10, impact: 10 },
     flavourText: 'My native language. Everything else is just transpiled to it.',
     detail: {
@@ -102,7 +102,7 @@ export const skills: Skill[] = [
     name: 'C#',
     category: 'backend',
     rarity: 'epic',
-    artwork: 'r3f',
+    artwork: 'svg',
     stats: { power: 8, speed: 7, versatility: 8, impact: 9 },
     flavourText: 'Strongly typed, object-oriented, and responsible for my salary. Respect.',
     detail: {
@@ -143,7 +143,7 @@ export const skills: Skill[] = [
     name: 'Docker',
     category: 'devops',
     rarity: 'rare',
-    artwork: 'r3f',
+    artwork: 'svg',
     stats: { power: 8, speed: 8, versatility: 9, impact: 9 },
     flavourText: 'Works on my machine — and now yours. That\'s the whole point.',
     detail: {

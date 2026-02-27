@@ -9,18 +9,6 @@ import { SkillCard } from "../SkillCard";
 import { SkillCardSection } from "../SkillCardSection";
 import { StatBar } from "../StatBar";
 
-// Mock R3F components since they require WebGL
-vi.mock("@react-three/fiber", () => ({
-  Canvas: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="r3f-canvas">{children}</div>
-  ),
-  useFrame: vi.fn(),
-}));
-
-vi.mock("@react-three/drei", () => ({
-  OrbitControls: () => null,
-}));
-
 // Mock framer-motion to avoid animation issues in tests
 vi.mock("framer-motion", () => ({
   motion: {
