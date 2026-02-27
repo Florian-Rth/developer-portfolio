@@ -1,9 +1,16 @@
 import type { Skill } from "@/data/skills";
 import type React from "react";
 import { Suspense, lazy } from "react";
+import { CiCdArtwork } from "./artworks/CiCdArtwork";
+import { DotnetArtwork } from "./artworks/DotnetArtwork";
 import { FallbackArtwork } from "./artworks/FallbackArtwork";
 import { GitArtwork } from "./artworks/GitArtwork";
+import { GithubActionsArtwork } from "./artworks/GithubActionsArtwork";
+import { GitopsArtwork } from "./artworks/GitopsArtwork";
+import { HtmlCssArtwork } from "./artworks/HtmlCssArtwork";
 import { JavaScriptArtwork } from "./artworks/JavaScriptArtwork";
+import { KubernetesArtwork } from "./artworks/KubernetesArtwork";
+import { RestApiArtwork } from "./artworks/RestApiArtwork";
 import { TailwindArtwork } from "./artworks/TailwindArtwork";
 import { TypeScriptArtwork } from "./artworks/TypeScriptArtwork";
 import { ViteArtwork } from "./artworks/ViteArtwork";
@@ -33,6 +40,13 @@ const artworkMap: Record<string, React.FC> = {
   tailwind: TailwindArtwork,
   git: GitArtwork,
   vite: ViteArtwork,
+  "html-css": HtmlCssArtwork,
+  dotnet: DotnetArtwork,
+  "rest-apis": RestApiArtwork,
+  kubernetes: KubernetesArtwork,
+  cicd: CiCdArtwork,
+  "github-actions": GithubActionsArtwork,
+  gitops: GitopsArtwork,
 };
 
 const r3fArtworkIds = new Set(["react", "csharp", "docker"]);
