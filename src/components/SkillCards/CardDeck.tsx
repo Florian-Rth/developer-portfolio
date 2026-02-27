@@ -24,15 +24,15 @@ export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className, cardSc
     <div className={cn("flex flex-col items-center justify-center gap-6", className)}>
       <motion.div
         className="relative cursor-pointer"
-        whileHover={{ y: -8 }}
+        whileHover={{ y: -16 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         onClick={onScatter}
         style={{ width: containerW, height: containerH }}
       >
         {deckSkills.map((skill, i) => {
-          const rotation = (i - Math.floor(DECK_SIZE / 2)) * 1.5;
-          const offsetX = (i - Math.floor(DECK_SIZE / 2)) * 2;
-          const offsetY = -i * 2;
+          const rotation = (i - Math.floor(DECK_SIZE / 2)) * 3;
+          const offsetX = (i - Math.floor(DECK_SIZE / 2)) * 4;
+          const offsetY = -i * 3;
           return (
             <motion.div
               key={skill.id}
