@@ -65,7 +65,7 @@ export const CardScatterA: React.FC<CardScatterAProps> = ({
     <div
       className={cn(
         "relative w-full flex items-center justify-center",
-        "min-h-[800px]",
+        "min-h-[1400px]",
         className,
       )}
     >

@@ -35,7 +35,7 @@ export const SkillCardSection: React.FC<SkillCardSectionProps> = ({ className })
         id="skills"
         aria-label="Skills"
         className={cn(
-          "relative bg-background overflow-hidden",
+          "relative bg-background",
           "min-h-screen",
           "pt-36 md:pt-52 lg:pt-60 pb-20",
           className,
