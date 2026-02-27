@@ -69,7 +69,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       style={{
         // zoom scales all internal content proportionally — text, padding, borders, artwork
         zoom: scale,
-        backgroundColor: "var(--surface, #f5f0e8)",
+        backgroundColor: "var(--card, var(--surface, #f5f0e8))",
         border: `2px solid ${rColors.border}`,
         boxShadow: isHovered
           ? `0 8px 32px ${rColors.glow}, 0 0 20px ${rColors.glow}`

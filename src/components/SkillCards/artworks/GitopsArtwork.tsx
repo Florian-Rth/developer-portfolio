@@ -2,7 +2,7 @@ import type React from "react";
 
 export const GitopsArtwork: React.FC = () => {
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-foreground/5">
+    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <svg viewBox="0 0 120 80" className="w-[90%] h-[90%]" aria-hidden="true">
         {/* Git branch line */}
         <line x1="25" y1="45" x2="55" y2="45" stroke="#E8B4A0" strokeWidth="2" />

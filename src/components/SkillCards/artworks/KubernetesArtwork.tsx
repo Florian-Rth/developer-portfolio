@@ -17,7 +17,7 @@ export const KubernetesArtwork: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-foreground/5">
+    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <svg viewBox="0 0 120 80" className="w-[90%] h-[90%]" aria-hidden="true">
         {/* Outer ring */}
         <circle cx={cx} cy={cy} r={outerR} fill="none" stroke="#326CE5" strokeWidth="2.5" />

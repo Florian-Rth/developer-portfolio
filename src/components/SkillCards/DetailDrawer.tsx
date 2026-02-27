@@ -72,7 +72,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ skill, onClose }) =>
           {/* Drawer — Desktop: right, Mobile: bottom */}
           <motion.div
             className={cn(
-              "fixed z-[999] bg-[var(--surface,#f5f0e8)]",
+              "fixed z-[999] bg-card text-card-foreground",
               "max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:h-[70vh] max-md:rounded-t-2xl max-md:overflow-hidden",
               "md:top-0 md:right-0 md:h-full md:w-[380px] md:overflow-y-auto",
             )}

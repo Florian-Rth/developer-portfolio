@@ -9,7 +9,7 @@ const glowKeyframes = `
 
 export const ViteArtwork: React.FC = () => {
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-foreground/5">
+    <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <style>{glowKeyframes}</style>
       <svg
         viewBox="0 0 60 70"
