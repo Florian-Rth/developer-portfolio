@@ -195,7 +195,6 @@ describe("SplashScreen", () => {
   });
 
   describe("Integration", () => {
-
     it("should render complete splash screen with all parts", () => {
       render(
         <SplashScreen onComplete={vi.fn()}>

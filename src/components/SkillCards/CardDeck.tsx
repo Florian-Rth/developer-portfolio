@@ -1,32 +1,34 @@
-import { skills } from "@/data/skills";
 import { cn } from "@lib/utils";
 import { motion } from "framer-motion";
 import type React from "react";
 import { useMemo } from "react";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
+import { useSkillCards } from "./SkillCardsProvider";
 
 type CardDeckProps = {
-  onScatter: () => void;
   className?: string;
-  /** Scale factor forwarded to each SkillCard. Container adjusts proportionally. Default: 1 */
   cardScale?: number;
 };
 
 const DECK_SIZE = 7;
 
-export const CardDeck: React.FC<CardDeckProps> = ({ onScatter, className, cardScale = 1 }) => {
-  const deckSkills = useMemo(() => skills.slice(0, DECK_SIZE), []);
+export const CardDeck: React.FC<CardDeckProps> = ({ className, cardScale = 1 }) => {
+  const { skills, scattered, isMobile, setScattered } = useSkillCards();
+
+  const deckSkills = useMemo(() => skills.slice(0, DECK_SIZE), [skills]);
+
+  if (scattered || isMobile) return null;
 
   const containerW = CARD_W * cardScale;
   const containerH = CARD_H * cardScale;
 
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-6", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-6 min-h-[500px]", className)}>
       <motion.div
         className="relative cursor-pointer"
         whileHover={{ y: -16 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        onClick={onScatter}
+        onClick={() => setScattered(true)}
         style={{ width: containerW, height: containerH }}
       >
         {deckSkills.map((skill, i) => {

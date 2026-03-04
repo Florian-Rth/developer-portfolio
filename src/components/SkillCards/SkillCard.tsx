@@ -6,7 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
 import { CategoryBadge } from "./CategoryBadge";
 import { RarityBadge } from "./RarityBadge";
-import { StatBar } from "./StatBar";
+import { SkillStatsList } from "./SkillStatsList";
 
 // Native design size — zoom handles all scaling externally
 const CARD_W = 220;
@@ -53,12 +53,11 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   const rColors = rarityColors[skill.rarity];
   const catColor = categoryColors[skill.category];
 
-  const cardContent = (
+  return (
     <button
       ref={cardRef}
       type="button"
       className={cn(
-        // Default size — overrideable via className (e.g. "w-full h-full" in MobileCardStack)
         "w-[220px] h-[320px]",
         "rounded-xl cursor-pointer select-none",
         "flex flex-col overflow-hidden",
@@ -67,7 +66,6 @@ export const SkillCard: React.FC<SkillCardProps> = ({
         className,
       )}
       style={{
-        // zoom scales all internal content proportionally — text, padding, borders, artwork
         zoom: scale,
         backgroundColor: "var(--card, var(--surface, #f5f0e8))",
         border: `2px solid ${rColors.border}`,
@@ -101,20 +99,12 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       <div className="mx-3 my-1 h-px bg-foreground/10" />
 
       {/* Stats */}
-      <div className="px-3 flex flex-col gap-0.5 flex-1 min-h-0">
-        <StatBar label="Mastery" value={skill.stats.power} color={catColor} />
-        <StatBar label="Speed" value={skill.stats.speed} color={catColor} />
-        <StatBar label="Range" value={skill.stats.versatility} color={catColor} />
-        <StatBar label="Impact" value={skill.stats.impact} color={catColor} />
-      </div>
+      <SkillStatsList skill={skill} color={catColor} className="px-3 flex-1 min-h-0" />
 
       {/* Bottom padding */}
       <div className="pb-3" />
     </button>
   );
-
-  // CSS zoom scales layout box too — no wrapper needed
-  return cardContent;
 };
 
 export { CARD_W, CARD_H };

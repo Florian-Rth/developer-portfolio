@@ -1,6 +1,7 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
-export const DotnetArtwork: React.FC = () => {
+export const DotnetArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <svg viewBox="0 0 120 80" className="w-[90%] h-[90%]" aria-hidden="true">

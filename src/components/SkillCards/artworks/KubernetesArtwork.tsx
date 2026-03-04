@@ -1,6 +1,7 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
-export const KubernetesArtwork: React.FC = () => {
+export const KubernetesArtwork: React.FC<ArtworkProps> = () => {
   const cx = 60;
   const cy = 38;
   const outerR = 24;
@@ -32,7 +33,15 @@ export const KubernetesArtwork: React.FC = () => {
           </g>
         ))}
         {/* Label */}
-        <text x="60" y="72" className="font-mono" fontSize="7" fill="#326CE5" textAnchor="middle" opacity="0.7">
+        <text
+          x="60"
+          y="72"
+          className="font-mono"
+          fontSize="7"
+          fill="#326CE5"
+          textAnchor="middle"
+          opacity="0.7"
+        >
           K8s
         </text>
       </svg>

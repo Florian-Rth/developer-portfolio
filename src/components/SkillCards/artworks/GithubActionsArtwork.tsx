@@ -1,6 +1,7 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
-export const GithubActionsArtwork: React.FC = () => {
+export const GithubActionsArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div
       className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center"
@@ -21,7 +22,15 @@ export const GithubActionsArtwork: React.FC = () => {
         {/* Connecting vertical line */}
         <line x1="83" y1="28" x2="83" y2="44" stroke="#B8A9D4" strokeWidth="1" opacity="0.4" />
         {/* Label */}
-        <text x="60" y="68" className="font-mono" fontSize="7" fill="#A8C4B8" textAnchor="middle" opacity="0.6">
+        <text
+          x="60"
+          y="68"
+          className="font-mono"
+          fontSize="7"
+          fill="#A8C4B8"
+          textAnchor="middle"
+          opacity="0.6"
+        >
           Actions
         </text>
       </svg>

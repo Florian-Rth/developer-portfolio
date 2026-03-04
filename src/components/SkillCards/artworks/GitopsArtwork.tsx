@@ -1,6 +1,7 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
-export const GitopsArtwork: React.FC = () => {
+export const GitopsArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <svg viewBox="0 0 120 80" className="w-[90%] h-[90%]" aria-hidden="true">
@@ -14,12 +15,7 @@ export const GitopsArtwork: React.FC = () => {
         <circle cx="45" cy="28" r="3" fill="#E8B4A0" />
         <circle cx="55" cy="45" r="3.5" fill="#E8B4A0" />
         {/* Loop arrow (sync cycle) */}
-        <path
-          d="M 68,32 A 14,14 0 1,1 68,48"
-          fill="none"
-          stroke="#4CAF50"
-          strokeWidth="2"
-        />
+        <path d="M 68,32 A 14,14 0 1,1 68,48" fill="none" stroke="#4CAF50" strokeWidth="2" />
         <polygon points="68,48 63,43 73,43" fill="#4CAF50" />
         {/* Sync icon center */}
         <circle cx="82" cy="40" r="3" fill="#4CAF50" opacity="0.5" />

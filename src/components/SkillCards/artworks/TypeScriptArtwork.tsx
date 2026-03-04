@@ -1,6 +1,7 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
-export const TypeScriptArtwork: React.FC = () => {
+export const TypeScriptArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div
       className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center p-3"

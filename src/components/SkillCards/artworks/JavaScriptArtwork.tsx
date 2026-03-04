@@ -1,4 +1,5 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
 const typingKeyframes = `
 @keyframes js-typing {
@@ -12,7 +13,7 @@ const typingKeyframes = `
 }
 `;
 
-export const JavaScriptArtwork: React.FC = () => {
+export const JavaScriptArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div
       className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center p-3"

@@ -1,17 +1,17 @@
-import type { Skill } from "@/data/skills";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
+import { useSkillCards } from "./SkillCardsProvider";
 
 type CardScatterAProps = {
-  skills: Skill[];
-  onSelect?: (skill: Skill) => void;
   className?: string;
-  /** Scale factor forwarded to each SkillCard. Spacing adjusts proportionally. Default: 1 */
   cardScale?: number;
 };
+
+const SCATTER_COL_W = CARD_W * 1.05;
+const SCATTER_ROW_H = CARD_H * 0.97;
 
 const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
@@ -25,8 +25,8 @@ const generatePositions = (count: number, scale: number) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
     const rows = Math.ceil(count / cols);
-    const baseX = (col - (cols - 1) / 2) * 230 * scale;
-    const baseY = (row - (rows - 1) / 2) * 310 * scale;
+    const baseX = (col - (cols - 1) / 2) * SCATTER_COL_W * scale;
+    const baseY = (row - (rows - 1) / 2) * SCATTER_ROW_H * scale;
     const jitterX = (seededRandom(i * 7 + 1) - 0.5) * 40 * scale;
     const jitterY = (seededRandom(i * 13 + 3) - 0.5) * 40 * scale;
     const rotation = (seededRandom(i * 17 + 5) - 0.5) * 20;
@@ -39,27 +39,18 @@ const generatePositions = (count: number, scale: number) => {
   });
 };
 
-export const CardScatterA: React.FC<CardScatterAProps> = ({
-  skills: allSkills,
-  onSelect,
-  className,
-  cardScale = 1,
-}) => {
+export const CardScatterA: React.FC<CardScatterAProps> = ({ className, cardScale = 1 }) => {
+  const { skills, scattered, isMobile, setSelectedSkill } = useSkillCards();
+
   const positions = useMemo(
-    () => generatePositions(allSkills.length, cardScale),
-    [allSkills.length, cardScale],
+    () => generatePositions(skills.length, cardScale),
+    [skills.length, cardScale],
   );
 
-  // Half the scaled card dimensions — used to centre cards on their anchor point
+  if (!scattered || isMobile) return null;
+
   const halfW = (CARD_W * cardScale) / 2;
   const halfH = (CARD_H * cardScale) / 2;
-
-  const handleSelect = useCallback(
-    (skill: Skill) => {
-      onSelect?.(skill);
-    },
-    [onSelect],
-  );
 
   return (
     <div
@@ -71,7 +62,7 @@ export const CardScatterA: React.FC<CardScatterAProps> = ({
     >
       <div className="relative" style={{ width: "100%", height: "100%" }}>
         <AnimatePresence>
-          {allSkills.map((skill, i) => {
+          {skills.map((skill, i) => {
             const pos = positions[i];
             return (
               <motion.div
@@ -104,7 +95,7 @@ export const CardScatterA: React.FC<CardScatterAProps> = ({
                 <SkillCard
                   skill={skill}
                   scale={cardScale}
-                  onSelect={() => handleSelect(skill)}
+                  onSelect={() => setSelectedSkill(skill)}
                 />
               </motion.div>
             );

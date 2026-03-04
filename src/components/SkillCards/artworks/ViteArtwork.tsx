@@ -1,4 +1,5 @@
 import type React from "react";
+import type { ArtworkProps } from "./types";
 
 const glowKeyframes = `
 @keyframes vite-glow {
@@ -7,7 +8,7 @@ const glowKeyframes = `
 }
 `;
 
-export const ViteArtwork: React.FC = () => {
+export const ViteArtwork: React.FC<ArtworkProps> = () => {
   return (
     <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-card">
       <style>{glowKeyframes}</style>

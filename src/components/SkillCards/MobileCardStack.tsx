@@ -1,16 +1,15 @@
 import type { Skill } from "@/data/skills";
-import { skills } from "@/data/skills";
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "framer-motion";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
+import { useSkillCards } from "./SkillCardsProvider";
 
 const SWIPE_THRESHOLD = 80;
 const STACK_SIZE = 3;
 const FLY_DISTANCE = 600;
 
-const calcCardScale = () =>
-  Math.min(Math.max(window.innerWidth * 0.65, 180), 280) / CARD_W;
+const calcCardScale = () => Math.min(Math.max(window.innerWidth * 0.65, 180), 280) / CARD_W;
 
 type ExitingCard = {
   skill: Skill;
@@ -19,11 +18,9 @@ type ExitingCard = {
   direction: "left" | "right";
 };
 
-type MobileCardStackProps = {
-  onSelect: (skill: Skill) => void;
-};
+export const MobileCardStack: React.FC = () => {
+  const { skills, isMobile, setSelectedSkill } = useSkillCards();
 
-export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) => {
   const [queue, setQueue] = useState<Skill[]>(skills);
   const [isDragging, setIsDragging] = useState(false);
   const [exitingCard, setExitingCard] = useState<ExitingCard | null>(null);
@@ -40,7 +37,11 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
-  const cardOpacity = useTransform(x, [-FLY_DISTANCE / 2, -80, 0, 80, FLY_DISTANCE / 2], [0, 1, 1, 1, 0]);
+  const cardOpacity = useTransform(
+    x,
+    [-FLY_DISTANCE / 2, -80, 0, 80, FLY_DISTANCE / 2],
+    [0, 1, 1, 1, 0],
+  );
 
   const handleDragEnd = useCallback(
     (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
@@ -51,7 +52,6 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
       if (swipedFar || swipedFast) {
         const dir = info.offset.x > 0 ? "right" : "left";
 
-        // Snapshot current card + position for the fly-off overlay
         setExitingCard({
           skill: queue[0],
           startX: x.get(),
@@ -59,13 +59,11 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           direction: dir,
         });
 
-        // Immediately cycle the queue — next card slides forward right now
         setQueue((prev) => {
           const [first, ...rest] = prev;
           return [...rest, first];
         });
 
-        // Reset x so the new top card starts from centre
         x.set(0);
       } else {
         animate(x, 0, { type: "spring", stiffness: 600, damping: 35 });
@@ -76,16 +74,18 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
 
   const handleTap = useCallback(() => {
     if (!isDragging && !exitingCard) {
-      onSelect(queue[0]);
+      setSelectedSkill(queue[0]);
     }
-  }, [isDragging, exitingCard, onSelect, queue]);
+  }, [isDragging, exitingCard, setSelectedSkill, queue]);
+
+  if (!isMobile) return null;
 
   const current = queue[0];
   const behind = queue.slice(1, 1 + STACK_SIZE);
   const currentIndex = skills.findIndex((s) => s.id === current.id);
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 min-h-[500px] justify-center">
       {/* Counter */}
       <p className="font-sans text-xs text-foreground/40 tracking-widest uppercase">
         {currentIndex + 1} / {skills.length}
@@ -93,8 +93,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
 
       {/* Card stack */}
       <div className="relative" style={{ width: cardW, height: cardH }}>
-
-        {/* Background cards — animate immediately when queue changes */}
+        {/* Background cards */}
         <AnimatePresence>
           {behind.map((skill, i) => (
             <motion.div
@@ -119,7 +118,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           ))}
         </AnimatePresence>
 
-        {/* New top card — mounts instantly when queue updates */}
+        {/* Top card */}
         <motion.div
           key={current.id}
           className="absolute top-0 left-0 touch-none"
@@ -141,7 +140,7 @@ export const MobileCardStack: React.FC<MobileCardStackProps> = ({ onSelect }) =>
           <SkillCard skill={current} scale={cardScale} />
         </motion.div>
 
-        {/* Fly-off overlay — old card continues flying out independently */}
+        {/* Fly-off overlay */}
         <AnimatePresence>
           {exitingCard && (
             <motion.div

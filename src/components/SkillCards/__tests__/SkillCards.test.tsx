@@ -1,5 +1,7 @@
+import type { Skill } from "@/data/skills";
 import { skills } from "@/data/skills";
 import { fireEvent, render, screen } from "@testing-library/react";
+import type React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { CardDeck } from "../CardDeck";
 import { CategoryBadge } from "../CategoryBadge";
@@ -7,6 +9,8 @@ import { DetailDrawer } from "../DetailDrawer";
 import { RarityBadge } from "../RarityBadge";
 import { SkillCard } from "../SkillCard";
 import { SkillCardSection } from "../SkillCardSection";
+import { useSkillCards } from "../SkillCardsProvider";
+import { SkillStatsList } from "../SkillStatsList";
 import { StatBar } from "../StatBar";
 
 // Mock framer-motion to avoid animation issues in tests
@@ -19,35 +23,64 @@ vi.mock("framer-motion", () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-describe("SkillCards", () => {
-  describe("SkillCardSection", () => {
-    it("should render without crash", () => {
-      render(<SkillCardSection />);
-      const section = document.querySelector("#skills");
-      expect(section).toBeInTheDocument();
-    });
+// Helper: wrap sub-components in Provider context
+const renderWithContext = (ui: React.ReactNode, overrides?: { selectedSkill?: Skill | null }) => {
+  const Wrapper = () => (
+    <SkillCardSection>
+      {overrides?.selectedSkill !== undefined ? (
+        <ContextSetter skill={overrides.selectedSkill}>{ui}</ContextSetter>
+      ) : (
+        ui
+      )}
+    </SkillCardSection>
+  );
+  return render(<Wrapper />);
+};
 
-    it("should have the skills watermark", () => {
-      render(<SkillCardSection />);
-      expect(screen.getByText("skills")).toBeInTheDocument();
+// Helper to set selectedSkill in context for DetailDrawer tests
+const ContextSetter: React.FC<{
+  skill: Skill | null;
+  children: React.ReactNode;
+}> = ({ skill, children }) => {
+  // We need to use the context's setSelectedSkill
+  // Since SkillCardSection is the provider, we trigger it via useEffect
+  const { useEffect } = require("react");
+  const Inner = () => {
+    const { setSelectedSkill } = useSkillCards();
+    useEffect(() => {
+      setSelectedSkill(skill);
+    }, [setSelectedSkill]);
+    return <>{children}</>;
+  };
+  return <Inner />;
+};
+
+describe("SkillCards", () => {
+  describe("SkillCardSection (Compound)", () => {
+    it("should render without crash", () => {
+      render(
+        <SkillCardSection>
+          <div>content</div>
+        </SkillCardSection>,
+      );
+      expect(screen.getByText("content")).toBeInTheDocument();
     });
   });
 
   describe("CardDeck", () => {
     it("should show stacked cards initially", () => {
-      const onScatter = vi.fn();
-      render(<CardDeck onScatter={onScatter} />);
+      renderWithContext(<CardDeck />);
       expect(screen.getByText("Click to explore →")).toBeInTheDocument();
     });
 
-    it("should call onScatter when clicked", () => {
-      const onScatter = vi.fn();
-      render(<CardDeck onScatter={onScatter} />);
+    it("should scatter on click", () => {
+      renderWithContext(<CardDeck />);
       const annotation = screen.getByText("Click to explore →");
       const deck = annotation.parentElement?.querySelector("[class*='relative']");
       if (deck) {
         fireEvent.click(deck);
-        expect(onScatter).toHaveBeenCalled();
+        // After scatter, deck returns null so the text disappears
+        expect(screen.queryByText("Click to explore →")).not.toBeInTheDocument();
       }
     });
   });
@@ -62,7 +95,6 @@ describe("SkillCards", () => {
 
     it("should render category and rarity badges", () => {
       render(<SkillCard skill={testSkill} />);
-      // CategoryBadge and RarityBadge should both be present on the card
       expect(screen.getByText(/frontend/i)).toBeInTheDocument();
       expect(screen.getByText(/legendary/i)).toBeInTheDocument();
     });
@@ -76,7 +108,16 @@ describe("SkillCards", () => {
 
     it("should render stats for the skill", () => {
       render(<SkillCard skill={testSkill} />);
-      // Display labels as defined in SkillCard StatBar calls
+      expect(screen.getByText("Mastery")).toBeInTheDocument();
+      expect(screen.getByText("Speed")).toBeInTheDocument();
+      expect(screen.getByText("Range")).toBeInTheDocument();
+      expect(screen.getByText("Impact")).toBeInTheDocument();
+    });
+  });
+
+  describe("SkillStatsList", () => {
+    it("should render all stat bars", () => {
+      render(<SkillStatsList skill={skills[0]} color="#B8A9D4" />);
       expect(screen.getByText("Mastery")).toBeInTheDocument();
       expect(screen.getByText("Speed")).toBeInTheDocument();
       expect(screen.getByText("Range")).toBeInTheDocument();
@@ -86,8 +127,8 @@ describe("SkillCards", () => {
 
   describe("StatBar", () => {
     it("should render label and value", () => {
-      render(<StatBar label="Power" value={8} color="#B8A9D4" />);
-      expect(screen.getByText("Power")).toBeInTheDocument();
+      render(<StatBar label="Mastery" value={8} color="#B8A9D4" />);
+      expect(screen.getByText("Mastery")).toBeInTheDocument();
       expect(screen.getByText("8")).toBeInTheDocument();
     });
   });
@@ -109,36 +150,43 @@ describe("SkillCards", () => {
   describe("DetailDrawer", () => {
     const testSkill = skills[0];
 
-    it("should render skill name when open", () => {
-      render(<DetailDrawer skill={testSkill} onClose={vi.fn()} />);
+    it("should render skill name when opened via context", () => {
+      renderWithContext(<DetailDrawer />, {
+        selectedSkill: testSkill,
+      });
       expect(screen.getByText(testSkill.name)).toBeInTheDocument();
     });
 
     it("should show detail sections", () => {
-      render(<DetailDrawer skill={testSkill} onClose={vi.fn()} />);
+      renderWithContext(<DetailDrawer />, {
+        selectedSkill: testSkill,
+      });
       expect(screen.getByText("Gelernt:")).toBeInTheDocument();
       expect(screen.getByText("Eingesetzt in:")).toBeInTheDocument();
       expect(screen.getByText(testSkill.detail.learned)).toBeInTheDocument();
       expect(screen.getByText(testSkill.detail.usedIn)).toBeInTheDocument();
     });
 
-    it("should call onClose when close button is clicked", () => {
-      const onClose = vi.fn();
-      render(<DetailDrawer skill={testSkill} onClose={onClose} />);
+    it("should close when close button is clicked", () => {
+      renderWithContext(<DetailDrawer />, {
+        selectedSkill: testSkill,
+      });
       fireEvent.click(screen.getByLabelText("Close drawer"));
-      expect(onClose).toHaveBeenCalled();
-    });
-
-    it("should not render when skill is null", () => {
-      render(<DetailDrawer skill={null} onClose={vi.fn()} />);
+      // After close, drawer content should disappear
       expect(screen.queryByText("Gelernt:")).not.toBeInTheDocument();
     });
 
-    it("should call onClose on Escape key", () => {
-      const onClose = vi.fn();
-      render(<DetailDrawer skill={testSkill} onClose={onClose} />);
+    it("should not render when no skill selected", () => {
+      renderWithContext(<DetailDrawer />);
+      expect(screen.queryByText("Gelernt:")).not.toBeInTheDocument();
+    });
+
+    it("should close on Escape key", () => {
+      renderWithContext(<DetailDrawer />, {
+        selectedSkill: testSkill,
+      });
       fireEvent.keyDown(document, { key: "Escape" });
-      expect(onClose).toHaveBeenCalled();
+      expect(screen.queryByText("Gelernt:")).not.toBeInTheDocument();
     });
   });
 
@@ -153,11 +201,21 @@ describe("SkillCards", () => {
       expect(react?.name).toBe("React");
       expect(react?.rarity).toBe("legendary");
     });
+
+    it("should use renamed stat fields", () => {
+      const react = skills.find((s) => s.id === "react");
+      expect(react?.stats.mastery).toBe(9);
+      expect(react?.stats.range).toBe(10);
+    });
   });
 
   describe("Scatter state transition", () => {
     it("should switch from stacked to scattered on click", () => {
-      render(<SkillCardSection />);
+      render(
+        <SkillCardSection>
+          <CardDeck />
+        </SkillCardSection>,
+      );
       // Initially: deck view with annotation
       expect(screen.getByText("Click to explore →")).toBeInTheDocument();
 
@@ -166,10 +224,8 @@ describe("SkillCards", () => {
       const deckContainer = annotation.previousElementSibling;
       if (deckContainer) {
         fireEvent.click(deckContainer);
-        // After scatter: all 15 skill names should be visible
-        for (const skill of skills) {
-          expect(screen.getByText(skill.name)).toBeInTheDocument();
-        }
+        // After scatter: CardDeck returns null
+        expect(screen.queryByText("Click to explore →")).not.toBeInTheDocument();
       }
     });
   });
