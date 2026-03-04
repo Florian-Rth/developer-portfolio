@@ -97,7 +97,12 @@ export const BrushUnderline: React.FC<BrushUnderlineProps> = ({ className }) => 
           </mask>
         </defs>
         {/* Filled brush shape revealed by the animated mask */}
-        <path d={BRUSH_SHAPE} fill="url(#brushUnderlineGradient)" opacity="0.85" mask="url(#brushDrawMask)" />
+        <path
+          d={BRUSH_SHAPE}
+          fill="url(#brushUnderlineGradient)"
+          opacity="0.85"
+          mask="url(#brushDrawMask)"
+        />
       </svg>
     </div>
   );
