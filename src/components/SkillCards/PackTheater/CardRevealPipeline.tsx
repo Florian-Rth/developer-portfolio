@@ -25,10 +25,10 @@ import { SkillCard } from "../SkillCard";
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
-const FLIP_IN_S = 0.7; // back → front
-const FLIP_OUT_HALF_S = 0.33; // each half of flip-out
-const HOLD_MS = 1200; // front visible for skill cards
-const HIRE_ME_HOLD_MS = 2400; // front visible for Hire Me
+const FLIP_IN_S = 0.42; // back → front
+const FLIP_OUT_HALF_S = 0.22; // each half of flip-out
+const HOLD_MS = 750;  // front visible for skill cards
+const HIRE_ME_HOLD_MS = 1600; // front visible for Hire Me
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const isHireMe = (card: RevealCard): card is HireMeSkill & { revealIndex: number } =>

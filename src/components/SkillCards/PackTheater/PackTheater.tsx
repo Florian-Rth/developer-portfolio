@@ -3,7 +3,6 @@ import { cn } from "@lib/utils";
 import type React from "react";
 import { CardRevealPipeline } from "./CardRevealPipeline";
 import { PackBurstAnimation } from "./PackBurstAnimation";
-import { PackGraphic } from "./PackGraphic";
 import { PackTearInteractive } from "./PackTearInteractive";
 import { useTheaterState } from "./useTheaterState";
 
@@ -168,12 +167,7 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
 
       {/* Revealing: cards appear — no pack backdrop (it already flew away) */}
 
-      {/* Mini pack after scattered */}
-      {phase === "scattered" && (
-        <div className="flex justify-end mb-4">
-          <PackGraphic mini opened />
-        </div>
-      )}
+
 
       {/* Skip button during reveal */}
       {phase === "revealing" && !skipped && (
