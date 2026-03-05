@@ -111,10 +111,12 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         isHireMe(card) ? (
           <HireMeCard scale={spotlightScale} />
         ) : (
-          <div className="relative">
+          // Zoom the entire wrapper so SkillCard + HoloEffect scale together
+          // → all border-radii stay in sync, no mismatch at corners
+          <div className="relative" style={{ zoom: spotlightScale }}>
             <SkillCard
               skill={card as Skill}
-              scale={spotlightScale}
+              scale={1}
               onSelect={() => onCardSelect(card as Skill)}
             />
             <HoloEffect rarity={card.rarity} intensity="max" />
