@@ -104,13 +104,19 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
       const base = rotBase.current;
 
+      const spotlightScale = SPOTLIGHT_W / CARD_W;
+
       // Prepare front face content BEFORE showing overlay
       setFrontContent(
         isHireMe(card) ? (
-          <HireMeCard />
+          <HireMeCard scale={spotlightScale} />
         ) : (
           <div className="relative">
-            <SkillCard skill={card as Skill} onSelect={() => onCardSelect(card as Skill)} />
+            <SkillCard
+              skill={card as Skill}
+              scale={spotlightScale}
+              onSelect={() => onCardSelect(card as Skill)}
+            />
             <HoloEffect rarity={card.rarity} intensity="max" />
           </div>
         ),
@@ -271,7 +277,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                   WebkitBackfaceVisibility: "hidden",
                 }}
               >
-                <CardBack />
+                <CardBack style={{ width: SPOTLIGHT_W, height: SPOTLIGHT_H }} />
               </div>
 
               {/* Front face */}
