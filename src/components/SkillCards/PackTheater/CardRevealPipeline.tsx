@@ -111,9 +111,17 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         isHireMe(card) ? (
           <HireMeCard scale={spotlightScale} />
         ) : (
-          // Zoom the entire wrapper so SkillCard + HoloEffect scale together
-          // → all border-radii stay in sync, no mismatch at corners
-          <div className="relative" style={{ zoom: spotlightScale }}>
+          // Zoom the entire wrapper so SkillCard + HoloEffect scale together.
+          // overflow+borderRadius here acts as outer clip context for mobile browsers
+          // where zoom + inner transform can break overflow:hidden clipping.
+          <div
+            className="relative"
+            style={{
+              zoom: spotlightScale,
+              borderRadius: "12px",
+              overflow: "hidden",
+            }}
+          >
             <SkillCard
               skill={card as Skill}
               scale={1}
