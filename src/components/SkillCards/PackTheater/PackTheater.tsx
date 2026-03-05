@@ -166,41 +166,7 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
         </div>
       )}
 
-      {/* Revealing: show pack with rip while cards appear */}
-      {phase === "revealing" && !skipped && (
-        <div className="flex flex-col items-center justify-center min-h-[500px] gap-6">
-          <PackGraphic opened>
-            {/* Rip line stays visible */}
-            <div
-              className="absolute left-0 w-full pointer-events-none"
-              style={{ top: Math.round(380 * 0.28) - 20, height: 50, zIndex: 20 }}
-            >
-              <svg
-                viewBox="0 -20 260 50"
-                className="w-full h-full"
-                preserveAspectRatio="none"
-                role="img"
-                aria-label="Pack tear line"
-              >
-                <path
-                  d="M0,0 C15,-8 25,0 40,-6 C55,-12 65,2 80,-5 C95,-12 105,6 120,-4 C135,-14 145,4 160,-8 C175,-12 185,3 200,-6 C215,-9 225,5 240,-2 L260,0"
-                  fill="none"
-                  stroke="rgba(255,253,249,0.95)"
-                  strokeWidth={2}
-                  style={{ filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8))" }}
-                />
-                <path
-                  d="M0,0 C15,-8 25,0 40,-6 C55,-12 65,2 80,-5 C95,-12 105,6 120,-4 C135,-14 145,4 160,-8 C175,-12 185,3 200,-6 C215,-9 225,5 240,-2 L260,0"
-                  fill="none"
-                  stroke="rgba(244,208,63,0.6)"
-                  strokeWidth={12}
-                  style={{ filter: "blur(6px)" }}
-                />
-              </svg>
-            </div>
-          </PackGraphic>
-        </div>
-      )}
+      {/* Revealing: cards appear — no pack backdrop (it already flew away) */}
 
       {/* Mini pack after scattered */}
       {phase === "scattered" && (
