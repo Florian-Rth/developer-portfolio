@@ -118,7 +118,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
             className="relative"
             style={{
               zoom: spotlightScale,
-              borderRadius: "12px",
+              borderRadius: "14px",
               overflow: "hidden",
             }}
           >

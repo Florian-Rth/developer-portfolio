@@ -59,7 +59,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       type="button"
       className={cn(
         "w-[220px] h-[320px]",
-        "rounded-xl cursor-pointer select-none",
+        "rounded-[14px] cursor-pointer select-none",
         "flex flex-col overflow-hidden",
         "transition-shadow duration-300",
         "text-left",
@@ -68,9 +68,10 @@ export const SkillCard: React.FC<SkillCardProps> = ({
       style={{
         zoom: scale,
         backgroundColor: "var(--card, var(--surface, #f5f0e8))",
+        border: `2px solid ${rColors.border}`,
         boxShadow: isHovered
-          ? `inset 0 0 0 2px ${rColors.border}, 0 8px 32px ${rColors.glow}, 0 0 20px ${rColors.glow}`
-          : `inset 0 0 0 2px ${rColors.border}, 0 4px 20px rgba(0,0,0,0.08)`,
+          ? `0 8px 32px ${rColors.glow}, 0 0 20px ${rColors.glow}`
+          : "0 4px 20px rgba(0,0,0,0.08)",
         transform: `perspective(600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.08 : 1})`,
         transition: "transform 0.2s ease-out, box-shadow 0.3s ease",
         ...style,
