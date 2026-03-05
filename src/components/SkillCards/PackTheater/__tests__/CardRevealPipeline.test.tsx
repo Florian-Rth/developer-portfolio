@@ -12,6 +12,7 @@ vi.mock("framer-motion", () => ({
     ),
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAnimation: () => ({ start: vi.fn().mockResolvedValue(undefined), set: vi.fn() }),
 }));
 
 // Must import after mock
@@ -33,7 +34,13 @@ describe("CardRevealPipeline", () => {
   it("should render all 16 cards when skipped", () => {
     const cards = buildCards();
     render(
-      <CardRevealPipeline cards={cards} revealedCount={16} skipped={true} onCardSelect={vi.fn()} />,
+      <CardRevealPipeline
+        cards={cards}
+        revealedCount={16}
+        skipped={true}
+        onCardSelect={vi.fn()}
+        onAllDone={vi.fn()}
+      />,
     );
 
     // All 15 skill names should be present
@@ -48,7 +55,13 @@ describe("CardRevealPipeline", () => {
   it("should not render cards when revealedCount is 0", () => {
     const cards = buildCards();
     render(
-      <CardRevealPipeline cards={cards} revealedCount={0} skipped={false} onCardSelect={vi.fn()} />,
+      <CardRevealPipeline
+        cards={cards}
+        revealedCount={0}
+        skipped={false}
+        onCardSelect={vi.fn()}
+        onAllDone={vi.fn()}
+      />,
     );
 
     // No skill cards should be placed yet
@@ -66,6 +79,7 @@ describe("CardRevealPipeline", () => {
         revealedCount={16}
         skipped={true}
         onCardSelect={onSelect}
+        onAllDone={vi.fn()}
       />,
     );
 

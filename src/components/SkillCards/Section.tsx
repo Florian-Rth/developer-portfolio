@@ -13,8 +13,8 @@ export const Section: React.FC<SectionProps> = ({ children, className }) => (
     aria-label="Skills"
     className={cn(
       "relative bg-background",
-      "min-h-screen",
-      "pt-36 md:pt-52 lg:pt-60 pb-20",
+      "min-h-[700px]",
+      "pt-24 md:pt-32 pb-20",
       className,
     )}
   >

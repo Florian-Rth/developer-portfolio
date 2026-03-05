@@ -2,7 +2,7 @@ import type { Skill } from "@/data/skills";
 import { rarityOrder, skills } from "@/data/skills";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-export type TheaterPhase = "idle" | "tearing" | "revealing" | "scattered";
+export type TheaterPhase = "idle" | "bursting" | "revealing" | "scattered";
 
 export type HireMeSkill = {
   id: "hire-me";
@@ -22,9 +22,8 @@ export const HIRE_ME: HireMeSkill = {
 
 export type RevealCard = (Skill | HireMeSkill) & { revealIndex: number };
 
-const TEAR_DURATION = 600;
-const CARD_STAGGER = 600;
-const HIRE_ME_PAUSE = 500;
+const CARD_STAGGER = 1200;
+const HIRE_ME_PAUSE = 900;
 
 const sortByRarity = (a: Skill, b: Skill): number => {
   const diff = rarityOrder[a.rarity] - rarityOrder[b.rarity];
@@ -55,31 +54,30 @@ export const useTheaterState = () => {
     timersRef.current = [];
   }, []);
 
+  const markScattered = useCallback(() => {
+    setPhase("scattered");
+  }, []);
+
+  const startBurst = useCallback(() => {
+    setPhase("bursting");
+  }, []);
+
   const startReveal = useCallback(() => {
-    setPhase("tearing");
+    setPhase("revealing");
     setRevealedCount(0);
     setSkipped(false);
 
-    const tearTimer = setTimeout(() => {
-      setPhase("revealing");
-      // Stagger each card reveal
-      Array.from({ length: totalCards }, (_, idx) => {
-        const isHire = idx === totalCards - 1;
-        const delay = isHire ? (totalCards - 1) * CARD_STAGGER + HIRE_ME_PAUSE : idx * CARD_STAGGER;
-        const t = setTimeout(() => {
-          setRevealedCount((prev) => prev + 1);
-        }, delay);
-        timersRef.current.push(t);
-      });
-
-      // All done after last card + its spotlight time
-      const finalDelay = (totalCards - 1) * CARD_STAGGER + HIRE_ME_PAUSE + 1800;
-      const doneTimer = setTimeout(() => {
-        setPhase("scattered");
-      }, finalDelay);
-      timersRef.current.push(doneTimer);
-    }, TEAR_DURATION);
-    timersRef.current.push(tearTimer);
+    // Feed cards into the pipeline one by one via stagger
+    Array.from({ length: totalCards }, (_, idx) => {
+      const isHire = idx === totalCards - 1;
+      const feedDelay = isHire
+        ? (totalCards - 1) * CARD_STAGGER + HIRE_ME_PAUSE
+        : idx * CARD_STAGGER;
+      const t = setTimeout(() => {
+        setRevealedCount((prev) => prev + 1);
+      }, feedDelay);
+      timersRef.current.push(t);
+    });
   }, [totalCards]);
 
   const skip = useCallback(() => {
@@ -102,8 +100,10 @@ export const useTheaterState = () => {
     revealedCount,
     totalCards,
     skipped,
+    startBurst,
     startReveal,
     skip,
     reset,
+    markScattered,
   };
 };

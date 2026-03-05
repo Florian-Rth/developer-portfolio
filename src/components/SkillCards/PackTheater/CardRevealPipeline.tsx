@@ -1,172 +1,310 @@
+/**
+ * CardRevealPipeline — continuous-rotation spotlight reveal
+ *
+ * One persistent card rotates in a single direction forever.
+ * Content swaps at the exact moment the card is edge-on (invisible).
+ * No AnimatePresence re-mounts, no backward flips.
+ *
+ * Rotation cycle per card:
+ *   base+0°   → base-180°  : flip IN  (back → front)  ~0.7s
+ *   hold at base-180°                                  ~1.1s
+ *   base-180° → base-270°  : flip OUT first half       ~0.33s  ← edge-on: swap content
+ *   base-270° → base-360°  : flip OUT second half      ~0.33s
+ *   base = base - 360° for next card
+ */
+
 import type { Skill } from "@/data/skills";
+import { cn } from "@lib/utils";
+import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import type React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
-import { CardFlip } from "../CardFlip";
 import { HireMeCard } from "../HireMeCard";
 import { HoloEffect } from "../HoloEffect";
 import { SkillCard } from "../SkillCard";
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
-import { cn } from "@lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import type React from "react";
-import { useEffect, useMemo, useState } from "react";
-import { CardSpotlight } from "./CardSpotlight";
+// ─── Timing ──────────────────────────────────────────────────────────────────
+const FLIP_IN_S = 0.7; // back → front
+const FLIP_OUT_HALF_S = 0.33; // each half of flip-out
+const HOLD_MS = 1200; // front visible for skill cards
+const HIRE_ME_HOLD_MS = 2400; // front visible for Hire Me
 
-type CardRevealPipelineProps = {
-  cards: RevealCard[];
-  revealedCount: number;
-  skipped: boolean;
-  onCardSelect: (skill: Skill) => void;
-  cardScale?: number;
-  className?: string;
-};
-
-const CARD_W = 220;
-const CARD_H = 320;
-const SCATTER_COL_W = CARD_W * 1.05;
-const SCATTER_ROW_H = CARD_H * 0.97;
-const SPOTLIGHT_DURATION = 500;
-const HIRE_ME_SPOTLIGHT_DURATION = 900;
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const isHireMe = (card: RevealCard): card is HireMeSkill & { revealIndex: number } =>
+  card.id === "hire-me";
 
 const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 };
 
-const generatePositions = (count: number, scale: number) => {
-  const cols = Math.ceil(Math.sqrt(count));
-  return Array.from({ length: count }, (_, i) => {
+const generatePositions = (count: number) =>
+  Array.from({ length: count }, (_, i) => {
+    const cols = Math.ceil(Math.sqrt(count));
     const col = i % cols;
     const row = Math.floor(i / cols);
     const rows = Math.ceil(count / cols);
-    const baseX = (col - (cols - 1) / 2) * SCATTER_COL_W * scale;
-    const baseY = (row - (rows - 1) / 2) * SCATTER_ROW_H * scale;
-    const jitterX = (seededRandom(i * 7 + 1) - 0.5) * 40 * scale;
-    const jitterY = (seededRandom(i * 13 + 3) - 0.5) * 40 * scale;
-    const rotation = (seededRandom(i * 17 + 5) - 0.5) * 20;
-    return { x: baseX + jitterX, y: baseY + jitterY, rotation };
+    const CARD_W = 220,
+      CARD_H = 320;
+    const baseX = (col - (cols - 1) / 2) * CARD_W * 1.08;
+    const baseY = (row - (rows - 1) / 2) * CARD_H * 1.0;
+    const jX = (seededRandom(i * 7 + 1) - 0.5) * 40;
+    const jY = (seededRandom(i * 13 + 3) - 0.5) * 40;
+    const rot = (seededRandom(i * 17 + 5) - 0.5) * 18;
+    return { x: baseX + jX, y: baseY + jY, rotation: rot };
   });
+
+function delay(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+type CardRevealPipelineProps = {
+  cards: RevealCard[];
+  revealedCount: number;
+  skipped: boolean;
+  onCardSelect: (skill: Skill) => void;
+  onAllDone: () => void;
+  className?: string;
 };
 
-const isHireMe = (card: RevealCard): card is HireMeSkill & { revealIndex: number } =>
-  card.id === "hire-me";
-
+// ─── Component ───────────────────────────────────────────────────────────────
 export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   cards,
   revealedCount,
   skipped,
   onCardSelect,
-  cardScale = 1,
+  onAllDone,
   className,
 }) => {
-  const [spotlightIndex, setSpotlightIndex] = useState<number | null>(null);
-  const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set());
-  const [placedSet, setPlacedSet] = useState<Set<number>>(new Set());
+  const controls = useAnimation();
+  const rotBase = useRef(0); // cumulative rotation base
+  const busy = useRef(false); // is an animation running?
+  const queue = useRef<RevealCard[]>([]);
+  const placedCount = useRef(0);
 
-  const positions = useMemo(
-    () => generatePositions(cards.length, cardScale),
-    [cards.length, cardScale],
+  // What's currently on the front face of the rotating card
+  const [frontContent, setFrontContent] = useState<React.ReactNode>(null);
+  // Whether spotlight overlay is visible
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  // Whether the front face should be shown (vs the back)
+  // (we use the rotation, but we also track this for the glow colour)
+  const [currentCard, setCurrentCard] = useState<RevealCard | null>(null);
+
+  // Which cards have been placed in the scatter field
+  const [placedSet, setPlacedSet] = useState<Set<number>>(new Set());
+  const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set());
+
+  const positions = useMemo(() => generatePositions(cards.length), [cards.length]);
+
+  // ── Core animation sequence for one card ──────────────────────────────────
+  const revealOne = useCallback(
+    async (card: RevealCard, idx: number) => {
+      const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
+      const base = rotBase.current;
+
+      // Prepare front face content BEFORE showing overlay
+      setFrontContent(
+        isHireMe(card) ? (
+          <HireMeCard />
+        ) : (
+          <div className="relative">
+            <SkillCard skill={card as Skill} onSelect={() => onCardSelect(card as Skill)} />
+            <HoloEffect rarity={card.rarity} intensity="max" />
+          </div>
+        ),
+      );
+      setCurrentCard(card);
+      setOverlayVisible(true);
+
+      // 1 — Flip IN: back → front  (0 → -180)
+      await controls.start({
+        rotateY: base - 180,
+        transition: {
+          duration: FLIP_IN_S,
+          ease: [0.645, 0.045, 0.355, 1.0], // easeInOutCubic
+        },
+      });
+
+      // 2 — Hold (front face visible)
+      await delay(holdMs);
+
+      // 3 — Flip OUT first half: front → edge  (-180 → -270)
+      await controls.start({
+        rotateY: base - 270,
+        transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
+      });
+
+      // ← card is edge-on: invisible → safe to hide overlay + swap content
+      setOverlayVisible(false);
+      setPlacedSet((prev) => new Set(prev).add(idx));
+      setFlippedSet((prev) => new Set(prev).add(idx));
+
+      placedCount.current += 1;
+      if (placedCount.current === cards.length) {
+        // Small extra pause so last card can drift into position, then call done
+        await delay(800);
+        onAllDone();
+      }
+
+      // 4 — Flip OUT second half: edge → back  (-270 → -360)
+      await controls.start({
+        rotateY: base - 360,
+        transition: { duration: FLIP_OUT_HALF_S, ease: "easeOut" },
+      });
+
+      rotBase.current = base - 360;
+    },
+    [cards.length, controls, onAllDone, onCardSelect],
   );
 
-  // Handle skip: instantly flip & place all
-  useEffect(() => {
-    if (skipped) {
-      setSpotlightIndex(null);
-      const allIndices = new Set(cards.map((_, i) => i));
-      setFlippedSet(allIndices);
-      setPlacedSet(allIndices);
+  // ── Queue processor ────────────────────────────────────────────────────────
+  const processQueue = useCallback(async () => {
+    if (busy.current) return;
+    while (queue.current.length > 0) {
+      busy.current = true;
+      const item = queue.current.shift()!;
+      const idx = cards.findIndex((c) => c.id === item.id);
+      await revealOne(item, idx);
+      busy.current = false;
     }
-  }, [skipped, cards]);
+  }, [cards, revealOne]);
 
-  // Handle incremental reveal: spotlight → flip → place
+  // ── React to parent incrementing revealedCount ────────────────────────────
   useEffect(() => {
     if (skipped || revealedCount === 0) return;
     const idx = revealedCount - 1;
-    if (idx < 0 || idx >= cards.length) return;
+    const card = cards[idx];
+    if (!card) return;
+    queue.current.push(card);
+    processQueue();
+  }, [revealedCount, skipped, cards, processQueue]);
 
-    // Show spotlight
-    setSpotlightIndex(idx);
+  // ── Skip: place everything immediately ────────────────────────────────────
+  useEffect(() => {
+    if (!skipped) return;
+    setOverlayVisible(false);
+    busy.current = false;
+    queue.current = [];
+    const allIdx = new Set(cards.map((_, i) => i));
+    setPlacedSet(allIdx);
+    setFlippedSet(allIdx);
+    onAllDone();
+  }, [skipped, cards, onAllDone]);
 
-    const isHire = isHireMe(cards[idx]);
-    const duration = isHire ? HIRE_ME_SPOTLIGHT_DURATION : SPOTLIGHT_DURATION;
-
-    // Flip after small delay
-    const flipTimer = setTimeout(() => {
-      setFlippedSet((prev) => new Set(prev).add(idx));
-    }, 150);
-
-    // Place after spotlight ends
-    const placeTimer = setTimeout(() => {
-      setSpotlightIndex(null);
-      setPlacedSet((prev) => new Set(prev).add(idx));
-    }, duration);
-
-    return () => {
-      clearTimeout(flipTimer);
-      clearTimeout(placeTimer);
-    };
-  }, [revealedCount, skipped, cards]);
-
-  const halfW = (CARD_W * cardScale) / 2;
-  const halfH = (CARD_H * cardScale) / 2;
-
-  // Get the currently spotlighted card for the overlay
-  const spotlightCard = spotlightIndex !== null ? cards[spotlightIndex] : null;
+  // ── Dimensions ────────────────────────────────────────────────────────────
+  const CARD_W = 220;
+  const CARD_H = 320;
+  const halfW = CARD_W / 2;
+  const halfH = CARD_H / 2;
 
   return (
     <>
-      {/* Spotlight overlay */}
-      {spotlightCard && !skipped && (
-        <CardSpotlight
-          visible={true}
-          skillName={spotlightCard.name}
-          isHireMe={isHireMe(spotlightCard)}
-        >
-          <div className="relative">
-            <CardFlip
-              flipped={flippedSet.has(spotlightIndex as number)}
-              front={
-                isHireMe(spotlightCard) ? (
-                  <HireMeCard scale={cardScale} />
-                ) : (
-                  <div className="relative">
-                    <SkillCard skill={spotlightCard as Skill} scale={cardScale} />
-                    <HoloEffect rarity={spotlightCard.rarity} intensity="max" />
-                  </div>
-                )
-              }
-              back={<CardBack />}
+      {/* ── Spotlight stage ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {overlayVisible && (
+          <div
+            key="spotlight-overlay"
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          >
+            {/* Dim */}
+            <motion.div
+              className="absolute inset-0"
+              style={{ background: "rgba(0,0,0,0.22)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            />
+
+            {/* Glow */}
+            <motion.div
+              className="absolute rounded-full"
+              style={{
+                width: 420,
+                height: 420,
+                background:
+                  currentCard && isHireMe(currentCard)
+                    ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
+                    : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)",
+              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.6, opacity: 0 }}
+              transition={{ duration: 0.3 }}
             />
           </div>
-        </CardSpotlight>
+        )}
+      </AnimatePresence>
+
+      {/*
+       * The rotating card — ALWAYS mounted while revealing, never re-mounted.
+       * Only the rotateY value changes via `controls`.
+       * Opacity wrapper shows/hides it around the overlay.
+       */}
+      {!skipped && (
+        <div
+          className="fixed inset-0 z-[51] flex items-center justify-center pointer-events-none"
+          style={{ visibility: overlayVisible ? "visible" : "hidden" }}
+        >
+          {/* Outer wrapper: perspective */}
+          <div style={{ perspective: "900px" }}>
+            {/* Framer Motion drives rotateY continuously */}
+            <motion.div
+              animate={controls}
+              style={{
+                transformStyle: "preserve-3d",
+                width: CARD_W,
+                height: CARD_H,
+                position: "relative",
+              }}
+            >
+              {/* Back face */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                }}
+              >
+                <CardBack />
+              </div>
+
+              {/* Front face */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                }}
+              >
+                {frontContent}
+              </div>
+            </motion.div>
+          </div>
+        </div>
       )}
 
-      {/* Scattered field */}
+      {/* ── Scattered field ──────────────────────────────────────────────── */}
       <div
-        className={cn(
-          "relative w-full flex items-center justify-center",
-          "min-h-[1400px]",
-          className,
-        )}
+        className={cn("relative w-full flex items-center justify-center min-h-[1400px]", className)}
       >
         <div className="relative" style={{ width: "100%", height: "100%" }}>
           <AnimatePresence>
             {cards.map((card, i) => {
-              const isPlaced = placedSet.has(i);
-              const isFlipped = flippedSet.has(i);
-              if (!isPlaced) return null;
+              if (!placedSet.has(i)) return null;
               const pos = positions[i];
 
               return (
                 <motion.div
                   key={card.id}
                   className="absolute"
-                  style={{
-                    left: "50%",
-                    top: "50%",
-                    zIndex: i,
-                  }}
-                  initial={{ x: -halfW, y: -halfH - 200, rotate: 0, opacity: 0 }}
+                  style={{ left: "50%", top: "50%", zIndex: i }}
+                  initial={{ x: -halfW, y: -halfH - 160, rotate: 0, opacity: 0 }}
                   animate={{
                     x: pos.x - halfW,
                     y: pos.y - halfH,
@@ -175,9 +313,9 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                   }}
                   transition={{
                     type: "spring",
-                    stiffness: 200,
-                    damping: 25,
-                    delay: skipped ? i * 0.03 : 0,
+                    stiffness: 60,
+                    damping: 18,
+                    delay: skipped ? i * 0.025 : 0,
                   }}
                   drag
                   dragMomentum={false}
@@ -186,15 +324,14 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                   whileDrag={{ scale: 1.05, zIndex: 100 }}
                 >
                   {isHireMe(card) ? (
-                    <HireMeCard scale={cardScale} />
+                    <HireMeCard />
                   ) : (
                     <div className="relative">
                       <SkillCard
                         skill={card as Skill}
-                        scale={cardScale}
                         onSelect={() => onCardSelect(card as Skill)}
                       />
-                      {isFlipped && <HoloEffect rarity={card.rarity} intensity="medium" />}
+                      {flippedSet.has(i) && <HoloEffect rarity={card.rarity} intensity="medium" />}
                     </div>
                   )}
                 </motion.div>

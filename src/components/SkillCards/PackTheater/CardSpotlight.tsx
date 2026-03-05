@@ -14,7 +14,7 @@ type CardSpotlightProps = {
 
 export const CardSpotlight: React.FC<CardSpotlightProps> = ({
   visible,
-  skillName,
+  skillName: _skillName,
   isHireMe = false,
   children,
   className,
@@ -30,7 +30,7 @@ export const CardSpotlight: React.FC<CardSpotlightProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.25 }}
         />
 
         {/* Spotlight glow behind card */}
@@ -52,40 +52,12 @@ export const CardSpotlight: React.FC<CardSpotlightProps> = ({
         {/* Card container — scaled up */}
         <motion.div
           className="relative z-10"
-          initial={{ scale: 0.6, y: -100, opacity: 0 }}
-          animate={{ scale: 1.3, y: 0, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          initial={{ scale: 0.5, y: -80, opacity: 0 }}
+          animate={{ scale: 1.25, y: 0, opacity: 1 }}
+          exit={{ scale: 0.6, y: 40, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 160, damping: 26, mass: 1.1 }}
         >
           {children}
-        </motion.div>
-
-        {/* Skill name */}
-        <motion.div
-          className="relative z-10 mt-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25, delay: 0.15 }}
-        >
-          <h3
-            className={cn(
-              "font-sans font-bold text-center select-none",
-              isHireMe ? "text-4xl font-script" : "text-2xl",
-            )}
-            style={{
-              background: isHireMe
-                ? "linear-gradient(135deg, #F4D03F, #FFFDF9, #F4D03F)"
-                : "linear-gradient(135deg, #B8A9D4, #D4929B, #E8B4A0)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: isHireMe
-                ? "drop-shadow(0 2px 10px rgba(244,208,63,0.4))"
-                : "drop-shadow(0 2px 6px rgba(184,169,212,0.3))",
-            }}
-          >
-            {skillName}
-          </h3>
         </motion.div>
 
         {/* Gold particles for Hire Me */}

@@ -43,28 +43,22 @@ describe("useTheaterState", () => {
     }
   });
 
-  it("should transition to tearing on startReveal", () => {
-    vi.useFakeTimers();
+  it("should transition to bursting on startBurst", () => {
     const { result } = renderHook(() => useTheaterState());
 
     act(() => {
-      result.current.startReveal();
+      result.current.startBurst();
     });
 
-    expect(result.current.phase).toBe("tearing");
-    vi.useRealTimers();
+    expect(result.current.phase).toBe("bursting");
   });
 
-  it("should transition to revealing after tear duration", () => {
+  it("should transition to revealing on startReveal", () => {
     vi.useFakeTimers();
     const { result } = renderHook(() => useTheaterState());
 
     act(() => {
       result.current.startReveal();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(700);
     });
 
     expect(result.current.phase).toBe("revealing");
@@ -77,9 +71,6 @@ describe("useTheaterState", () => {
 
     act(() => {
       result.current.startReveal();
-    });
-    act(() => {
-      vi.advanceTimersByTime(700);
     });
     act(() => {
       result.current.skip();

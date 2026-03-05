@@ -37,8 +37,7 @@ export const PackGraphic: React.FC<PackGraphicProps> = ({
   const tiltX = (mouse.y - 0.5) * -15;
   const tiltY = (mouse.x - 0.5) * 15;
   const shimmerAngle = mouse.x * 360;
-  const highlightX = mouse.x * 100;
-  const highlightY = mouse.y * 100;
+
 
   if (mini) {
     return (
@@ -137,17 +136,6 @@ export const PackGraphic: React.FC<PackGraphicProps> = ({
           }}
         />
 
-        {/* Layer 4: Specular highlight */}
-        <div
-          className="absolute inset-0 rounded-2xl"
-          style={{
-            background: `radial-gradient(ellipse 40% 40% at ${highlightX}% ${highlightY}%,
-              rgba(255,255,255,0.5) 0%,
-              rgba(255,255,255,0.1) 40%,
-              transparent 70%)`,
-          }}
-        />
-
         {/* Layer 5: Fresnel border glow */}
         <div
           className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -158,7 +146,6 @@ export const PackGraphic: React.FC<PackGraphicProps> = ({
               0 4px 30px rgba(184,169,212,0.2),
               0 8px 60px rgba(212,146,155,0.15)
             `,
-            border: "1.5px solid rgba(255,255,255,0.35)",
           }}
         />
 
