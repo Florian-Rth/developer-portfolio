@@ -136,15 +136,15 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
       });
 
-      // ← card is edge-on: invisible → safe to hide overlay + swap content
-      setOverlayVisible(false);
+      // ← card is edge-on: launch it from spotlight center to scatter position
       setPlacedSet((prev) => new Set(prev).add(idx));
       setFlippedSet((prev) => new Set(prev).add(idx));
 
       placedCount.current += 1;
       if (placedCount.current === cards.length) {
-        // Small extra pause so last card can drift into position, then call done
-        await delay(800);
+        // All cards placed — now fade out the overlay once
+        setOverlayVisible(false);
+        await delay(900);
         onAllDone();
       }
 
@@ -215,7 +215,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.6 }}
             />
 
             {/* Glow */}
@@ -304,18 +304,19 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                   key={card.id}
                   className="absolute"
                   style={{ left: "50%", top: "50%", zIndex: i }}
-                  initial={{ x: -halfW, y: -halfH - 160, rotate: 0, opacity: 0 }}
+                  initial={{ x: -halfW, y: -halfH, scale: 0.88, rotate: 0, opacity: 0 }}
                   animate={{
                     x: pos.x - halfW,
                     y: pos.y - halfH,
+                    scale: 1,
                     rotate: pos.rotation,
                     opacity: 1,
                   }}
                   transition={{
                     type: "spring",
-                    stiffness: 60,
-                    damping: 18,
-                    delay: skipped ? i * 0.025 : 0,
+                    stiffness: 48,
+                    damping: 16,
+                    delay: skipped ? i * 0.025 : 0.08,
                   }}
                   drag
                   dragMomentum={false}
