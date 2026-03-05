@@ -247,50 +247,6 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           </div>
         )}
 
-        {/* Progressive tear SVG overlay */}
-        {tearProgress > 0 && (
-          <div
-            className="absolute left-0 w-full pointer-events-none"
-            style={{ top: TEAR_Y - 20, height: 50, zIndex: 20 }}
-          >
-            <svg
-              viewBox="0 -20 260 50"
-              className="w-full h-full"
-              preserveAspectRatio="none"
-              role="img"
-              aria-label="Tear progress"
-            >
-              <defs>
-                <clipPath id="tearClip">
-                  <rect x={0} y={-20} width={tearProgress * PACK_W} height={50} />
-                </clipPath>
-              </defs>
-
-              {/* Layer 1: Tear glow */}
-              <path
-                d={TEAR_PATH}
-                fill="none"
-                stroke="rgba(255,240,200,0.6)"
-                strokeWidth={glowStrokeWidth}
-                clipPath="url(#tearClip)"
-                style={{ filter: "blur(8px)" }}
-              />
-
-              {/* Layer 2: Tear line */}
-              <path
-                d={TEAR_PATH}
-                fill="none"
-                stroke="rgba(255,253,249,0.95)"
-                strokeWidth={2}
-                clipPath="url(#tearClip)"
-                style={{
-                  filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8))",
-                }}
-              />
-            </svg>
-          </div>
-        )}
-
         {/* Completion flash */}
         {showFlash && (
           <div
@@ -317,6 +273,48 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           onPointerDown={handlePointerDown}
         />
       </div>
+
+      {/* Progressive tear SVG — outside overflow-hidden so glow bleeds freely */}
+      {tearProgress > 0 && (
+        <div
+          className="absolute left-0 w-full pointer-events-none"
+          style={{ top: TEAR_Y - 60, height: 120, zIndex: 21 }}
+        >
+          <svg
+            viewBox="0 -60 260 120"
+            className="w-full h-full"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Tear progress"
+          >
+            <defs>
+              <clipPath id="tearClip">
+                <rect x={0} y={-60} width={tearProgress * PACK_W} height={120} />
+              </clipPath>
+            </defs>
+
+            {/* Layer 1: Wide glow — free to bleed top/bottom */}
+            <path
+              d={TEAR_PATH}
+              fill="none"
+              stroke="rgba(255,240,200,0.55)"
+              strokeWidth={glowStrokeWidth}
+              clipPath="url(#tearClip)"
+              style={{ filter: "blur(10px)" }}
+            />
+
+            {/* Layer 2: Crisp tear line */}
+            <path
+              d={TEAR_PATH}
+              fill="none"
+              stroke="rgba(255,253,249,0.95)"
+              strokeWidth={2}
+              clipPath="url(#tearClip)"
+              style={{ filter: "drop-shadow(0 0 4px rgba(255,255,255,0.9))" }}
+            />
+          </svg>
+        </div>
+      )}
 
       {/* Light leak — outside overflow-hidden so it bleeds beyond card edges */}
       {tearProgress > 0 && (
