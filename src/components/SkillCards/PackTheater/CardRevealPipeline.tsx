@@ -194,10 +194,12 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   }, [skipped, cards, onAllDone]);
 
   // ── Dimensions ────────────────────────────────────────────────────────────
-  const CARD_W = 220;
+  const CARD_W = 220;  // scattered size (unchanged)
   const CARD_H = 320;
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
+  const SPOTLIGHT_W = 310; // revealed card size (larger)
+  const SPOTLIGHT_H = 452;
 
   return (
     <>
@@ -255,8 +257,8 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
               animate={controls}
               style={{
                 transformStyle: "preserve-3d",
-                width: CARD_W,
-                height: CARD_H,
+                width: SPOTLIGHT_W,
+                height: SPOTLIGHT_H,
                 position: "relative",
               }}
             >
@@ -318,11 +320,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                     damping: 16,
                     delay: skipped ? i * 0.025 : 0.08,
                   }}
-                  drag
-                  dragMomentum={false}
-                  dragElastic={0.1}
                   whileHover={{ zIndex: 50 }}
-                  whileDrag={{ scale: 1.05, zIndex: 100 }}
                 >
                   {isHireMe(card) ? (
                     <HireMeCard />
