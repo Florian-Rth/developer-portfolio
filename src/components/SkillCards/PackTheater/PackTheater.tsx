@@ -46,20 +46,19 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
           {/* Section heading */}
           <div className="text-center mb-6">
             <h2
-              className="font-script text-6xl md:text-7xl lg:text-8xl mb-4"
+              className="font-script inline-block"
               style={{
-                background: "linear-gradient(135deg, #7B5FC7 0%, #E04080 50%, #F07030 100%)",
+                fontSize: "clamp(3rem, 6vw, 4.5rem)",
+                lineHeight: 1.5,
+                background: "linear-gradient(to right, #e8b4a0, #d4929b, #b8a9d4)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 4px 24px rgba(224,64,128,0.35))",
+                padding: "0.15em 0.1em 0.1em",
               }}
             >
-              Skills & Technologies
+              Skills.
             </h2>
-            <p
-              className="font-sans text-[13px] tracking-[0.18em] uppercase font-semibold"
-              style={{ color: "rgba(123,95,199,0.8)" }}
-            >
+            <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-foreground/40 mt-2">
               16 technologies · open the pack to discover
             </p>
           </div>
