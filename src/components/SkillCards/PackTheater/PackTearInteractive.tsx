@@ -274,65 +274,73 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
         />
       </div>
 
-      {/* Progressive tear SVG — outside overflow-hidden so glow bleeds freely */}
+      {/* Effects layer: same tilt as card, clips L/R at card edge, allows T/B overflow */}
       {tearProgress > 0 && (
         <div
-          className="absolute left-0 w-full pointer-events-none"
-          style={{ top: TEAR_Y - 60, height: 120, zIndex: 21 }}
-        >
-          <svg
-            viewBox="0 -60 260 120"
-            className="w-full h-full"
-            preserveAspectRatio="none"
-            role="img"
-            aria-label="Tear progress"
-          >
-            <defs>
-              <clipPath id="tearClip">
-                <rect x={0} y={-60} width={tearProgress * PACK_W} height={120} />
-              </clipPath>
-            </defs>
-
-            {/* Layer 1: Wide glow — free to bleed top/bottom */}
-            <path
-              d={TEAR_PATH}
-              fill="none"
-              stroke="rgba(255,240,200,0.55)"
-              strokeWidth={glowStrokeWidth}
-              clipPath="url(#tearClip)"
-              style={{ filter: "blur(10px)" }}
-            />
-
-            {/* Layer 2: Crisp tear line */}
-            <path
-              d={TEAR_PATH}
-              fill="none"
-              stroke="rgba(255,253,249,0.95)"
-              strokeWidth={2}
-              clipPath="url(#tearClip)"
-              style={{ filter: "drop-shadow(0 0 4px rgba(255,255,255,0.9))" }}
-            />
-          </svg>
-        </div>
-      )}
-
-      {/* Light leak — outside overflow-hidden so it bleeds beyond card edges */}
-      {tearProgress > 0 && (
-        <div
-          className="absolute pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            left: tearProgress * PACK_W - leakW / 2,
-            top: TEAR_Y - leakH / 2,
-            width: leakW,
-            height: leakH,
-            background:
-              "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,250,235,0.95), rgba(255,240,180,0.5) 35%, rgba(255,220,120,0.2) 60%, transparent 80%)",
-            opacity: tearProgress * 0.95,
-            mixBlendMode: "screen",
+            transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+            transition: "transform 0.15s ease-out",
+            transformStyle: "preserve-3d",
+            // clip left/right at card edge, let top/bottom bleed freely
+            clipPath: "inset(-300px 0px -300px 0px)",
             zIndex: 20,
-            filter: "blur(2px)",
           }}
-        />
+        >
+          {/* Tear SVG glow — bleeds top/bottom */}
+          <div
+            className="absolute left-0 w-full pointer-events-none"
+            style={{ top: TEAR_Y - 60, height: 120 }}
+          >
+            <svg
+              viewBox="0 -60 260 120"
+              className="w-full h-full"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="Tear progress"
+            >
+              <defs>
+                <clipPath id="tearClip">
+                  <rect x={0} y={-60} width={tearProgress * PACK_W} height={120} />
+                </clipPath>
+              </defs>
+              {/* Glow */}
+              <path
+                d={TEAR_PATH}
+                fill="none"
+                stroke="rgba(255,240,200,0.55)"
+                strokeWidth={glowStrokeWidth}
+                clipPath="url(#tearClip)"
+                style={{ filter: "blur(10px)" }}
+              />
+              {/* Crisp line */}
+              <path
+                d={TEAR_PATH}
+                fill="none"
+                stroke="rgba(255,253,249,0.95)"
+                strokeWidth={2}
+                clipPath="url(#tearClip)"
+                style={{ filter: "drop-shadow(0 0 4px rgba(255,255,255,0.9))" }}
+              />
+            </svg>
+          </div>
+
+          {/* Radial light leak */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: tearProgress * PACK_W - leakW / 2,
+              top: TEAR_Y - leakH / 2,
+              width: leakW,
+              height: leakH,
+              background:
+                "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,250,235,0.95), rgba(255,240,180,0.5) 35%, rgba(255,220,120,0.2) 60%, transparent 80%)",
+              opacity: tearProgress * 0.95,
+              mixBlendMode: "screen",
+              filter: "blur(2px)",
+            }}
+          />
+        </div>
       )}
 
       {/* Flash keyframe style */}
