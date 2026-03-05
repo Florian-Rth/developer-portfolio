@@ -84,8 +84,8 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
   }, []);
 
   const glowStrokeWidth = 6 + tearProgress * 18;
-  const leakW = 40 + tearProgress * 80;
-  const leakH = 80 + tearProgress * 160;
+  const leakW = 50 + tearProgress * 120;
+  const leakH = 100 + tearProgress * 260;
 
   return (
     <div
@@ -291,24 +291,6 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           </div>
         )}
 
-        {/* Light leak */}
-        {tearProgress > 0 && (
-          <div
-            className="absolute pointer-events-none"
-            style={{
-              left: tearProgress * PACK_W - leakW / 2,
-              top: TEAR_Y - leakH / 2,
-              width: leakW,
-              height: leakH,
-              background:
-                "radial-gradient(ellipse 60px 120px at 50% 50%, rgba(255,250,235,0.9), rgba(255,240,180,0.4) 40%, transparent 75%)",
-              opacity: tearProgress * 0.9,
-              mixBlendMode: "screen",
-              zIndex: 18,
-            }}
-          />
-        )}
-
         {/* Completion flash */}
         {showFlash && (
           <div
@@ -335,6 +317,25 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           onPointerDown={handlePointerDown}
         />
       </div>
+
+      {/* Light leak — outside overflow-hidden so it bleeds beyond card edges */}
+      {tearProgress > 0 && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: tearProgress * PACK_W - leakW / 2,
+            top: TEAR_Y - leakH / 2,
+            width: leakW,
+            height: leakH,
+            background:
+              "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,250,235,0.95), rgba(255,240,180,0.5) 35%, rgba(255,220,120,0.2) 60%, transparent 80%)",
+            opacity: tearProgress * 0.95,
+            mixBlendMode: "screen",
+            zIndex: 20,
+            filter: "blur(2px)",
+          }}
+        />
+      )}
 
       {/* Flash keyframe style */}
       <style>
