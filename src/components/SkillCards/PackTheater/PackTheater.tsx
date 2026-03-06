@@ -30,11 +30,16 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
 
   return (
     <div className={cn("relative", className)}>
-      {/* Stage lighting — only during idle */}
+      {/* Stage lighting — spans full viewport width to avoid max-w clipping */}
       {phase === "idle" && (
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute pointer-events-none"
           style={{
+            top: 0,
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "100vw",
             background: `
               radial-gradient(ellipse 60% 45% at 50% 50%, rgba(212,88,122,0.08) 0%, transparent 60%),
               radial-gradient(ellipse 80% 60% at 50% 55%, rgba(139,110,199,0.1) 0%, transparent 70%)
