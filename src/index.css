@@ -335,6 +335,14 @@
   40%  { opacity: 0.7; }
   100% { opacity: 0; }
 }
+@keyframes swipeUp {
+  0%, 100% { transform: translateY(0px); opacity: 0.8; }
+  50%       { transform: translateY(-7px); opacity: 1; }
+}
+@keyframes sparkleFloat {
+  0%, 100% { opacity: 0.3; transform: translateY(0px) scale(1); }
+  50%       { opacity: 1; transform: translateY(-8px) scale(1.2); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes cardBackShimmer {
@@ -372,4 +380,6 @@
   @keyframes ctaFloat  { from, to { transform: none; opacity: 1; } }
   @keyframes ctaHand   { from, to { transform: none; } }
   @keyframes tearFlash { from, to { opacity: 0; } }
+  @keyframes swipeUp   { from, to { transform: none; opacity: 1; } }
+  @keyframes sparkleFloat { from, to { opacity: 0.5; transform: none; } }
 }

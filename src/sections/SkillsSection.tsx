@@ -1,4 +1,5 @@
 import { SkillCardSection } from "@components/SkillCards";
+import { MobilePackTheater } from "@components/SkillCards/MobilePackTheater";
 import { useSkillCards } from "@components/SkillCards/SkillCardsProvider";
 import type React from "react";
 
@@ -8,7 +9,7 @@ const TheaterWithDrawer: React.FC = () => {
   if (isMobile) {
     return (
       <>
-        <SkillCardSection.MobileStack />
+        <MobilePackTheater />
         <SkillCardSection.Drawer />
       </>
     );
