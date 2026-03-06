@@ -1,24 +1,28 @@
 /**
  * MobileRevealPipeline — spotlight card reveal for mobile
  *
- * Flow inside this component:
- *   1. Overlay opens → "Your cards are ready!" intro (card cascade, ~1.8s)
- *   2. Intro fades → card-by-card spotlight flip (same as desktop)
- *   3. After last card → onAllDone() → MobileCardStack
+ * Flow:
+ *   1. "Your cards are ready!" intro (card cascade, 2s)
+ *      — top card = CardBack of first skill, layoutId="bridge-card"
+ *   2. Intro exits, flip-stage enters with same layoutId
+ *      → Framer Motion morphs the card from intro size/position to spotlight size
+ *   3. Card flips: back → front for each skill card
+ *   4. After last card → onAllDone() → MobileCardStack
  */
 
 import type { Skill } from "@/data/skills";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion, useAnimation } from "framer-motion";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CardBack } from "./CardBack";
 import { HireMeCard } from "./HireMeCard";
 import { rarityShimmer } from "./shimmers";
-import { PACK_GRADIENT } from "./PackTheater/packConstants";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
 import type { HireMeSkill, RevealCard } from "./PackTheater/useTheaterState";
 
-// ─── Spotlight sizing ─────────────────────────────────────────────────────────
+// ─── Sizing ───────────────────────────────────────────────────────────────────
+const INTRO_CARD_W = 200;
+const INTRO_CARD_H = 290;
 const SPOTLIGHT_W = 260;
 const SPOTLIGHT_H = Math.round(SPOTLIGHT_W * (CARD_H / CARD_W));
 const SPOTLIGHT_SCALE = SPOTLIGHT_W / CARD_W;
@@ -28,25 +32,29 @@ const FLIP_IN_S = 0.42;
 const FLIP_OUT_HALF_S = 0.22;
 const HOLD_MS = 750;
 const HIRE_ME_HOLD_MS = 1600;
-const INTRO_DURATION_MS = 2000; // "Your cards are ready!" display time
+const INTRO_DURATION_MS = 2000;
+/** How long to wait for the layoutId morph animation before starting the first flip */
+const BRIDGE_SETTLE_MS = 550;
 
-// ─── Intro card cascade configs ───────────────────────────────────────────────
-const INTRO_CARDS = [
-  { delay: 0,    fromY: -220, fromX: -90, toRotate: -13, toX: -38, zIndex: 1, scale: 0.93 },
-  { delay: 0.07, fromY: -240, fromX:  70, toRotate:   9, toX:  34, zIndex: 2, scale: 0.91 },
-  { delay: 0.14, fromY: -200, fromX: -35, toRotate:  -4, toX: -14, zIndex: 3, scale: 0.96 },
-  { delay: 0.21, fromY: -260, fromX:  25, toRotate:   3, toX:  10, zIndex: 4, scale: 0.97 },
-  { delay: 0.28, fromY: -210, fromX:   0, toRotate:   0, toX:   0, zIndex: 5, scale: 1.00 },
-];
-
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 const isHireMe = (c: RevealCard): c is HireMeSkill & { revealIndex: number } => c.id === "hire-me";
 
 function delay(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// ─── Intro cascade card positions ────────────────────────────────────────────
+const INTRO_CARDS = [
+  { delay: 0,    fromY: -220, fromX: -90, toRotate: -13, toX: -38, zIndex: 1, scale: 0.93 },
+  { delay: 0.07, fromY: -240, fromX:  70, toRotate:   9, toX:  34, zIndex: 2, scale: 0.91 },
+  { delay: 0.14, fromY: -200, fromX: -35, toRotate:  -4, toX: -14, zIndex: 3, scale: 0.96 },
+  { delay: 0.21, fromY: -260, fromX:  25, toRotate:   3, toX:  10, zIndex: 4, scale: 0.97 },
+];
+
 // ─── Intro scene ─────────────────────────────────────────────────────────────
-const IntroScene: React.FC<{ onDone: () => void }> = ({ onDone }) => {
+type IntroSceneProps = { onDone: () => void };
+
+const IntroScene: React.FC<IntroSceneProps> = ({ onDone }) => {
   useEffect(() => {
     const t = setTimeout(onDone, INTRO_DURATION_MS);
     return () => clearTimeout(t);
@@ -58,18 +66,17 @@ const IntroScene: React.FC<{ onDone: () => void }> = ({ onDone }) => {
       className="flex flex-col items-center justify-center gap-6 w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.35 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      {/* Card cascade stack */}
-      <div className="relative" style={{ width: 200, height: 290 }}>
-        {/* Light burst behind the stack */}
+      {/* Card stack */}
+      <div className="relative" style={{ width: INTRO_CARD_W, height: INTRO_CARD_H }}>
+        {/* Light burst */}
         <motion.div
-          className="absolute"
+          className="absolute pointer-events-none"
           style={{
-            inset: -60,
-            borderRadius: "50%",
-            background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.35) 0%, transparent 70%)",
+            inset: -60, borderRadius: "50%",
+            background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.32) 0%, transparent 70%)",
             filter: "blur(24px)",
           }}
           initial={{ opacity: 0, scale: 0.5 }}
@@ -77,20 +84,17 @@ const IntroScene: React.FC<{ onDone: () => void }> = ({ onDone }) => {
           transition={{ duration: 0.5 }}
         />
 
-        {/* Fanned ghost cards */}
+        {/* Ghost cards (gradient silhouettes) */}
         {INTRO_CARDS.map((card) => (
           <motion.div
             key={card.delay}
             className="absolute rounded-2xl"
             style={{
-              width: 200,
-              height: 290,
+              width: INTRO_CARD_W, height: INTRO_CARD_H,
               background: "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
               boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
               border: "1.5px solid rgba(255,255,255,0.5)",
-              zIndex: card.zIndex,
-              left: 0,
-              top: 0,
+              zIndex: card.zIndex, left: 0, top: 0,
             }}
             initial={{ y: card.fromY, x: card.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
             animate={{ y: -card.zIndex * 3, x: card.toX, rotate: card.toRotate, opacity: 1, scale: card.scale }}
@@ -98,37 +102,20 @@ const IntroScene: React.FC<{ onDone: () => void }> = ({ onDone }) => {
           />
         ))}
 
-        {/* Top card — pack gradient + shimmer sweep */}
+        {/* ── Top card: real CardBack — this is the bridge element ───────── */}
         <motion.div
+          layoutId="bridge-card"
           className="absolute rounded-2xl overflow-hidden"
-          style={{
-            width: 200,
-            height: 290,
-            background: PACK_GRADIENT,
-            boxShadow: "0 22px 65px rgba(184,169,212,0.55)",
-            border: "2px solid rgba(255,255,255,0.65)",
-            zIndex: 10,
-            left: 0,
-            top: 0,
-          }}
+          style={{ width: INTRO_CARD_W, height: INTRO_CARD_H, zIndex: 10, left: 0, top: 0 }}
           initial={{ y: -270, x: 0, rotate: 18, opacity: 0, scale: 0.55 }}
           animate={{ y: -18, x: 0, rotate: 0, opacity: 1, scale: 1 }}
           transition={{ delay: 0.42, type: "spring", stiffness: 190, damping: 17 }}
         >
-          {/* Shimmer sweep over top card */}
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(108deg, transparent 35%, rgba(255,255,255,0.5) 50%, transparent 65%)",
-            }}
-            initial={{ x: "-140%" }}
-            animate={{ x: "200%" }}
-            transition={{ delay: 0.85, duration: 0.65, ease: "easeInOut" }}
-          />
+          <CardBack style={{ width: INTRO_CARD_W, height: INTRO_CARD_H }} />
         </motion.div>
       </div>
 
-      {/* Text */}
+      {/* "Your cards are ready!" text */}
       <motion.p
         className="font-script text-2xl"
         style={{
@@ -144,7 +131,6 @@ const IntroScene: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         Your cards are ready!
       </motion.p>
 
-      {/* Subtle subtitle */}
       <motion.p
         className="font-sans text-xs tracking-widest uppercase"
         style={{ color: "rgba(255,253,249,0.45)" }}
@@ -183,7 +169,7 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
   const introFinished = useRef(false);
 
   const [frontContent, setFrontContent] = useState<React.ReactNode>(null);
-  const [overlayVisible, setOverlayVisible] = useState(true); // open immediately
+  const [overlayVisible, setOverlayVisible] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
   const [currentCard, setCurrentCard] = useState<RevealCard | null>(null);
 
@@ -252,12 +238,12 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
     }
   }, [revealOne]);
 
-  // ── Intro done: drain queued cards ────────────────────────────────────────
+  // ── Intro done → wait for bridge morph → start flips ─────────────────────
   const handleIntroDone = useCallback(() => {
     introFinished.current = true;
     setShowIntro(false);
-    // Small pause between intro and first flip
-    setTimeout(() => processQueue(), 200);
+    // Wait for layoutId morph animation to settle before starting flip
+    setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
   // ── Feed cards from parent ────────────────────────────────────────────────
@@ -266,7 +252,7 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
     const card = cards[revealedCount - 1];
     if (!card) return;
     queueRef.current.push(card);
-    processQueue(); // no-op if intro not done yet — handled in handleIntroDone
+    processQueue();
   }, [revealedCount, skipped, cards, processQueue]);
 
   // ── Skip ──────────────────────────────────────────────────────────────────
@@ -283,15 +269,15 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
   const isHireMeCard = currentCard && isHireMe(currentCard);
 
   return (
-    <>
-      {/* ── Full-screen overlay ──────────────────────────────────────────── */}
+    <LayoutGroup>
+      {/* ── Full-screen overlay ────────────────────────────────────────── */}
       <AnimatePresence>
         {overlayVisible && (
           <div
             key="mobile-reveal-overlay"
             className="fixed inset-0 z-50 flex items-center justify-center px-8"
           >
-            {/* Dim background */}
+            {/* Dim */}
             <motion.div
               className="absolute inset-0"
               style={{ background: "rgba(10,8,12,0.55)" }}
@@ -301,13 +287,11 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
               transition={{ duration: 0.45 }}
             />
 
-            {/* Glow — warm during intro, card-rarity colour during flip */}
+            {/* Background glow */}
             <motion.div
               className="absolute pointer-events-none"
               style={{
-                width: 400,
-                height: 400,
-                borderRadius: "50%",
+                width: 400, height: 400, borderRadius: "50%",
                 background: showIntro || !currentCard
                   ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
                   : isHireMeCard
@@ -315,57 +299,68 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
                     : "radial-gradient(ellipse, rgba(184,169,212,0.26) 0%, transparent 70%)",
               }}
               animate={{ scale: showIntro ? 1.1 : 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
             />
 
-            {/* ── Intro scene ─────────────────────────────────────────── */}
+            {/* ── Intro scene or Flip stage ──────────────────────────── */}
             <AnimatePresence mode="wait">
               {showIntro ? (
                 <IntroScene key="intro" onDone={handleIntroDone} />
               ) : (
-                /* ── Flip card ──────────────────────────────────────── */
+                /* Flip card — bridge-card layoutId morphs from intro size */
                 <motion.div
                   key="flip-stage"
-                  className="relative z-10"
-                  style={{ perspective: "900px" }}
-                  initial={{ opacity: 0, scale: 0.88 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
+                  className="relative z-10 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.25 }}
                 >
-                  <motion.div
-                    animate={controls}
-                    style={{
-                      transformStyle: "preserve-3d",
-                      width: SPOTLIGHT_W,
-                      height: SPOTLIGHT_H,
-                      position: "relative",
-                    }}
-                  >
-                    {/* Back face */}
-                    <div
+                  <div style={{ perspective: "900px" }}>
+                    {/* This wrapper receives the layoutId morph */}
+                    <motion.div
+                      layoutId="bridge-card"
                       style={{
-                        position: "absolute",
-                        inset: 0,
-                        backfaceVisibility: "hidden",
-                        WebkitBackfaceVisibility: "hidden",
+                        width: SPOTLIGHT_W,
+                        height: SPOTLIGHT_H,
+                        position: "relative",
                       }}
+                      transition={{ type: "spring", stiffness: 220, damping: 26 }}
                     >
-                      <CardBack style={{ width: SPOTLIGHT_W, height: SPOTLIGHT_H }} />
-                    </div>
+                      {/* Inner 3D rotator */}
+                      <motion.div
+                        animate={controls}
+                        style={{
+                          transformStyle: "preserve-3d",
+                          width: "100%",
+                          height: "100%",
+                          position: "relative",
+                        }}
+                      >
+                        {/* Back face */}
+                        <div
+                          style={{
+                            position: "absolute", inset: 0,
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                          }}
+                        >
+                          <CardBack style={{ width: "100%", height: "100%" }} />
+                        </div>
 
-                    {/* Front face */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        backfaceVisibility: "hidden",
-                        WebkitBackfaceVisibility: "hidden",
-                        transform: "rotateY(180deg)",
-                      }}
-                    >
-                      {frontContent}
-                    </div>
-                  </motion.div>
+                        {/* Front face */}
+                        <div
+                          style={{
+                            position: "absolute", inset: 0,
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            transform: "rotateY(180deg)",
+                          }}
+                        >
+                          {frontContent}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -373,8 +368,8 @@ export const MobileRevealPipeline: React.FC<MobileRevealPipelineProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Page placeholder — prevents layout shift */}
+      {/* Placeholder */}
       <div className="min-h-[200px]" />
-    </>
+    </LayoutGroup>
   );
 };
