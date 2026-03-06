@@ -5,9 +5,11 @@ import { PACK_GRADIENT, PACK_W, TEAR_PATH, TEAR_Y } from "./packConstants";
 
 type PackTearInteractiveProps = {
   onTearComplete: () => void;
+  /** Relaxed hit zone for touch — wider X and Y tolerance */
+  mobileMode?: boolean;
 };
 
-export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTearComplete }) => {
+export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTearComplete, mobileMode = false }) => {
   const packRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
   const [tearProgress, setTearProgress] = useState(0);
@@ -36,13 +38,16 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
-      if (localX / PACK_W > 0.35) return;
-      if (Math.abs(localY - TEAR_Y) > 25) return;
+      // Mobile: wider hit zone (left 65%, ±50px); Desktop: left 35%, ±25px
+      const xLimit = mobileMode ? 0.65 : 0.35;
+      const yTolerance = mobileMode ? 50 : 25;
+      if (localX / PACK_W > xLimit) return;
+      if (Math.abs(localY - TEAR_Y) > yTolerance) return;
 
       setIsTearing(true);
       e.currentTarget.setPointerCapture?.(e.pointerId);
     },
-    [isComplete],
+    [isComplete, mobileMode],
   );
 
   const handlePointerMove = useCallback(
