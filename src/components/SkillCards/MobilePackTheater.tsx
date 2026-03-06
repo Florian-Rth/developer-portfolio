@@ -126,7 +126,7 @@ export const MobilePackTheater: React.FC = () => {
                 className="relative flex items-center justify-center"
                 style={{ animation: "floatBob 4s ease-in-out infinite" }}
               >
-                <GhostCards />
+                <GhostCards compact />
                 <PackTearInteractive onTearComplete={startBurst} mobileMode />
               </div>
             </div>
