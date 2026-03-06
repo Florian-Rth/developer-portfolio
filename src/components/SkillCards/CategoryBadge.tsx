@@ -19,7 +19,7 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, classNam
   return (
     <span
       className={cn(
-        "font-sans text-[9px] font-medium uppercase tracking-[1px]",
+        "font-sans text-[10px] font-medium uppercase tracking-[1px]",
         "px-2 py-0.5 rounded-full",
         className,
       )}

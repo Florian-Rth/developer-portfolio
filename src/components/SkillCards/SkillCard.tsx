@@ -133,15 +133,20 @@ export const SkillCard: React.FC<SkillCardProps> = ({
         </div>
 
         {/* Artwork */}
-        <CardArtwork skill={skill} className="mx-2.5 h-[45%] rounded-lg overflow-hidden" />
+        <CardArtwork skill={skill} className="mx-2.5 h-[36%] rounded-lg overflow-hidden" />
 
         {/* Skill Name */}
-        <h3 className="font-sans text-[14px] font-bold px-3 pt-2 text-foreground truncate">
+        <h3 className="font-sans text-[15px] font-bold px-3 pt-2 pb-0.5 text-foreground truncate">
           {skill.name}
         </h3>
 
+        {/* Flavour text — italic tagline like real TCG cards */}
+        <p className="font-sans text-[9px] italic px-3 pb-1 text-foreground/50 leading-[1.4] line-clamp-2">
+          "{skill.flavourText}"
+        </p>
+
         {/* Separator */}
-        <div className="mx-3 my-1 h-px bg-foreground/10" />
+        <div className="mx-3 mb-1 h-px bg-foreground/10" />
 
         {/* Stats */}
         <SkillStatsList skill={skill} color={catColor} className="px-3 flex-1 min-h-0" />
