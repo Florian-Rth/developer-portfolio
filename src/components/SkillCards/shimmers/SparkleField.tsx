@@ -1,8 +1,8 @@
 /**
- * SparkleField — scattered glitter dots that flare near the cursor.
+ * SparkleField — scattered 4-pointed stars that flare near the cursor.
  *
- * 28 deterministic sparkle points sit across the card. Points close to the
- * mouse glow brighter; points far away stay dim. A soft iridescent wash
+ * 36 deterministic sparkle stars sit across the card. Stars close to the
+ * mouse glow brighter; stars far away stay dim. A soft iridescent wash
  * underneath ensures the card looks special even without hovering.
  */
 import type React from "react";
@@ -12,21 +12,37 @@ import type { ShimmerProps } from "./types";
 
 const MAX_OPACITY: Record<NonNullable<ShimmerProps["intensity"]>, number> = {
   low: 0.45,
-  medium: 0.72,
+  medium: 0.75,
   max: 0.95,
 };
 
-// Deterministic sparkle positions in 0–100 space (seeded by index)
+// Seeded pseudo-random for deterministic positions
 function seeded(n: number) {
   const x = Math.sin(n) * 10000;
   return x - Math.floor(x);
 }
 
-const SPARKLES = Array.from({ length: 28 }, (_, i) => ({
-  x: seeded(i * 2.7 + 1) * 88 + 6,   // keep 6% from edges
-  y: seeded(i * 1.9 + 3) * 88 + 6,
-  r: seeded(i * 3.1 + 5) * 2 + 1,    // radius 1–3
+const STAR_COUNT = 36;
+const STARS = Array.from({ length: STAR_COUNT }, (_, i) => ({
+  x: seeded(i * 2.7 + 1) * 86 + 7,
+  y: seeded(i * 1.9 + 3) * 86 + 7,
+  // Outer radius 0.8–2.2, inner ratio fixed at 0.3 (sharp 4-pt star)
+  r: seeded(i * 3.1 + 5) * 1.4 + 0.8,
+  // Random rotation 0–90° (4-pt star repeats every 90°)
+  rot: seeded(i * 5.3 + 7) * 90,
 }));
+
+/** Returns the SVG path for a 4-pointed star centred at (cx, cy). */
+function starPath(cx: number, cy: number, outer: number, rot: number): string {
+  const inner = outer * 0.28;
+  const pts: [number, number][] = [];
+  for (let k = 0; k < 8; k++) {
+    const angle = (Math.PI / 4) * k + (rot * Math.PI) / 180;
+    const r = k % 2 === 0 ? outer : inner;
+    pts.push([cx + r * Math.cos(angle - Math.PI / 2), cy + r * Math.sin(angle - Math.PI / 2)]);
+  }
+  return pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ") + " Z";
+}
 
 export const SparkleField: React.FC<ShimmerProps> = ({ intensity = "medium" }) => {
   const { mouseX, mouseY, isHovered } = useShimmerCtx();
@@ -34,14 +50,12 @@ export const SparkleField: React.FC<ShimmerProps> = ({ intensity = "medium" }) =
   const mx = mouseX * 100;
   const my = mouseY * 100;
 
-  // Compute per-sparkle glow: full brightness within ~28 units, falls off to 0
   const opacities = useMemo(
     () =>
-      SPARKLES.map(({ x, y }) => {
+      STARS.map(({ x, y }) => {
+        if (!isHovered) return 0.12 * maxOp;
         const dist = Math.sqrt((x - mx) ** 2 + (y - my) ** 2);
-        return isHovered
-          ? Math.max(0.08, 1 - dist / 30) * maxOp
-          : 0.15 * maxOp; // idle: uniform dim
+        return Math.max(0.06, 1 - dist / 32) * maxOp;
       }),
     [mx, my, isHovered, maxOp],
   );
@@ -51,7 +65,7 @@ export const SparkleField: React.FC<ShimmerProps> = ({ intensity = "medium" }) =
       className="absolute inset-0 rounded-[14px] pointer-events-none overflow-hidden"
       style={{ zIndex: 10 }}
     >
-      {/* Soft iridescent base so the card always looks a little special */}
+      {/* Soft iridescent base */}
       <div
         className="absolute inset-0"
         style={{
@@ -61,21 +75,19 @@ export const SparkleField: React.FC<ShimmerProps> = ({ intensity = "medium" }) =
         }}
       />
 
-      {/* Sparkle dots */}
+      {/* Star field */}
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
       >
-        {SPARKLES.map((s, i) => (
-          <circle
+        {STARS.map((s, i) => (
+          <path
             key={i}
-            cx={s.x}
-            cy={s.y}
-            r={s.r}
+            d={starPath(s.x, s.y, s.r, s.rot)}
             fill="white"
             opacity={opacities[i]}
-            style={{ transition: "opacity 0.1s ease" }}
+            style={{ transition: "opacity 0.12s ease" }}
           />
         ))}
       </svg>
