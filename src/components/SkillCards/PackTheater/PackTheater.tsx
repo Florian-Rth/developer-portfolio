@@ -39,10 +39,21 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
             className="relative flex items-center justify-center p-8"
             style={{
               animation: "floatBob 4s ease-in-out infinite",
-              background:
-                "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(139,92,246,0.06) 0%, transparent 70%)",
             }}
           >
+            {/* Focused glow — inset-0 stays within the p-8 pack wrapper so
+                it never bleeds into the CTA / pills below.
+                Fixed-px ellipse radii keep it tight around the cards. */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              aria-hidden="true"
+              style={{
+                background: `
+                  radial-gradient(ellipse 140px 180px at 50% 50%, rgba(212,88,122,0.25) 0%, transparent 100%),
+                  radial-gradient(ellipse 190px 240px at 50% 50%, rgba(139,110,199,0.18) 0%, transparent 100%)
+                `,
+              }}
+            />
             <GhostCards />
             <PackTearInteractive onTearComplete={startBurst} />
           </div>
