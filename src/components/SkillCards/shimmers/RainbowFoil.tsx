@@ -10,9 +10,9 @@ import { useShimmerCtx } from "./SkillCardShimmerContext";
 import type { ShimmerProps } from "./types";
 
 const OPACITY: Record<NonNullable<ShimmerProps["intensity"]>, number> = {
-  low: 0.20,
-  medium: 0.32,
-  max: 0.48,
+  low: 0.12,
+  medium: 0.22,
+  max: 0.33,
 };
 
 export const RainbowFoil: React.FC<ShimmerProps> = ({ intensity = "medium" }) => {
@@ -54,7 +54,7 @@ export const RainbowFoil: React.FC<ShimmerProps> = ({ intensity = "medium" }) =>
         style={{
           background: `radial-gradient(
             ellipse 55% 45% at ${mouseX * 100}% ${mouseY * 100}%,
-            rgba(255,255,255,0.22) 0%,
+            rgba(255,255,255,0.14) 0%,
             transparent 60%
           )`,
           mixBlendMode: "screen",
