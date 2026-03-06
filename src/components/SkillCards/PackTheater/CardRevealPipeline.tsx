@@ -304,7 +304,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
               return (
                 <motion.div
                   key={card.id}
-                  className="absolute"
+                  className="absolute cursor-pointer"
                   style={{ left: "50%", top: "50%", zIndex: i }}
                   initial={{ x: -halfW, y: -halfH, scale: 0.88, rotate: 0, opacity: 0 }}
                   animate={{
@@ -320,7 +320,12 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                     damping: 16,
                     delay: skipped ? i * 0.025 : 0.08,
                   }}
-                  whileHover={{ zIndex: 50 }}
+                  whileHover={{
+                    scale: 1.08,
+                    zIndex: 50,
+                    y: pos.y - halfH - 8,
+                    transition: { duration: 0.18, ease: "easeOut" },
+                  }}
                 >
                   {isHireMe(card) ? (
                     <HireMeCard />

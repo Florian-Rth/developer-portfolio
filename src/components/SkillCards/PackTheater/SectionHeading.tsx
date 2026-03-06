@@ -1,6 +1,12 @@
 import type React from "react";
 
-export const SectionHeading: React.FC = () => (
+type SectionHeadingProps = {
+  subtitle?: string;
+};
+
+export const SectionHeading: React.FC<SectionHeadingProps> = ({
+  subtitle = "16 technologies · open the pack to discover",
+}) => (
   <div className="text-center mb-6">
     <h2
       className="font-script inline-block"
@@ -16,7 +22,7 @@ export const SectionHeading: React.FC = () => (
       Skills.
     </h2>
     <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-foreground/40 mt-2">
-      16 technologies · open the pack to discover
+      {subtitle}
     </p>
   </div>
 );

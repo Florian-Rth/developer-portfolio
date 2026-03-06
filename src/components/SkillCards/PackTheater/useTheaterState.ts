@@ -31,10 +31,14 @@ const sortByRarity = (a: Skill, b: Skill): number => {
   return a.name.localeCompare(b.name);
 };
 
+const debugPhase = new URLSearchParams(window.location.search).get("phase") as TheaterPhase | null;
+
 export const useTheaterState = () => {
-  const [phase, setPhase] = useState<TheaterPhase>("idle");
-  const [revealedCount, setRevealedCount] = useState(0);
-  const [skipped, setSkipped] = useState(false);
+  const [phase, setPhase] = useState<TheaterPhase>(debugPhase ?? "idle");
+  const [revealedCount, setRevealedCount] = useState(
+    debugPhase === "scattered" ? 999 : 0,
+  );
+  const [skipped, setSkipped] = useState(debugPhase === "scattered");
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const orderedCards: RevealCard[] = useMemo(() => {

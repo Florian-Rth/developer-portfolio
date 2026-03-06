@@ -83,6 +83,13 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
         </button>
       )}
 
+      {/* ── Scattered header — heading + interaction hint ─────────────── */}
+      {phase === "scattered" && (
+        <div className="text-center pt-2 pb-2">
+          <SectionHeading subtitle="Tap any card to explore" />
+        </div>
+      )}
+
       {/* ── Card reveal + scattered field ─────────────────────────────── */}
       {(phase === "revealing" || phase === "scattered") && (
         <CardRevealPipeline
