@@ -165,6 +165,7 @@
     line-height: 1.7;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* prevent 100vw glow from causing horizontal scroll */
   }
 
   code,
