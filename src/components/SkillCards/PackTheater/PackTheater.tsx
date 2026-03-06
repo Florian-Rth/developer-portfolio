@@ -36,11 +36,11 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
         <div
           className="absolute pointer-events-none"
           style={{
-            top: 0,
-            bottom: 0,
+            top: "50%",
             left: "50%",
-            transform: "translateX(-50%)",
+            transform: "translate(-50%, -50%)",
             width: "100vw",
+            height: "100vh",
             background: `
               radial-gradient(ellipse 28% 45% at 50% 50%, rgba(212,88,122,0.10) 0%, transparent 100%),
               radial-gradient(ellipse 32% 60% at 50% 55%, rgba(139,110,199,0.12) 0%, transparent 100%)
