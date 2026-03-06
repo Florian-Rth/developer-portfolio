@@ -6,10 +6,8 @@ type HoloEffectProps = {
   rarity: SkillRarity;
   intensity?: "low" | "medium" | "max";
   className?: string;
-  /** Normalized 0–1 mouse position within the card. When provided + isHovered,
-   *  the shimmer tracks the cursor instead of playing a CSS animation. */
-  mouseX?: number;
-  mouseY?: number;
+  mouseX?: number; // 0–1
+  mouseY?: number; // 0–1
   isHovered?: boolean;
 };
 
@@ -22,61 +20,61 @@ const RARITY_HAS_HOLO: Record<SkillRarity, boolean> = {
 };
 
 const INTENSITY_OPACITY = {
-  low: 0.15,
-  medium: 0.3,
-  max: 0.5,
+  low: 0.12,
+  medium: 0.18,
+  max: 0.28,
 };
 
 export const HoloEffect: React.FC<HoloEffectProps> = ({
   rarity,
   intensity = "medium",
   className,
-  mouseX,
-  mouseY,
+  mouseX = 0.5,
+  mouseY = 0.5,
   isHovered = false,
 }) => {
   if (!RARITY_HAS_HOLO[rarity]) return null;
 
-  const opacity = INTENSITY_OPACITY[intensity];
+  const op = INTENSITY_OPACITY[intensity];
 
-  // Mouse-driven values — only active when hovering with known position
-  const tracked = isHovered && mouseX !== undefined && mouseY !== undefined;
-  const conicFrom = tracked ? (mouseX! + mouseY!) * 90 : 0;
-  const conicAt = tracked ? `${mouseX! * 100}% ${mouseY! * 100}%` : "50% 50%";
-  const sweepPos = tracked ? `${mouseX! * 200}% 0` : undefined;
+  // Shift the iridescent sheen based on mouse position
+  const hue = Math.round(mouseX * 60 + mouseY * 40); // 0–100 hue shift
+  const posX = Math.round(mouseX * 100);
+  const posY = Math.round(mouseY * 100);
 
   return (
     <div
       className={cn("absolute inset-0 rounded-[14px] pointer-events-none overflow-hidden", className)}
       style={{ zIndex: 10 }}
     >
-      {/* Conic shimmer — follows mouse when hovered, auto-spins otherwise */}
+      {/* Iridescent foil — soft rainbow that shifts with mouse */}
       <div
         className="absolute inset-0"
         style={{
-          background: `conic-gradient(from ${conicFrom}deg at ${conicAt},
-            rgba(184,169,212,${opacity}) 0deg,
-            rgba(232,180,160,${opacity}) 72deg,
-            rgba(212,146,155,${opacity}) 144deg,
-            rgba(168,196,184,${opacity}) 216deg,
-            rgba(244,208,63,${opacity}) 288deg,
-            rgba(184,169,212,${opacity}) 360deg)`,
-          animation: tracked ? "none" : "holoSpin 4s linear infinite",
+          background: `linear-gradient(
+            ${105 + hue}deg,
+            hsla(${200 + hue}, 60%, 80%, ${op}) 0%,
+            hsla(${280 + hue}, 50%, 85%, ${op * 0.6}) 35%,
+            hsla(${340 + hue}, 55%, 80%, ${op}) 65%,
+            hsla(${200 + hue}, 60%, 80%, ${op * 0.4}) 100%
+          )`,
           mixBlendMode: "overlay",
-          transition: "background 0.08s ease",
+          transition: isHovered ? "background 0.15s ease" : "none",
         }}
       />
 
-      {/* Sweep highlight — shifts with mouse X when hovered */}
+      {/* Specular gloss — small bright spot that follows the cursor */}
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)",
-          backgroundSize: "200% 100%",
-          backgroundPosition: sweepPos ?? "0% 0%",
-          animation: tracked ? "none" : "holoSweep 3s ease-in-out infinite",
-          transition: tracked ? "background-position 0.08s ease" : "none",
+          background: `radial-gradient(
+            ellipse 55% 45% at ${posX}% ${posY}%,
+            rgba(255,255,255,0.22) 0%,
+            rgba(255,255,255,0.06) 50%,
+            transparent 70%
+          )`,
+          mixBlendMode: "screen",
+          transition: isHovered ? "background 0.12s ease" : "none",
         }}
       />
     </div>
