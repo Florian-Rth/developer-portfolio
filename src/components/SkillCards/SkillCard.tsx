@@ -2,11 +2,12 @@ import type { Skill } from "@/data/skills";
 import { categoryColors, rarityColors } from "@/data/skills";
 import { cn } from "@lib/utils";
 import type React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
 import { CategoryBadge } from "./CategoryBadge";
-import { HoloEffect } from "./HoloEffect";
 import { RarityBadge } from "./RarityBadge";
+import { SkillCardShimmerContext } from "./shimmers/SkillCardShimmerContext";
+import type { ShimmerProps } from "./shimmers/types";
 import { SkillStatsList } from "./SkillStatsList";
 
 // Native design size — zoom handles all scaling externally
@@ -20,8 +21,16 @@ type SkillCardProps = {
   className?: string;
   /** Proportional scale applied via CSS zoom — scales text, padding, borders, everything */
   scale?: number;
-  /** Holo shimmer intensity for legendary/epic cards. Defaults to "medium". */
-  holoIntensity?: "low" | "medium" | "max";
+  /**
+   * Compound composition: pass any shimmer component (RainbowFoil, SparkleField,
+   * SatinSheen, or your own). It receives mouse state via SkillCardShimmerContext
+   * and an optional `intensity` prop.
+   *
+   * @example
+   * <SkillCard skill={skill} Shimmer={RainbowFoil} shimmerIntensity="max" />
+   */
+  Shimmer?: React.ComponentType<ShimmerProps>;
+  shimmerIntensity?: ShimmerProps["intensity"];
 };
 
 export const SkillCard: React.FC<SkillCardProps> = ({
@@ -30,25 +39,22 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   onSelect,
   className,
   scale = 1,
-  holoIntensity = "medium",
+  Shimmer,
+  shimmerIntensity = "medium",
 }) => {
   const cardRef = useRef<HTMLButtonElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
-  // Normalized 0–1 mouse position within the card (for HoloEffect tracking)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: y * -10, y: x * 10 });
-    setMousePos({
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top) / rect.height,
-    });
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    setTilt({ x: (ny - 0.5) * -10, y: (nx - 0.5) * 10 });
+    setMousePos({ x: nx, y: ny });
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -56,73 +62,73 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     setIsHovered(false);
   }, []);
 
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+
+  const shimmerCtx = useMemo(
+    () => ({ mouseX: mousePos.x, mouseY: mousePos.y, isHovered }),
+    [mousePos.x, mousePos.y, isHovered],
+  );
 
   const rColors = rarityColors[skill.rarity];
   const catColor = categoryColors[skill.category];
 
   return (
-    <button
-      ref={cardRef}
-      type="button"
-      className={cn(
-        "w-[220px] h-[320px]",
-        "rounded-[14px] cursor-pointer select-none",
-        "flex flex-col overflow-hidden",
-        "transition-shadow duration-300",
-        "text-left",
-        className,
-      )}
-      style={{
-        zoom: scale,
-        backgroundColor: "var(--card, var(--surface, #f5f0e8))",
-        border: `2px solid ${rColors.border}`,
-        boxShadow: isHovered
-          ? `0 8px 32px ${rColors.glow}, 0 0 20px ${rColors.glow}`
-          : "0 4px 20px rgba(0,0,0,0.08)",
-        transform: `perspective(600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.08 : 1})`,
-        transition: "transform 0.2s ease-out, box-shadow 0.3s ease",
-        ...style,
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
-      onClick={onSelect}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-        <CategoryBadge category={skill.category} />
-        <RarityBadge rarity={skill.rarity} />
-      </div>
+    <SkillCardShimmerContext.Provider value={shimmerCtx}>
+      <button
+        ref={cardRef}
+        type="button"
+        className={cn(
+          "w-[220px] h-[320px]",
+          "rounded-[14px] cursor-pointer select-none",
+          "flex flex-col overflow-hidden",
+          "transition-shadow duration-300",
+          "text-left",
+          className,
+        )}
+        style={{
+          zoom: scale,
+          backgroundColor: "var(--card, var(--surface, #f5f0e8))",
+          border: `2px solid ${rColors.border}`,
+          boxShadow: isHovered
+            ? `0 8px 32px ${rColors.glow}, 0 0 20px ${rColors.glow}`
+            : "0 4px 20px rgba(0,0,0,0.08)",
+          transform: `perspective(600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.08 : 1})`,
+          transition: "transform 0.2s ease-out, box-shadow 0.3s ease",
+          ...style,
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter}
+        onClick={onSelect}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
+          <CategoryBadge category={skill.category} />
+          <RarityBadge rarity={skill.rarity} />
+        </div>
 
-      {/* Artwork */}
-      <CardArtwork skill={skill} className="mx-2.5 h-[45%] rounded-lg overflow-hidden" />
+        {/* Artwork */}
+        <CardArtwork skill={skill} className="mx-2.5 h-[45%] rounded-lg overflow-hidden" />
 
-      {/* Skill Name */}
-      <h3 className="font-sans text-[14px] font-bold px-3 pt-2 text-foreground truncate">
-        {skill.name}
-      </h3>
+        {/* Skill Name */}
+        <h3 className="font-sans text-[14px] font-bold px-3 pt-2 text-foreground truncate">
+          {skill.name}
+        </h3>
 
-      {/* Separator */}
-      <div className="mx-3 my-1 h-px bg-foreground/10" />
+        {/* Separator */}
+        <div className="mx-3 my-1 h-px bg-foreground/10" />
 
-      {/* Stats */}
-      <SkillStatsList skill={skill} color={catColor} className="px-3 flex-1 min-h-0" />
+        {/* Stats */}
+        <SkillStatsList skill={skill} color={catColor} className="px-3 flex-1 min-h-0" />
 
-      {/* Bottom padding */}
-      <div className="pb-3" />
+        {/* Bottom padding */}
+        <div className="pb-3" />
 
-      {/* Holo shimmer — inside the button so it tilts/moves with the card */}
-      <HoloEffect
-        rarity={skill.rarity}
-        intensity={holoIntensity}
-        mouseX={mousePos.x}
-        mouseY={mousePos.y}
-        isHovered={isHovered}
-      />
-    </button>
+        {/* Shimmer layer — inside button so it participates in the 3D tilt transform.
+            Reads mouse state from SkillCardShimmerContext (no prop drilling needed). */}
+        {Shimmer && <Shimmer intensity={shimmerIntensity} />}
+      </button>
+    </SkillCardShimmerContext.Provider>
   );
 };
 

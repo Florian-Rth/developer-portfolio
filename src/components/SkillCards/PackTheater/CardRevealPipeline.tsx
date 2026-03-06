@@ -20,7 +20,12 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
+import { RainbowFoil, SatinSheen, SparkleField } from "../shimmers";
 import { SkillCard } from "../SkillCard";
+
+// Demo assignment — first 3 non-hire-me cards each show a different shimmer so
+// you can compare them side-by-side. Swap or extend as needed.
+const DEMO_SHIMMERS = [RainbowFoil, SparkleField, SatinSheen] as const;
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
@@ -116,7 +121,8 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
           <SkillCard
             skill={card as Skill}
             scale={spotlightScale}
-            holoIntensity="max"
+            Shimmer={RainbowFoil}
+            shimmerIntensity="max"
             onSelect={() => onCardSelect(card as Skill)}
           />
         ),
@@ -331,6 +337,17 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                     <SkillCard
                       skill={card as Skill}
                       onSelect={() => onCardSelect(card as Skill)}
+                      Shimmer={
+                        // First 3 cards: one of each shimmer type for comparison.
+                        // After that: assign by rarity (legendary→Rainbow, epic→Sparkle).
+                        i < 3
+                          ? DEMO_SHIMMERS[i]
+                          : card.rarity === "legendary"
+                            ? RainbowFoil
+                            : card.rarity === "epic"
+                              ? SparkleField
+                              : undefined
+                      }
                     />
                   )}
                 </motion.div>
