@@ -10,9 +10,9 @@ import { useShimmerCtx } from "./SkillCardShimmerContext";
 import type { ShimmerProps } from "./types";
 
 const OPACITY: Record<NonNullable<ShimmerProps["intensity"]>, number> = {
-  low: 0.45,
-  medium: 0.65,
-  max: 0.82,
+  low: 0.20,
+  medium: 0.32,
+  max: 0.48,
 };
 
 export const RainbowFoil: React.FC<ShimmerProps> = ({ intensity = "medium" }) => {
@@ -44,7 +44,7 @@ export const RainbowFoil: React.FC<ShimmerProps> = ({ intensity = "medium" }) =>
             hsla(${140 + hue}deg, 85%, 65%, ${op}) 83%,
             hsla(${200 + hue}deg, 85%, 65%, ${op}) 100%
           )`,
-          mixBlendMode: "color",
+          mixBlendMode: "overlay",
           transition: tr,
         }}
       />

@@ -2,7 +2,7 @@ import type { Skill } from "@/data/skills";
 import { categoryColors, rarityColors } from "@/data/skills";
 import { cn } from "@lib/utils";
 import type React from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
 import { CategoryBadge } from "./CategoryBadge";
 import { RarityBadge } from "./RarityBadge";
@@ -63,6 +63,28 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   }, []);
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+
+  // Idle shimmer drift — slowly oscillates mousePos so the shimmer subtly
+  // animates even without interaction. Stops the moment the user hovers.
+  const rafRef = useRef<number>(0);
+  const idleStartRef = useRef<number>(0);
+  useEffect(() => {
+    if (isHovered) {
+      cancelAnimationFrame(rafRef.current);
+      return;
+    }
+    idleStartRef.current = performance.now();
+    const tick = (now: number) => {
+      const t = (now - idleStartRef.current) / 1000; // seconds
+      setMousePos({
+        x: 0.5 + Math.sin(t * 0.25) * 0.35,
+        y: 0.5 + Math.cos(t * 0.18) * 0.28,
+      });
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [isHovered]);
 
   const shimmerCtx = useMemo(
     () => ({ mouseX: mousePos.x, mouseY: mousePos.y, isHovered }),
