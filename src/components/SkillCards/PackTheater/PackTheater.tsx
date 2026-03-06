@@ -30,7 +30,8 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
 
   return (
     <div className={cn("relative", className)}>
-      {/* Stage lighting — fixed width so glow hugs the pack area */}
+      {/* Stage lighting — 100vw so no clipping, but tight ellipses keep the
+          glow visually constrained to the pack area only */}
       {phase === "idle" && (
         <div
           className="absolute pointer-events-none"
@@ -39,10 +40,10 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
             bottom: 0,
             left: "50%",
             transform: "translateX(-50%)",
-            width: 560,
+            width: "100vw",
             background: `
-              radial-gradient(ellipse 80% 45% at 50% 50%, rgba(212,88,122,0.09) 0%, transparent 65%),
-              radial-gradient(ellipse 100% 60% at 50% 55%, rgba(139,110,199,0.11) 0%, transparent 70%)
+              radial-gradient(ellipse 28% 45% at 50% 50%, rgba(212,88,122,0.10) 0%, transparent 100%),
+              radial-gradient(ellipse 32% 60% at 50% 55%, rgba(139,110,199,0.12) 0%, transparent 100%)
             `,
           }}
         />
