@@ -66,6 +66,8 @@ export const SkillCard: React.FC<SkillCardProps> = ({
 
   // Idle shimmer drift — slowly oscillates mousePos so the shimmer subtly
   // animates even without interaction. Stops the moment the user hovers.
+  // Per-instance random phase so cards don't all drift in sync
+  const driftPhaseRef = useRef(Math.random() * Math.PI * 2);
   const rafRef = useRef<number>(0);
   const idleStartRef = useRef<number>(0);
   useEffect(() => {
@@ -75,10 +77,11 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     }
     idleStartRef.current = performance.now();
     const tick = (now: number) => {
-      const t = (now - idleStartRef.current) / 1000; // seconds
+      const t = (now - idleStartRef.current) / 1000;
+      const p = driftPhaseRef.current;
       setMousePos({
-        x: 0.5 + Math.sin(t * 0.25) * 0.35,
-        y: 0.5 + Math.cos(t * 0.18) * 0.28,
+        x: 0.5 + Math.sin(t * 0.25 + p) * 0.35,
+        y: 0.5 + Math.cos(t * 0.18 + p * 0.7) * 0.28,
       });
       rafRef.current = requestAnimationFrame(tick);
     };

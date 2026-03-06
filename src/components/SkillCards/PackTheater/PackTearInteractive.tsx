@@ -1,17 +1,11 @@
 import { cn } from "@lib/utils";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
+import { PACK_GRADIENT, PACK_W, TEAR_PATH, TEAR_Y } from "./packConstants";
 
 type PackTearInteractiveProps = {
   onTearComplete: () => void;
 };
-
-const PACK_W = 260;
-const PACK_H = 380;
-const TEAR_Y = Math.round(PACK_H * 0.28); // ~107px
-
-const TEAR_PATH =
-  "M0,0 C15,-8 25,0 40,-6 C55,-12 65,2 80,-5 C95,-12 105,6 120,-4 C135,-14 145,4 160,-8 C175,-12 185,3 200,-6 C215,-9 225,5 240,-2 L260,0";
 
 export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTearComplete }) => {
   const packRef = useRef<HTMLDivElement>(null);
@@ -110,7 +104,7 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           className="absolute inset-0 rounded-2xl"
           style={{
             background:
-              "linear-gradient(135deg, #B8A9D4 0%, #E8B4A0 40%, #D4929B 70%, #B8A9D4 100%)",
+              PACK_GRADIENT,
           }}
         />
 
@@ -343,14 +337,6 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
         </div>
       )}
 
-      {/* Flash keyframe style */}
-      <style>
-        {`@keyframes tearFlash {
-          0% { opacity: 0; }
-          40% { opacity: 0.7; }
-          100% { opacity: 0; }
-        }`}
-      </style>
     </div>
   );
 };

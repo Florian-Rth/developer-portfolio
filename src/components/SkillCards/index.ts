@@ -1,7 +1,5 @@
 import { SectionWatermark } from "@/components/ui/SectionWatermark";
 import { CardArtwork } from "./CardArtwork";
-import { CardDeck } from "./CardDeck";
-import { CardScatterA } from "./CardScatterA";
 import { CategoryBadge } from "./CategoryBadge";
 import { DetailDrawer } from "./DetailDrawer";
 import { MobileCardStack } from "./MobileCardStack";
@@ -15,8 +13,6 @@ import { StatBar } from "./StatBar";
 
 type SkillCardSectionType = typeof SkillCardSectionComponent & {
   Section: typeof Section;
-  Deck: typeof CardDeck;
-  Scatter: typeof CardScatterA;
   MobileStack: typeof MobileCardStack;
   Theater: typeof PackTheater;
   Card: typeof SkillCard;
@@ -31,8 +27,6 @@ type SkillCardSectionType = typeof SkillCardSectionComponent & {
 
 const SkillCardSection = SkillCardSectionComponent as SkillCardSectionType;
 SkillCardSection.Section = Section;
-SkillCardSection.Deck = CardDeck;
-SkillCardSection.Scatter = CardScatterA;
 SkillCardSection.MobileStack = MobileCardStack;
 SkillCardSection.Theater = PackTheater;
 SkillCardSection.Card = SkillCard;

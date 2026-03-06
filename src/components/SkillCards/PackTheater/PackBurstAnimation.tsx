@@ -1,14 +1,11 @@
 import { motion } from "framer-motion";
 import type React from "react";
 import { useEffect } from "react";
+import { PACK_GRADIENT, PACK_H, PACK_W, TEAR_Y } from "./packConstants";
 
 type PackBurstAnimationProps = {
   onBurstComplete: () => void;
 };
-
-const PACK_W = 260;
-const PACK_H = 380;
-const TEAR_Y = Math.round(PACK_H * 0.28);
 
 const CARD_OFFSETS = [
   { x: -20, rot: -12 },
@@ -47,7 +44,7 @@ export const PackBurstAnimation: React.FC<PackBurstAnimationProps> = ({ onBurstC
           style={{
             height: PACK_H,
             background:
-              "linear-gradient(135deg, #B8A9D4 0%, #E8B4A0 40%, #D4929B 70%, #B8A9D4 100%)",
+              PACK_GRADIENT,
           }}
         />
       </motion.div>
@@ -66,7 +63,7 @@ export const PackBurstAnimation: React.FC<PackBurstAnimationProps> = ({ onBurstC
             height: PACK_H,
             marginTop: -TEAR_Y,
             background:
-              "linear-gradient(135deg, #B8A9D4 0%, #E8B4A0 40%, #D4929B 70%, #B8A9D4 100%)",
+              PACK_GRADIENT,
           }}
         />
       </motion.div>

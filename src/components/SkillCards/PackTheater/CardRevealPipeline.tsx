@@ -21,7 +21,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
 import { rarityShimmer } from "../shimmers";
-import { SkillCard } from "../SkillCard";
+import { CARD_H, CARD_W, SkillCard } from "../SkillCard";
+
+// ─── Spotlight dimensions ─────────────────────────────────────────────────────
+const SPOTLIGHT_W = 310;
+const SPOTLIGHT_H = 452;
+const SPOTLIGHT_SCALE = SPOTLIGHT_W / CARD_W;
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
@@ -45,8 +50,6 @@ const generatePositions = (count: number) =>
     const col = i % cols;
     const row = Math.floor(i / cols);
     const rows = Math.ceil(count / cols);
-    const CARD_W = 220,
-      CARD_H = 320;
     const baseX = (col - (cols - 1) / 2) * CARD_W * 1.08;
     const baseY = (row - (rows - 1) / 2) * CARD_H * 1.0;
     const jX = (seededRandom(i * 7 + 1) - 0.5) * 40;
@@ -103,17 +106,15 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
       const base = rotBase.current;
 
-      const spotlightScale = SPOTLIGHT_W / CARD_W;
-
       // Prepare front face content BEFORE showing overlay
       const spotlightSh = rarityShimmer(card.rarity);
       setFrontContent(
         isHireMe(card) ? (
-          <HireMeCard scale={spotlightScale} />
+          <HireMeCard scale={SPOTLIGHT_SCALE} />
         ) : (
           <SkillCard
             skill={card as Skill}
-            scale={spotlightScale}
+            scale={SPOTLIGHT_SCALE}
             Shimmer={spotlightSh?.Shimmer}
             shimmerIntensity={spotlightSh?.intensity}
             onSelect={() => onCardSelect(card as Skill)}
@@ -195,13 +196,9 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     onAllDone();
   }, [skipped, cards, onAllDone]);
 
-  // ── Dimensions ────────────────────────────────────────────────────────────
-  const CARD_W = 220;  // scattered size (unchanged)
-  const CARD_H = 320;
+  // ── Derived layout values ─────────────────────────────────────────────────
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
-  const SPOTLIGHT_W = 310; // revealed card size (larger)
-  const SPOTLIGHT_H = 452;
 
   return (
     <>

@@ -316,6 +316,25 @@
   }
 }
 
+/* ── Pack Theater animations ─────────────────────────────────────────────── */
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes ctaFloat {
+  0%, 100% { transform: translateY(0px); opacity: 0.85; }
+  50%       { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes ctaHand {
+  0%, 100% { transform: translateX(0px) rotate(0deg); }
+  50%       { transform: translateX(6px) rotate(-10deg); }
+}
+@keyframes tearFlash {
+  0%   { opacity: 0; }
+  40%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @keyframes cardBackShimmer {
     from,
@@ -348,4 +367,8 @@
       transform: none;
     }
   }
+  @keyframes floatBob  { from, to { transform: none; } }
+  @keyframes ctaFloat  { from, to { transform: none; opacity: 1; } }
+  @keyframes ctaHand   { from, to { transform: none; } }
+  @keyframes tearFlash { from, to { opacity: 0; } }
 }
