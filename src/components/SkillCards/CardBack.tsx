@@ -12,6 +12,10 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
     style={{
       background: "radial-gradient(ellipse at center, #FFFDF9, #F5F0E8)",
       border: "2px solid rgba(184,169,212,0.4)",
+      // clip-path works more reliably than overflow-hidden inside 3D transform
+      // contexts (backface-visibility, preserve-3d) — prevents corner dots
+      // from "bleeding" outside the card boundary.
+      clipPath: "inset(0 round 12px)",
       ...style,
     }}
   >
@@ -59,7 +63,10 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
     <div
       className="absolute inset-0 rounded-xl pointer-events-none"
       style={{
-        boxShadow: "inset 0 0 0 1.5px rgba(184,169,212,0.2), inset 0 0 20px rgba(232,180,160,0.1)",
+        // Only the inner glow — the 1.5px border-shadow has been removed
+        // because the outer div already has `border: 2px solid` and the
+        // combination created a visible double-border at spotlight scale.
+        boxShadow: "inset 0 0 20px rgba(232,180,160,0.1)",
       }}
     />
   </div>

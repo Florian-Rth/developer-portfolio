@@ -5,6 +5,7 @@ import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
 import { CategoryBadge } from "./CategoryBadge";
+import { HoloEffect } from "./HoloEffect";
 import { RarityBadge } from "./RarityBadge";
 import { SkillStatsList } from "./SkillStatsList";
 
@@ -19,6 +20,8 @@ type SkillCardProps = {
   className?: string;
   /** Proportional scale applied via CSS zoom — scales text, padding, borders, everything */
   scale?: number;
+  /** Holo shimmer intensity for legendary/epic cards. Defaults to "medium". */
+  holoIntensity?: "low" | "medium" | "max";
 };
 
 export const SkillCard: React.FC<SkillCardProps> = ({
@@ -27,10 +30,13 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   onSelect,
   className,
   scale = 1,
+  holoIntensity = "medium",
 }) => {
   const cardRef = useRef<HTMLButtonElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  // Normalized 0–1 mouse position within the card (for HoloEffect tracking)
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     const card = cardRef.current;
@@ -39,6 +45,10 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
     setTilt({ x: y * -10, y: x * 10 });
+    setMousePos({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -103,6 +113,15 @@ export const SkillCard: React.FC<SkillCardProps> = ({
 
       {/* Bottom padding */}
       <div className="pb-3" />
+
+      {/* Holo shimmer — inside the button so it tilts/moves with the card */}
+      <HoloEffect
+        rarity={skill.rarity}
+        intensity={holoIntensity}
+        mouseX={mousePos.x}
+        mouseY={mousePos.y}
+        isHovered={isHovered}
+      />
     </button>
   );
 };

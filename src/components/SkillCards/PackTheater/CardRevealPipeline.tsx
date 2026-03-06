@@ -20,7 +20,6 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
-import { HoloEffect } from "../HoloEffect";
 import { SkillCard } from "../SkillCard";
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
@@ -94,7 +93,6 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
 
   // Which cards have been placed in the scatter field
   const [placedSet, setPlacedSet] = useState<Set<number>>(new Set());
-  const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set());
 
   const positions = useMemo(() => generatePositions(cards.length), [cards.length]);
 
@@ -111,24 +109,16 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         isHireMe(card) ? (
           <HireMeCard scale={spotlightScale} />
         ) : (
-          // Zoom the entire wrapper so SkillCard + HoloEffect scale together.
-          // overflow+borderRadius here acts as outer clip context for mobile browsers
-          // where zoom + inner transform can break overflow:hidden clipping.
-          <div
-            className="relative"
-            style={{
-              zoom: spotlightScale,
-              borderRadius: "14px",
-              overflow: "hidden",
-            }}
-          >
-            <SkillCard
-              skill={card as Skill}
-              scale={1}
-              onSelect={() => onCardSelect(card as Skill)}
-            />
-            <HoloEffect rarity={card.rarity} intensity="max" />
-          </div>
+          // Apply zoom directly to SkillCard (scale prop) so it goes from
+          // its native 220×320 → 310×451. Do NOT put zoom on the wrapper
+          // div — the wrapper fills the 310px parent, so zooming it would
+          // scale from 310px → 437px (wrong element, wrong result).
+          <SkillCard
+            skill={card as Skill}
+            scale={spotlightScale}
+            holoIntensity="max"
+            onSelect={() => onCardSelect(card as Skill)}
+          />
         ),
       );
       setCurrentCard(card);
@@ -154,7 +144,6 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
 
       // ← card is edge-on: launch it from spotlight center to scatter position
       setPlacedSet((prev) => new Set(prev).add(idx));
-      setFlippedSet((prev) => new Set(prev).add(idx));
 
       placedCount.current += 1;
       if (placedCount.current === cards.length) {
@@ -203,9 +192,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     setOverlayVisible(false);
     busy.current = false;
     queue.current = [];
-    const allIdx = new Set(cards.map((_, i) => i));
-    setPlacedSet(allIdx);
-    setFlippedSet(allIdx);
+    setPlacedSet(new Set(cards.map((_, i) => i)));
     onAllDone();
   }, [skipped, cards, onAllDone]);
 
@@ -341,13 +328,10 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                   {isHireMe(card) ? (
                     <HireMeCard />
                   ) : (
-                    <div className="relative">
-                      <SkillCard
-                        skill={card as Skill}
-                        onSelect={() => onCardSelect(card as Skill)}
-                      />
-                      {flippedSet.has(i) && <HoloEffect rarity={card.rarity} intensity="medium" />}
-                    </div>
+                    <SkillCard
+                      skill={card as Skill}
+                      onSelect={() => onCardSelect(card as Skill)}
+                    />
                   )}
                 </motion.div>
               );
