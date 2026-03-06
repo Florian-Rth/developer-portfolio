@@ -1,16 +1,16 @@
 /**
  * CardRevealPipeline — continuous-rotation spotlight reveal
  *
- * One persistent card rotates in a single direction forever.
- * Content swaps at the exact moment the card is edge-on (invisible).
- * No AnimatePresence re-mounts, no backward flips.
- *
  * Rotation cycle per card:
- *   base+0°   → base-180°  : flip IN  (back → front)  ~0.7s
- *   hold at base-180°                                  ~1.1s
- *   base-180° → base-270°  : flip OUT first half       ~0.33s  ← edge-on: swap content
- *   base-270° → base-360°  : flip OUT second half      ~0.33s
- *   base = base - 360° for next card
+ *   base+0°   → base-180°  : flip IN  (back → front)  ~0.42s
+ *   hold at base-180°                                  ~0.75s / 1.6s
+ *   base-180° → base-270°  : flip OUT first half       ~0.22s  ← edge-on: swap content
+ *   base-270° → base-360°  : flip OUT second half      ~0.22s
+ *
+ * Intro sequence (added):
+ *   On mount → overlay opens → ghost cards cascade + "Your cards are ready!"
+ *   After 2s  → ghost cards + text fade out, card grows 200×290 → 310×452
+ *   After 550ms settle → first card flip starts
  */
 
 import type { Skill } from "@/data/skills";
@@ -22,18 +22,32 @@ import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
 import { rarityShimmer } from "../shimmers";
 import { CARD_H, CARD_W, SkillCard } from "../SkillCard";
+import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Spotlight dimensions ─────────────────────────────────────────────────────
 const SPOTLIGHT_W = 310;
 const SPOTLIGHT_H = 452;
 const SPOTLIGHT_SCALE = SPOTLIGHT_W / CARD_W;
-import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
-// ─── Timing ──────────────────────────────────────────────────────────────────
-const FLIP_IN_S = 0.42; // back → front
-const FLIP_OUT_HALF_S = 0.22; // each half of flip-out
-const HOLD_MS = 750;  // front visible for skill cards
-const HIRE_ME_HOLD_MS = 1600; // front visible for Hire Me
+// ─── Intro dimensions ─────────────────────────────────────────────────────────
+const INTRO_W = 200;
+const INTRO_H = 290;
+
+// ─── Timing ───────────────────────────────────────────────────────────────────
+const FLIP_IN_S = 0.42;
+const FLIP_OUT_HALF_S = 0.22;
+const HOLD_MS = 750;
+const HIRE_ME_HOLD_MS = 1600;
+const INTRO_DURATION_MS = 2000;
+const BRIDGE_SETTLE_MS = 550;
+
+// ─── Ghost card configs ───────────────────────────────────────────────────────
+const GHOST_CARDS = [
+  { delay: 0,    fromY: -220, fromX: -90, toRotate: -13, toX: -42, zIndex: 1, toScale: 0.93 },
+  { delay: 0.07, fromY: -240, fromX:  70, toRotate:   9, toX:  38, zIndex: 2, toScale: 0.91 },
+  { delay: 0.14, fromY: -200, fromX: -35, toRotate:  -4, toX: -16, zIndex: 3, toScale: 0.96 },
+  { delay: 0.21, fromY: -260, fromX:  25, toRotate:   3, toX:  12, zIndex: 4, toScale: 0.97 },
+];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const isHireMe = (card: RevealCard): card is HireMeSkill & { revealIndex: number } =>
@@ -82,20 +96,18 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   className,
 }) => {
   const controls = useAnimation();
-  const rotBase = useRef(0); // cumulative rotation base
-  const busy = useRef(false); // is an animation running?
+  const rotBase = useRef(0);
+  const busy = useRef(false);
   const queue = useRef<RevealCard[]>([]);
   const placedCount = useRef(0);
+  const introFinished = useRef(false);
 
-  // What's currently on the front face of the rotating card
   const [frontContent, setFrontContent] = useState<React.ReactNode>(null);
-  // Whether spotlight overlay is visible
-  const [overlayVisible, setOverlayVisible] = useState(false);
-  // Whether the front face should be shown (vs the back)
-  // (we use the rotation, but we also track this for the glow colour)
+  const [overlayVisible, setOverlayVisible] = useState(true);   // open for intro
+  const [showIntro, setShowIntro] = useState(true);
+  const [cardW, setCardW] = useState(INTRO_W);                   // grows after intro
+  const [cardH, setCardH] = useState(INTRO_H);
   const [currentCard, setCurrentCard] = useState<RevealCard | null>(null);
-
-  // Which cards have been placed in the scatter field
   const [placedSet, setPlacedSet] = useState<Set<number>>(new Set());
 
   const positions = useMemo(() => generatePositions(cards.length), [cards.length]);
@@ -106,7 +118,6 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
       const base = rotBase.current;
 
-      // Prepare front face content BEFORE showing overlay
       const spotlightSh = rarityShimmer(card.rarity);
       setFrontContent(
         isHireMe(card) ? (
@@ -122,38 +133,32 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         ),
       );
       setCurrentCard(card);
-      setOverlayVisible(true);
 
-      // 1 — Flip IN: back → front  (0 → -180)
+      // 1 — Flip IN
       await controls.start({
         rotateY: base - 180,
-        transition: {
-          duration: FLIP_IN_S,
-          ease: [0.645, 0.045, 0.355, 1.0], // easeInOutCubic
-        },
+        transition: { duration: FLIP_IN_S, ease: [0.645, 0.045, 0.355, 1.0] },
       });
 
-      // 2 — Hold (front face visible)
+      // 2 — Hold
       await delay(holdMs);
 
-      // 3 — Flip OUT first half: front → edge  (-180 → -270)
+      // 3 — Flip OUT first half → card is edge-on → place in scatter
       await controls.start({
         rotateY: base - 270,
         transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
       });
 
-      // ← card is edge-on: launch it from spotlight center to scatter position
       setPlacedSet((prev) => new Set(prev).add(idx));
-
       placedCount.current += 1;
+
       if (placedCount.current === cards.length) {
-        // All cards placed — now fade out the overlay once
         setOverlayVisible(false);
         await delay(900);
         onAllDone();
       }
 
-      // 4 — Flip OUT second half: edge → back  (-270 → -360)
+      // 4 — Flip OUT second half
       await controls.start({
         rotateY: base - 360,
         transition: { duration: FLIP_OUT_HALF_S, ease: "easeOut" },
@@ -166,7 +171,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
 
   // ── Queue processor ────────────────────────────────────────────────────────
   const processQueue = useCallback(async () => {
-    if (busy.current) return;
+    if (busy.current || !introFinished.current) return;
     while (queue.current.length > 0) {
       busy.current = true;
       const item = queue.current.shift()!;
@@ -176,7 +181,23 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     }
   }, [cards, revealOne]);
 
-  // ── React to parent incrementing revealedCount ────────────────────────────
+  // ── Intro done: grow card → wait for spring → start flips ────────────────
+  const handleIntroDone = useCallback(() => {
+    setShowIntro(false);
+    setCardW(SPOTLIGHT_W);
+    setCardH(SPOTLIGHT_H);
+    introFinished.current = true;
+    setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
+  }, [processQueue]);
+
+  // ── Intro timer ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (skipped) return;
+    const t = setTimeout(handleIntroDone, INTRO_DURATION_MS);
+    return () => clearTimeout(t);
+  }, [handleIntroDone, skipped]);
+
+  // ── Feed cards from parent ────────────────────────────────────────────────
   useEffect(() => {
     if (skipped || revealedCount === 0) return;
     const idx = revealedCount - 1;
@@ -186,10 +207,12 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     processQueue();
   }, [revealedCount, skipped, cards, processQueue]);
 
-  // ── Skip: place everything immediately ────────────────────────────────────
+  // ── Skip ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!skipped) return;
     setOverlayVisible(false);
+    setShowIntro(false);
+    introFinished.current = true;
     busy.current = false;
     queue.current = [];
     setPlacedSet(new Set(cards.map((_, i) => i)));
@@ -199,10 +222,11 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   // ── Derived layout values ─────────────────────────────────────────────────
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
+  const isHireMeCard = currentCard && isHireMe(currentCard);
 
   return (
     <>
-      {/* ── Spotlight stage ─────────────────────────────────────────────── */}
+      {/* ── Overlay: dim + glow ─────────────────────────────────────────── */}
       <AnimatePresence>
         {overlayVisible && (
           <div
@@ -223,70 +247,149 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
             <motion.div
               className="absolute rounded-full"
               style={{
-                width: 420,
-                height: 420,
-                background:
-                  currentCard && isHireMe(currentCard)
+                width: 480, height: 480,
+                background: showIntro || !currentCard
+                  ? "radial-gradient(ellipse, rgba(244,208,63,0.26) 0%, transparent 70%)"
+                  : isHireMeCard
                     ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
                     : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)",
               }}
+              animate={{ scale: showIntro ? 1.12 : 1 }}
+              transition={{ duration: 0.5 }}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.6, opacity: 0 }}
-              transition={{ duration: 0.3 }}
             />
           </div>
         )}
       </AnimatePresence>
 
-      {/*
-       * The rotating card — ALWAYS mounted while revealing, never re-mounted.
-       * Only the rotateY value changes via `controls`.
-       * Opacity wrapper shows/hides it around the overlay.
-       */}
+      {/* ── Card + intro elements (always mounted while revealing) ─────────── */}
       {!skipped && (
         <div
-          className="fixed inset-0 z-[51] flex items-center justify-center pointer-events-none"
+          className="fixed inset-0 z-[51] flex flex-col items-center justify-center gap-6 pointer-events-none"
           style={{ visibility: overlayVisible ? "visible" : "hidden" }}
         >
-          {/* Outer wrapper: perspective */}
-          <div style={{ perspective: "900px" }}>
-            {/* Framer Motion drives rotateY continuously */}
-            <motion.div
-              animate={controls}
-              style={{
-                transformStyle: "preserve-3d",
-                width: SPOTLIGHT_W,
-                height: SPOTLIGHT_H,
-                position: "relative",
-              }}
-            >
-              {/* Back face */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                }}
-              >
-                <CardBack style={{ width: SPOTLIGHT_W, height: SPOTLIGHT_H }} />
-              </div>
+          {/* ── Card stack area ──────────────────────────────────────────── */}
+          <div
+            className="relative flex items-center justify-center"
+            style={{ width: SPOTLIGHT_W + 100, height: SPOTLIGHT_H + 80 }}
+          >
+            {/* Ghost cards — fade out when intro ends */}
+            <AnimatePresence>
+              {showIntro && (
+                <motion.div
+                  key="ghost-cards"
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Light burst */}
+                  <motion.div
+                    className="absolute pointer-events-none"
+                    style={{
+                      inset: -80, borderRadius: "50%",
+                      background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.28) 0%, transparent 70%)",
+                      filter: "blur(28px)",
+                    }}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                  {GHOST_CARDS.map((g) => (
+                    <motion.div
+                      key={g.delay}
+                      className="absolute rounded-2xl"
+                      style={{
+                        width: INTRO_W, height: INTRO_H,
+                        background: "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
+                        boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
+                        border: "1.5px solid rgba(255,255,255,0.5)",
+                        zIndex: g.zIndex,
+                      }}
+                      initial={{ y: g.fromY, x: g.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
+                      animate={{ y: -g.zIndex * 3, x: g.toX, rotate: g.toRotate, opacity: 1, scale: g.toScale }}
+                      transition={{ delay: g.delay, type: "spring", stiffness: 220, damping: 20 }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* Front face */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                }}
+            {/* ── Bridge card — always mounted, grows via layout ─────────── */}
+            <div style={{ perspective: "900px", zIndex: 10 }}>
+              <motion.div
+                layout
+                style={{ width: cardW, height: cardH, position: "relative" }}
+                transition={{ type: "spring", stiffness: 200, damping: 28 }}
               >
-                {frontContent}
-              </div>
-            </motion.div>
+                <motion.div
+                  animate={controls}
+                  style={{
+                    transformStyle: "preserve-3d",
+                    width: "100%", height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {/* Back face */}
+                  <div
+                    style={{
+                      position: "absolute", inset: 0,
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                    }}
+                  >
+                    <CardBack style={{ width: "100%", height: "100%" }} />
+                  </div>
+
+                  {/* Front face */}
+                  <div
+                    style={{
+                      position: "absolute", inset: 0,
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                    }}
+                  >
+                    {frontContent}
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
+
+          {/* ── Intro text — fades out when intro ends ───────────────────── */}
+          <AnimatePresence>
+            {showIntro && (
+              <motion.div
+                key="intro-text"
+                className="flex flex-col items-center gap-2"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ delay: 0.6 }}
+              >
+                <p
+                  className="font-script text-3xl"
+                  style={{
+                    background: "linear-gradient(135deg, #FFFDF9 0%, #F4D03F 40%, #E8B4A0 80%, #FFFDF9 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    filter: "drop-shadow(0 2px 14px rgba(244,208,63,0.45))",
+                  }}
+                >
+                  Your cards are ready!
+                </p>
+                <p
+                  className="font-sans text-xs tracking-widest uppercase"
+                  style={{ color: "rgba(255,253,249,0.45)" }}
+                >
+                  16 cards · click to explore
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
