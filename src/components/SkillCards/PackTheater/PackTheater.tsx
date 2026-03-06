@@ -30,25 +30,6 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
 
   return (
     <div className={cn("relative", className)}>
-      {/* Stage lighting — 100vw so no clipping, but tight ellipses keep the
-          glow visually constrained to the pack area only */}
-      {phase === "idle" && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "100vw",
-            height: "100vh",
-            background: `
-              radial-gradient(ellipse 28% 45% at 50% 50%, rgba(212,88,122,0.10) 0%, transparent 100%),
-              radial-gradient(ellipse 32% 60% at 50% 55%, rgba(139,110,199,0.12) 0%, transparent 100%)
-            `,
-          }}
-        />
-      )}
-
       {/* ── Idle: interactive tear ─────────────────────────────────────── */}
       {phase === "idle" && (
         <div className="flex flex-col items-center justify-center min-h-[520px] gap-4">
