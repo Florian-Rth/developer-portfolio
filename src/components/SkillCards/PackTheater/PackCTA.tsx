@@ -3,7 +3,7 @@ import type React from "react";
 export const PackCTA: React.FC = () => (
   <div className="flex flex-col items-center mt-6">
     <div
-      className="flex items-center gap-4 px-7 py-3.5 rounded-full select-none cursor-pointer"
+      className="flex items-center gap-4 px-7 py-3.5 rounded-full select-none cursor-default"
       style={{
         background: "linear-gradient(135deg, rgba(123,95,199,0.15) 0%, rgba(224,64,128,0.12) 100%)",
         border: "1.5px solid rgba(123,95,199,0.4)",
