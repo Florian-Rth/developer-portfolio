@@ -20,12 +20,8 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
-import { RainbowFoil, SparkleField } from "../shimmers";
+import { rarityShimmer } from "../shimmers";
 import { SkillCard } from "../SkillCard";
-
-// Demo assignment — alternate Rainbow / Sparkle on the first cards so you can
-// compare both effects side-by-side after opening a pack.
-const DEMO_SHIMMERS = [RainbowFoil, SparkleField] as const;
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
@@ -110,19 +106,16 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       const spotlightScale = SPOTLIGHT_W / CARD_W;
 
       // Prepare front face content BEFORE showing overlay
+      const spotlightSh = rarityShimmer(card.rarity);
       setFrontContent(
         isHireMe(card) ? (
           <HireMeCard scale={spotlightScale} />
         ) : (
-          // Apply zoom directly to SkillCard (scale prop) so it goes from
-          // its native 220×320 → 310×451. Do NOT put zoom on the wrapper
-          // div — the wrapper fills the 310px parent, so zooming it would
-          // scale from 310px → 437px (wrong element, wrong result).
           <SkillCard
             skill={card as Skill}
             scale={spotlightScale}
-            Shimmer={RainbowFoil}
-            shimmerIntensity="max"
+            Shimmer={spotlightSh?.Shimmer}
+            shimmerIntensity={spotlightSh?.intensity}
             onSelect={() => onCardSelect(card as Skill)}
           />
         ),
@@ -309,6 +302,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
             {cards.map((card, i) => {
               if (!placedSet.has(i)) return null;
               const pos = positions[i];
+              const sh = isHireMe(card) ? null : rarityShimmer(card.rarity);
 
               return (
                 <motion.div
@@ -337,17 +331,8 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
                     <SkillCard
                       skill={card as Skill}
                       onSelect={() => onCardSelect(card as Skill)}
-                      Shimmer={
-                        // First 4 cards alternate Rainbow/Sparkle for side-by-side compare.
-                        // Beyond that: rarity-based (legendary→Rainbow, epic→Sparkle).
-                        i < 4
-                          ? DEMO_SHIMMERS[i % 2]
-                          : card.rarity === "legendary"
-                            ? RainbowFoil
-                            : card.rarity === "epic"
-                              ? SparkleField
-                              : undefined
-                      }
+                      Shimmer={sh?.Shimmer}
+                      shimmerIntensity={sh?.intensity}
                     />
                   )}
                 </motion.div>
