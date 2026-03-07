@@ -15,7 +15,7 @@
 import type { Skill } from "@/data/skills";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { CardBack } from "./CardBack";
 import { HireMeCard } from "./HireMeCard";
 import { rarityShimmer } from "./shimmers";
@@ -151,8 +151,8 @@ export const MobileRevealPipeline: React.FC<Props> = ({
     setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
-  // ── Dim AppBar via body class (works around iOS backdrop-filter z-index bug)
-  useEffect(() => {
+  // ── Dim AppBar — useLayoutEffect fires before paint, syncs with framer-motion
+  useLayoutEffect(() => {
     document.body.classList.add("card-reveal-active");
     return () => document.body.classList.remove("card-reveal-active");
   }, []);

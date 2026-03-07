@@ -17,7 +17,7 @@ import type { Skill } from "@/data/skills";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
 import { rarityShimmer } from "../shimmers";
@@ -190,8 +190,8 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
-  // ── Dim AppBar via body class (iOS backdrop-filter z-index workaround)
-  useEffect(() => {
+  // ── Dim AppBar — useLayoutEffect fires before paint, syncs with framer-motion
+  useLayoutEffect(() => {
     document.body.classList.add("card-reveal-active");
     return () => document.body.classList.remove("card-reveal-active");
   }, []);
