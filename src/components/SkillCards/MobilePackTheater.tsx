@@ -155,7 +155,7 @@ export const MobilePackTheater: React.FC = () => {
             key="skip-btn"
             type="button"
             onClick={skip}
-            className="fixed bottom-8 right-6 z-[62] px-4 py-2 rounded-full font-sans text-sm font-bold cursor-pointer transition-opacity hover:opacity-100"
+            className="fixed bottom-8 right-6 z-[102] px-4 py-2 rounded-full font-sans text-sm font-bold cursor-pointer transition-opacity hover:opacity-100"
             style={{
               background: "rgba(255,253,249,0.9)",
               color: "#2d2a26",
