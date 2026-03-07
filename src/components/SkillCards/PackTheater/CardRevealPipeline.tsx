@@ -231,7 +231,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
         {overlayVisible && (
           <div
             key="spotlight-overlay"
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none"
           >
             {/* Dim */}
             <motion.div
@@ -266,7 +266,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       {/* ── Card + intro elements (always mounted while revealing) ─────────── */}
       {!skipped && (
         <div
-          className="fixed inset-0 z-[51] flex flex-col items-center justify-center gap-6 pointer-events-none"
+          className="fixed inset-0 z-[61] flex flex-col items-center justify-center gap-6 pointer-events-none"
           style={{ visibility: overlayVisible ? "visible" : "hidden" }}
         >
           {/* ── Card stack area ──────────────────────────────────────────── */}

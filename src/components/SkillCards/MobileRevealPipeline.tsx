@@ -186,7 +186,7 @@ export const MobileRevealPipeline: React.FC<Props> = ({
         {overlayVisible && (
           <div
             key="mobile-reveal-overlay"
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-[60] flex items-center justify-center"
           >
             {/* Dim */}
             <motion.div
