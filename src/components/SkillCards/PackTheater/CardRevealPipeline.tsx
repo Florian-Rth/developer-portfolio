@@ -190,6 +190,12 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
+  // ── Dim AppBar via body class (iOS backdrop-filter z-index workaround)
+  useEffect(() => {
+    document.body.classList.add("card-reveal-active");
+    return () => document.body.classList.remove("card-reveal-active");
+  }, []);
+
   // ── Intro timer ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (skipped) return;

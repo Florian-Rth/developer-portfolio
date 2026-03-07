@@ -336,6 +336,16 @@
   40%  { opacity: 0.7; }
   100% { opacity: 0; }
 }
+/* AppBar dim during card reveal — avoids iOS backdrop-filter z-index bug */
+body.card-reveal-active header {
+  opacity: 0.15;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+body:not(.card-reveal-active) header {
+  transition: opacity 0.45s ease;
+}
+
 @keyframes swipeUp {
   0%, 100% { transform: translateY(0px); opacity: 0.8; }
   50%       { transform: translateY(-7px); opacity: 1; }

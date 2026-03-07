@@ -151,6 +151,12 @@ export const MobileRevealPipeline: React.FC<Props> = ({
     setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
+  // ── Dim AppBar via body class (works around iOS backdrop-filter z-index bug)
+  useEffect(() => {
+    document.body.classList.add("card-reveal-active");
+    return () => document.body.classList.remove("card-reveal-active");
+  }, []);
+
   // ── Intro timer ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (skipped) return;
