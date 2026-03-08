@@ -11,7 +11,7 @@ export const Watermark: React.FC<WatermarkProps> = ({ children, className }) => 
     <span
       aria-hidden="true"
       className={cn(
-        "absolute inset-x-0 flex justify-center pointer-events-none select-none font-script text-[25vw] md:text-[14vw] text-foreground/[0.04] -translate-y-[60%]",
+        "absolute inset-x-0 flex justify-center pointer-events-none select-none font-script text-[25vw] md:text-[14vw] text-foreground/[0.03] -translate-y-[60%]",
         className,
       )}
     >

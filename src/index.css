@@ -156,6 +156,7 @@
     background-color: var(--background);
     color: var(--foreground);
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* overflow-x intentionally not set — ghost card offsets already reduced to stay within viewport */
   }
 
   body {
@@ -165,6 +166,7 @@
     line-height: 1.7;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
+
   }
 
   code,
@@ -259,4 +261,127 @@
     transform: none;
     transition: none;
   }
+}
+
+/* ── Pack Theater Animations ───────────────────────────────────────── */
+
+@keyframes cardBackShimmer {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes holoSpin {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes holoSweep {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes hireMeGlow {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(244, 208, 63, 0.25), 0 0 40px rgba(244, 208, 63, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(244, 208, 63, 0.4), 0 0 60px rgba(244, 208, 63, 0.2);
+  }
+}
+
+@keyframes goldParticleRise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200px) scale(0);
+  }
+}
+
+/* ── Pack Theater animations ─────────────────────────────────────────────── */
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes ctaFloat {
+  0%, 100% { transform: translateY(0px); opacity: 0.85; }
+  50%       { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes ctaHand {
+  0%, 100% { transform: translateX(0px) rotate(0deg); }
+  50%       { transform: translateX(6px) rotate(-10deg); }
+}
+@keyframes tearFlash {
+  0%   { opacity: 0; }
+  40%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+@keyframes swipeUp {
+  0%, 100% { transform: translateY(0px); opacity: 0.8; }
+  50%       { transform: translateY(-7px); opacity: 1; }
+}
+@keyframes sparkleFloat {
+  0%, 100% { opacity: 0.3; transform: translateY(0px) scale(1); }
+  50%       { opacity: 1; transform: translateY(-8px) scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes cardBackShimmer {
+    from,
+    to {
+      background-position: 0 0;
+    }
+  }
+  @keyframes holoSpin {
+    from,
+    to {
+      filter: none;
+    }
+  }
+  @keyframes holoSweep {
+    from,
+    to {
+      background-position: 0 0;
+    }
+  }
+  @keyframes hireMeGlow {
+    from,
+    to {
+      box-shadow: 0 4px 20px rgba(244, 208, 63, 0.25);
+    }
+  }
+  @keyframes goldParticleRise {
+    from,
+    to {
+      opacity: 0;
+      transform: none;
+    }
+  }
+  @keyframes floatBob  { from, to { transform: none; } }
+  @keyframes ctaFloat  { from, to { transform: none; opacity: 1; } }
+  @keyframes ctaHand   { from, to { transform: none; } }
+  @keyframes tearFlash { from, to { opacity: 0; } }
+  @keyframes swipeUp   { from, to { transform: none; opacity: 1; } }
+  @keyframes sparkleFloat { from, to { opacity: 0.5; transform: none; } }
 }

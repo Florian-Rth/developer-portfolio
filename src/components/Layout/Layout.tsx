@@ -11,7 +11,7 @@ type LayoutProps = {
 
 export const Layout: React.FC<LayoutProps> = ({ children, className }) => {
   return (
-    <div className={cn("min-h-screen flex flex-col bg-background text-foreground", className)}>
+    <div className={cn("min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden", className)}>
       <AppBar>
         <AppBar.Desktop>
           <AppBar.Nav>

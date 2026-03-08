@@ -12,9 +12,10 @@ export const Section: React.FC<SectionProps> = ({ children, className }) => (
     id="skills"
     aria-label="Skills"
     className={cn(
-      "relative bg-background",
-      "min-h-screen",
-      "pt-36 md:pt-52 lg:pt-60 pb-20",
+      "relative bg-background overflow-visible",
+      "min-h-[700px] [@media(max-height:720px)]:min-h-[500px] [@media(max-height:680px)]:min-h-[420px]",
+      "pt-4 md:pt-32 pb-20 [@media(max-height:720px)]:pt-4 [@media(max-height:720px)]:pb-10 [@media(max-height:680px)]:pt-2 [@media(max-height:680px)]:pb-4",
+      "scroll-mt-20",
       className,
     )}
   >

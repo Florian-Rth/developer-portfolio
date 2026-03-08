@@ -11,7 +11,7 @@ type RarityBadgeProps = {
 export const RarityBadge: React.FC<RarityBadgeProps> = ({ rarity, className }) => {
   return (
     <span
-      className={cn("font-sans text-[9px] font-medium uppercase tracking-[1px]", className)}
+      className={cn("font-sans text-[10px] font-medium uppercase tracking-[1px]", className)}
       style={{ color: rarityColors[rarity].badge }}
     >
       {rarityLabel[rarity]}
