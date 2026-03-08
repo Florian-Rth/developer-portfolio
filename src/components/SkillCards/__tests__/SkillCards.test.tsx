@@ -205,7 +205,7 @@ describe("SkillCards", () => {
     it("should use renamed stat fields", () => {
       const react = skills.find((s) => s.id === "react");
       expect(react?.stats.mastery).toBe(9);
-      expect(react?.stats.range).toBe(10);
+      expect(react?.stats.range).toBe(9); // reduced from 10 for stat variance credibility
     });
   });
 

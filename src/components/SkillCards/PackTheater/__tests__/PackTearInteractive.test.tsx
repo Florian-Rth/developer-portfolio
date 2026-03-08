@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { PackTearInteractive } from "../PackTearInteractive";
+// Card count is dynamic: skills + 1 Hire Me card — avoid hardcoded "16 Cards"
 
 describe("PackTearInteractive", () => {
   it("should render the pack with perforation line and scissors icon", () => {
@@ -8,7 +9,7 @@ describe("PackTearInteractive", () => {
     expect(screen.getByText("✂")).toBeInTheDocument();
     expect(screen.getByText("→")).toBeInTheDocument();
     expect(screen.getByText("FlorianRth")).toBeInTheDocument();
-    expect(screen.getByText("16 Cards")).toBeInTheDocument();
+    expect(screen.getByText(/\d+\s+Cards/)).toBeInTheDocument();
   });
 
   it("should not start tearing when pointer down is outside left third", () => {

@@ -71,7 +71,10 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   const rafRef = useRef<number>(0);
   const idleStartRef = useRef<number>(0);
   useEffect(() => {
-    if (isHovered) {
+    // Only run the drift loop when a Shimmer is actually rendered.
+    // Skipping when Shimmer is absent avoids concurrent RAF loops on all
+    // mounted cards (e.g., in the scattered/stack view) that have no shimmer.
+    if (isHovered || !Shimmer) {
       cancelAnimationFrame(rafRef.current);
       return;
     }
@@ -87,7 +90,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [isHovered]);
+  }, [isHovered, Shimmer]);
 
   const shimmerCtx = useMemo(
     () => ({ mouseX: mousePos.x, mouseY: mousePos.y, isHovered }),

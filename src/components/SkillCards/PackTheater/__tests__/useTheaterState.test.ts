@@ -10,10 +10,10 @@ describe("useTheaterState", () => {
     expect(result.current.revealedCount).toBe(0);
   });
 
-  it("should have 16 ordered cards (15 skills + Hire Me)", () => {
+  it("should have skills.length + 1 ordered cards (skills + Hire Me)", () => {
     const { result } = renderHook(() => useTheaterState());
-    expect(result.current.orderedCards).toHaveLength(16);
-    expect(result.current.totalCards).toBe(16);
+    expect(result.current.orderedCards).toHaveLength(skills.length + 1);
+    expect(result.current.totalCards).toBe(skills.length + 1);
   });
 
   it("should order cards Common → Uncommon → Rare → Epic → Legendary → Hire Me", () => {
@@ -34,10 +34,10 @@ describe("useTheaterState", () => {
     });
   });
 
-  it("should include all 15 skills", () => {
+  it("should include all skills", () => {
     const { result } = renderHook(() => useTheaterState());
     const skillCards = result.current.orderedCards.filter((c) => c.id !== "hire-me");
-    expect(skillCards).toHaveLength(15);
+    expect(skillCards).toHaveLength(skills.length);
     for (const skill of skills) {
       expect(skillCards.find((c) => c.id === skill.id)).toBeDefined();
     }
@@ -77,7 +77,7 @@ describe("useTheaterState", () => {
     });
 
     expect(result.current.phase).toBe("scattered");
-    expect(result.current.revealedCount).toBe(16);
+    expect(result.current.revealedCount).toBe(skills.length + 1);
     expect(result.current.skipped).toBe(true);
     vi.useRealTimers();
   });

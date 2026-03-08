@@ -1,6 +1,6 @@
 import type { Skill } from "@/data/skills";
 import { rarityOrder, skills } from "@/data/skills";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export type TheaterPhase = "idle" | "bursting" | "revealing" | "scattered";
 
@@ -58,6 +58,10 @@ export const useTheaterState = () => {
     timersRef.current = [];
   }, []);
 
+  // Cancel all pending reveal timers on unmount to prevent state updates
+  // on an unmounted component (e.g., navigation away mid-reveal).
+  useEffect(() => () => clearTimers(), [clearTimers]);
+
   const markScattered = useCallback(() => {
     setPhase("scattered");
   }, []);
@@ -67,6 +71,7 @@ export const useTheaterState = () => {
   }, []);
 
   const startReveal = useCallback(() => {
+    clearTimers(); // cancel any in-flight timers from a previous run
     setPhase("revealing");
     setRevealedCount(0);
     setSkipped(false);
@@ -82,7 +87,7 @@ export const useTheaterState = () => {
       }, feedDelay);
       timersRef.current.push(t);
     });
-  }, [totalCards]);
+  }, [clearTimers, totalCards]);
 
   const skip = useCallback(() => {
     clearTimers();

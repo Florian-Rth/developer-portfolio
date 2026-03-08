@@ -1,7 +1,8 @@
+import { skills } from "@/data/skills";
 import { cn } from "@lib/utils";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
-import { PACK_GRADIENT, PACK_W, TEAR_PATH, TEAR_Y } from "./packConstants";
+import { PACK_GRADIENT, PACK_H, PACK_W, TEAR_PATH, TEAR_Y } from "./packConstants";
 
 type PackTearInteractiveProps = {
   onTearComplete: () => void;
@@ -41,8 +42,10 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
       // Mobile: wider hit zone (left 65%, ±50px); Desktop: left 35%, ±25px
       const xLimit = mobileMode ? 0.65 : 0.35;
       const yTolerance = mobileMode ? 50 : 25;
-      if (localX / PACK_W > xLimit) return;
-      if (Math.abs(localY - TEAR_Y) > yTolerance) return;
+      // Use actual rendered size (handles CSS scale transforms on short viewports)
+      const tearLineY = (TEAR_Y / PACK_H) * rect.height;
+      if (localX / rect.width > xLimit) return;
+      if (Math.abs(localY - tearLineY) > yTolerance) return;
 
       setIsTearing(true);
       e.currentTarget.setPointerCapture?.(e.pointerId);
@@ -61,7 +64,8 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
 
       if (!isTearing) return;
       const localX = e.clientX - rect.left;
-      const progress = Math.min(1, Math.max(tearProgress, localX / PACK_W));
+      // Use rect.width so progress is correct even when the pack is CSS-scaled
+      const progress = Math.min(1, Math.max(tearProgress, localX / rect.width));
       setTearProgress(progress);
       if (progress >= 0.92) completeTear();
     },
@@ -195,7 +199,7 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
             }}
           >
             <span className="text-[10px] font-sans font-bold tracking-[0.15em] text-white/70 uppercase">
-              16 Cards
+              {skills.length + 1} Cards
             </span>
           </div>
         </div>
