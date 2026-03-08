@@ -20,7 +20,6 @@ import { GhostCards } from "./PackTheater/GhostCards";
 import { PackBurstAnimation } from "./PackTheater/PackBurstAnimation";
 import { PackTearInteractive } from "./PackTheater/PackTearInteractive";
 import { SectionHeading } from "./PackTheater/SectionHeading";
-import { TechPills } from "./PackTheater/TechPills";
 import { useTheaterState } from "./PackTheater/useTheaterState";
 
 // ─── Mobile-specific CTA ──────────────────────────────────────────────────────
@@ -98,13 +97,13 @@ export const MobilePackTheater: React.FC = () => {
         {phase === "idle" && (
           <motion.div
             key="idle"
-            className="flex flex-col items-center justify-center min-h-[560px] gap-4"
+            className="flex flex-col items-center justify-center min-h-[480px] [@media(max-height:720px)]:min-h-[400px] [@media(max-height:680px)]:min-h-[340px] gap-1"
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
           >
             <SectionHeading />
 
             <div
-              className="relative flex items-center justify-center p-8"
+              className="relative flex items-center justify-center p-3 [@media(max-height:680px)]:p-1"
             >
               {/* Floating sparkles */}
               <IdleSparkles />
@@ -123,7 +122,7 @@ export const MobilePackTheater: React.FC = () => {
 
               {/* Pack + ghost cards */}
               <div
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center [@media(max-height:680px)]:scale-[0.80] [@media(max-height:680px)]:origin-top [@media(max-height:680px)]:-mb-20"
                 style={{ animation: "floatBob 4s ease-in-out infinite" }}
               >
                 <GhostCards compact />
@@ -132,7 +131,6 @@ export const MobilePackTheater: React.FC = () => {
             </div>
 
             <MobilePackCTA />
-            <TechPills />
           </motion.div>
         )}
 
@@ -149,28 +147,6 @@ export const MobilePackTheater: React.FC = () => {
           </motion.div>
         )}
 
-        {/* ── SKIP button during reveal ────────────────────────────────── */}
-        {phase === "revealing" && !skipped && (
-          <motion.button
-            key="skip-btn"
-            type="button"
-            onClick={skip}
-            className="fixed bottom-8 right-6 z-[102] px-4 py-2 rounded-full font-sans text-sm font-bold cursor-pointer transition-opacity hover:opacity-100"
-            style={{
-              background: "rgba(255,253,249,0.9)",
-              color: "#2d2a26",
-              border: "1px solid rgba(184,169,212,0.3)",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              opacity: 0.75,
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 0.75, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            Skip ⏭
-          </motion.button>
-        )}
-
         {/* ── REVEALING ───────────────────────────────────────────────── */}
         {phase === "revealing" && (
           <motion.div
@@ -185,6 +161,7 @@ export const MobilePackTheater: React.FC = () => {
               skipped={skipped}
               onCardSelect={setSelectedSkill}
               onAllDone={markScattered}
+              onSkip={skip}
             />
           </motion.div>
         )}

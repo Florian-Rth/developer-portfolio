@@ -3,6 +3,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
+import { rarityShimmer } from "./shimmers";
 import { useSkillCards } from "./SkillCardsProvider";
 
 const SWIPE_THRESHOLD = 80;
@@ -83,6 +84,8 @@ export const MobileCardStack: React.FC = () => {
   const current = queue[0];
   const behind = queue.slice(1, 1 + STACK_SIZE);
   const currentIndex = skills.findIndex((s) => s.id === current.id);
+  const currentSh = rarityShimmer(current.rarity);
+  const exitSh = exitingCard ? rarityShimmer(exitingCard.skill.rarity) : null;
 
   return (
     <div className="flex flex-col items-center gap-6 min-h-[500px] justify-center">
@@ -95,27 +98,35 @@ export const MobileCardStack: React.FC = () => {
       <div className="relative" style={{ width: cardW, height: cardH }}>
         {/* Background cards */}
         <AnimatePresence>
-          {behind.map((skill, i) => (
-            <motion.div
-              key={skill.id}
-              className="absolute top-0 left-0 pointer-events-none"
-              initial={{
-                y: (i + 1) * -7,
-                scale: 1 - (i + 1) * 0.04,
-                opacity: 1 - (i + 1) * 0.15,
-                zIndex: STACK_SIZE - i,
-              }}
-              animate={{
-                y: (i + 1) * -7,
-                scale: 1 - (i + 1) * 0.04,
-                opacity: 1 - (i + 1) * 0.15,
-                zIndex: STACK_SIZE - i,
-              }}
-              transition={{ type: "spring", stiffness: 500, damping: 32 }}
-            >
-              <SkillCard skill={skill} scale={cardScale} />
-            </motion.div>
-          ))}
+          {behind.map((skill, i) => {
+            const sh = rarityShimmer(skill.rarity);
+            return (
+              <motion.div
+                key={skill.id}
+                className="absolute top-0 left-0 pointer-events-none"
+                initial={{
+                  y: (i + 1) * -7,
+                  scale: 1 - (i + 1) * 0.04,
+                  opacity: 1 - (i + 1) * 0.15,
+                  zIndex: STACK_SIZE - i,
+                }}
+                animate={{
+                  y: (i + 1) * -7,
+                  scale: 1 - (i + 1) * 0.04,
+                  opacity: 1 - (i + 1) * 0.15,
+                  zIndex: STACK_SIZE - i,
+                }}
+                transition={{ type: "spring", stiffness: 500, damping: 32 }}
+              >
+                <SkillCard
+                  skill={skill}
+                  scale={cardScale}
+                  Shimmer={sh?.Shimmer}
+                  shimmerIntensity={sh?.intensity}
+                />
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
         {/* Top card */}
@@ -137,7 +148,13 @@ export const MobileCardStack: React.FC = () => {
           onDragEnd={handleDragEnd}
           onTap={handleTap}
         >
-          <SkillCard skill={current} scale={cardScale} />
+          <SkillCard
+            skill={current}
+            scale={cardScale}
+            Shimmer={currentSh?.Shimmer}
+            shimmerIntensity={currentSh?.intensity}
+            onSelect={() => setSelectedSkill(current)}
+          />
         </motion.div>
 
         {/* Fly-off overlay */}
@@ -160,7 +177,12 @@ export const MobileCardStack: React.FC = () => {
               transition={{ duration: 0.22, ease: "easeOut" }}
               onAnimationComplete={() => setExitingCard(null)}
             >
-              <SkillCard skill={exitingCard.skill} scale={cardScale} />
+              <SkillCard
+                skill={exitingCard.skill}
+                scale={cardScale}
+                Shimmer={exitSh?.Shimmer}
+                shimmerIntensity={exitSh?.intensity}
+              />
             </motion.div>
           )}
         </AnimatePresence>

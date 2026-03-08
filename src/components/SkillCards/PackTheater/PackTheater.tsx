@@ -70,30 +70,6 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
         </div>
       )}
 
-      {/* ── Skip button during reveal ──────────────────────────────────── */}
-      {phase === "revealing" && !skipped && (
-        <button
-          type="button"
-          onClick={skip}
-          className={cn(
-            "fixed bottom-8 right-8 z-[60]",
-            "px-4 py-2 rounded-full",
-            "font-sans text-sm font-bold",
-            "cursor-pointer",
-            "transition-opacity hover:opacity-100",
-          )}
-          style={{
-            background: "rgba(255,253,249,0.9)",
-            color: "#2d2a26",
-            border: "1px solid rgba(184,169,212,0.3)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            opacity: 0.7,
-          }}
-        >
-          Skip ⏭
-        </button>
-      )}
-
       {/* ── Scattered header — heading + interaction hint ─────────────── */}
       {phase === "scattered" && (
         <div className="text-center pt-2 pb-2">
@@ -109,6 +85,7 @@ export const PackTheater: React.FC<PackTheaterProps> = ({ onCardSelect, classNam
           skipped={skipped}
           onCardSelect={onCardSelect}
           onAllDone={markScattered}
+          onSkip={skip}
         />
       )}
 

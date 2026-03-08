@@ -40,7 +40,7 @@ export const skills: Skill[] = [
     name: "React",
     category: "frontend",
     rarity: "legendary",
-    stats: { mastery: 9, speed: 9, range: 10, impact: 10 },
+    stats: { mastery: 9, speed: 8, range: 9, impact: 10 },
     flavourText: "My native language. Everything else is just transpiled to it.",
     detail: {
       learned: "Seit dem 2. Ausbildungsjahr — gelernt durch einfach loslegen und produktiv werden.",

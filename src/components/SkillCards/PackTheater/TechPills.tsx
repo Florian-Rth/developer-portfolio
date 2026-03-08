@@ -11,11 +11,11 @@ const PILLS = [
 ] as const;
 
 export const TechPills: React.FC = () => (
-  <div className="flex flex-wrap justify-center gap-3 mt-6 max-w-lg">
+  <div className="flex flex-wrap justify-center gap-2 mt-2 max-w-lg">
     {PILLS.map((pill) => (
       <span
         key={pill.name}
-        className="font-sans text-sm font-semibold tracking-wide uppercase px-5 py-2.5 rounded-full transition-all hover:scale-105"
+        className="font-sans text-xs font-semibold tracking-wide uppercase px-3 py-1.5 rounded-full transition-all hover:scale-105"
         style={{
           border: `1.5px solid ${pill.color}50`,
           color: pill.color,

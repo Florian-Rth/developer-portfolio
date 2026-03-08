@@ -12,7 +12,7 @@ export const Watermark: React.FC<WatermarkProps> = ({ className }) => {
         aria-hidden="true"
         className={cn(
           "font-script text-[120px] lg:text-[280px]",
-          "text-foreground/[0.04] dark:text-foreground/[0.03]",
+          "text-foreground/[0.022] dark:text-foreground/[0.018]",
           "select-none pointer-events-none whitespace-nowrap",
         )}
       >

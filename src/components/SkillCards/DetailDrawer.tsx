@@ -1,4 +1,6 @@
 import { categoryColors } from "@/data/skills";
+import { Backdrop } from "@/components/ui/Backdrop";
+import { LAYERS } from "@/lib/layers";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
@@ -43,27 +45,28 @@ export const DetailDrawer: React.FC = () => {
       };
 
   return (
-    <AnimatePresence>
-      {isOpen && skill && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 z-[998] bg-black/30 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-
-          {/* Drawer */}
+    <Backdrop
+      visible={isOpen}
+      zIndex={LAYERS.drawer}
+      dimColor="rgba(0,0,0,0.3)"
+      fadeDuration={0.2}
+      onDismiss={onClose}
+      blockScroll
+    >
+      {/* Drawer — pointer-events: auto so it's interactive */}
+      <AnimatePresence>
+        {isOpen && skill && (
           <motion.div
             className={cn(
-              "fixed z-[999] bg-card text-card-foreground",
+              "fixed z-[1] bg-card text-card-foreground",
               "max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:h-[70vh] max-md:rounded-t-2xl max-md:overflow-hidden",
               "md:top-0 md:right-0 md:h-full md:w-[380px] md:overflow-y-auto",
             )}
             style={{
-              boxShadow: isMobile ? "0 -4px 40px rgba(0,0,0,0.12)" : "-4px 0 40px rgba(0,0,0,0.12)",
+              pointerEvents: "auto",
+              boxShadow: isMobile
+                ? "0 -4px 40px rgba(0,0,0,0.12)"
+                : "-4px 0 40px rgba(0,0,0,0.12)",
             }}
             {...drawerAnimation}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -156,8 +159,8 @@ export const DetailDrawer: React.FC = () => {
               </div>
             </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </Backdrop>
   );
 };

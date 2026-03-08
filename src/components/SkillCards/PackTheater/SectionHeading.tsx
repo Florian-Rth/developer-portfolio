@@ -1,3 +1,4 @@
+import { skills } from "@/data/skills";
 import type React from "react";
 
 type SectionHeadingProps = {
@@ -5,9 +6,9 @@ type SectionHeadingProps = {
 };
 
 export const SectionHeading: React.FC<SectionHeadingProps> = ({
-  subtitle = "16 technologies · open the pack to discover",
+  subtitle = `${skills.length} technologies · open the pack to discover`,
 }) => (
-  <div className="text-center mb-6">
+  <div className="text-center mb-2">
     <h2
       className="font-script inline-block"
       style={{
@@ -21,7 +22,7 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
     >
       Skills.
     </h2>
-    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-foreground/40 mt-2">
+    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-foreground/55 mt-2">
       {subtitle}
     </p>
   </div>

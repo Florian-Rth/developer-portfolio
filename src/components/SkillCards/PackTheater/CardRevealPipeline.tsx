@@ -1,23 +1,28 @@
 /**
  * CardRevealPipeline — continuous-rotation spotlight reveal
  *
+ * Uses <Backdrop> (Portal) so the overlay sits directly on document.body —
+ * immune to parent transforms, filters, or overflow clipping.
+ *
  * Rotation cycle per card:
  *   base+0°   → base-180°  : flip IN  (back → front)  ~0.42s
  *   hold at base-180°                                  ~0.75s / 1.6s
  *   base-180° → base-270°  : flip OUT first half       ~0.22s  ← edge-on: swap content
  *   base-270° → base-360°  : flip OUT second half      ~0.22s
  *
- * Intro sequence (added):
+ * Intro sequence:
  *   On mount → overlay opens → ghost cards cascade + "Your cards are ready!"
  *   After 2s  → ghost cards + text fade out, card grows 200×290 → 310×452
  *   After 550ms settle → first card flip starts
  */
 
 import type { Skill } from "@/data/skills";
+import { Backdrop } from "@/components/ui/Backdrop";
+import { LAYERS } from "@/lib/layers";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import type React from "react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
 import { rarityShimmer } from "../shimmers";
@@ -83,6 +88,7 @@ type CardRevealPipelineProps = {
   skipped: boolean;
   onCardSelect: (skill: Skill) => void;
   onAllDone: () => void;
+  onSkip?: () => void;
   className?: string;
 };
 
@@ -93,6 +99,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   skipped,
   onCardSelect,
   onAllDone,
+  onSkip,
   className,
 }) => {
   const controls = useAnimation();
@@ -103,9 +110,9 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   const introFinished = useRef(false);
 
   const [frontContent, setFrontContent] = useState<React.ReactNode>(null);
-  const [overlayVisible, setOverlayVisible] = useState(true);   // open for intro
+  const [overlayVisible, setOverlayVisible] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
-  const [cardW, setCardW] = useState(INTRO_W);                   // grows after intro
+  const [cardW, setCardW] = useState(INTRO_W);
   const [cardH, setCardH] = useState(INTRO_H);
   const [currentCard, setCurrentCard] = useState<RevealCard | null>(null);
   const [placedSet, setPlacedSet] = useState<Set<number>>(new Set());
@@ -117,8 +124,9 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     async (card: RevealCard, idx: number) => {
       const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
       const base = rotBase.current;
-
       const spotlightSh = rarityShimmer(card.rarity);
+
+      setCurrentCard(card);
       setFrontContent(
         isHireMe(card) ? (
           <HireMeCard scale={SPOTLIGHT_SCALE} />
@@ -132,7 +140,6 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
           />
         ),
       );
-      setCurrentCard(card);
 
       // 1 — Flip IN
       await controls.start({
@@ -143,7 +150,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
       // 2 — Hold
       await delay(holdMs);
 
-      // 3 — Flip OUT first half → card is edge-on → place in scatter
+      // 3 — Flip OUT first half → edge-on → place card in scatter
       await controls.start({
         rotateY: base - 270,
         transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
@@ -190,12 +197,6 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     setTimeout(() => processQueue(), BRIDGE_SETTLE_MS);
   }, [processQueue]);
 
-  // ── Dim AppBar — useLayoutEffect fires before paint, syncs with framer-motion
-  useLayoutEffect(() => {
-    document.body.classList.add("card-reveal-active");
-    return () => document.body.classList.remove("card-reveal-active");
-  }, []);
-
   // ── Intro timer ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (skipped) return;
@@ -225,178 +226,198 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
     onAllDone();
   }, [skipped, cards, onAllDone]);
 
-  // ── Derived layout values ─────────────────────────────────────────────────
+  // ── Derived ───────────────────────────────────────────────────────────────
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
   const isHireMeCard = currentCard && isHireMe(currentCard);
 
+  const glowColor = showIntro || !currentCard
+    ? "radial-gradient(ellipse, rgba(244,208,63,0.26) 0%, transparent 70%)"
+    : isHireMeCard
+      ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
+      : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)";
+
   return (
     <>
-      {/* ── Overlay: dim + glow ─────────────────────────────────────────── */}
-      <AnimatePresence>
-        {overlayVisible && (
-          <div
-            key="spotlight-overlay"
-            className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
-          >
-            {/* Dim */}
-            <motion.div
-              className="absolute inset-0"
-              style={{ background: "rgba(0,0,0,0.22)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-            />
-
-            {/* Glow */}
-            <motion.div
-              className="absolute rounded-full"
-              style={{
-                width: 480, height: 480,
-                background: showIntro || !currentCard
-                  ? "radial-gradient(ellipse, rgba(244,208,63,0.26) 0%, transparent 70%)"
-                  : isHireMeCard
-                    ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
-                    : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)",
-              }}
-              animate={{ scale: showIntro ? 1.12 : 1 }}
-              transition={{ duration: 0.5 }}
-              initial={{ scale: 0, opacity: 0 }}
-              exit={{ scale: 0.6, opacity: 0 }}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Card + intro elements (always mounted while revealing) ─────────── */}
+      {/* ── Spotlight overlay (Portal) ──────────────────────────────────── */}
       {!skipped && (
-        <div
-          className="fixed inset-0 z-[101] flex flex-col items-center justify-center gap-6 pointer-events-none"
-          style={{ visibility: overlayVisible ? "visible" : "hidden" }}
-        >
-          {/* ── Card stack area ──────────────────────────────────────────── */}
+        <Backdrop visible={overlayVisible} zIndex={LAYERS.theater} dimColor="rgba(0,0,0,0.22)" fadeDuration={0.6}>
+
+          {/* ── Glow — absolute, centered in viewport ────────────────────── */}
+          <motion.div
+            className="absolute pointer-events-none rounded-full"
+            style={{ width: 480, height: 480, background: glowColor }}
+            animate={{ scale: showIntro ? 1.12 : 1 }}
+            transition={{ duration: 0.5 }}
+          />
+
+          {/* ── Centre column ──────────────────────────────────────────────── */}
           <div
-            className="relative flex items-center justify-center"
-            style={{ width: SPOTLIGHT_W + 100, height: SPOTLIGHT_H + 80 }}
+            className="relative z-10 flex flex-col items-center justify-center gap-6 pointer-events-none"
           >
-            {/* Ghost cards — fade out when intro ends */}
+            {/* ── Card stack area ──────────────────────────────────────────── */}
+            <div
+              className="relative flex items-center justify-center"
+              style={{ width: SPOTLIGHT_W + 100, height: SPOTLIGHT_H + 80 }}
+            >
+              {/* Ghost cards — fade out when intro ends */}
+              <AnimatePresence>
+                {showIntro && (
+                  <motion.div
+                    key="ghost-cards"
+                    className="absolute inset-0 flex items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Light burst */}
+                    <motion.div
+                      className="absolute pointer-events-none"
+                      style={{
+                        inset: -80,
+                        borderRadius: "50%",
+                        background:
+                          "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.28) 0%, transparent 70%)",
+                        filter: "blur(28px)",
+                      }}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    {GHOST_CARDS.map((g) => (
+                      <motion.div
+                        key={g.delay}
+                        className="absolute rounded-2xl"
+                        style={{
+                          width: INTRO_W,
+                          height: INTRO_H,
+                          background:
+                            "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
+                          boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
+                          border: "1.5px solid rgba(255,255,255,0.5)",
+                          zIndex: g.zIndex,
+                        }}
+                        initial={{ y: g.fromY, x: g.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
+                        animate={{
+                          y: -g.zIndex * 3,
+                          x: g.toX,
+                          rotate: g.toRotate,
+                          opacity: 1,
+                          scale: g.toScale,
+                        }}
+                        transition={{ delay: g.delay, type: "spring", stiffness: 220, damping: 20 }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* ── Bridge card — always mounted, grows via layout ─────────── */}
+              <div style={{ perspective: "900px", zIndex: 10 }}>
+                <motion.div
+                  layout
+                  style={{ width: cardW, height: cardH, position: "relative" }}
+                  transition={{ type: "spring", stiffness: 200, damping: 28 }}
+                >
+                  <motion.div
+                    animate={controls}
+                    style={{
+                      transformStyle: "preserve-3d",
+                      width: "100%",
+                      height: "100%",
+                      position: "relative",
+                    }}
+                  >
+                    {/* Back face */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        backfaceVisibility: "hidden",
+                        WebkitBackfaceVisibility: "hidden",
+                      }}
+                    >
+                      <CardBack style={{ width: "100%", height: "100%" }} />
+                    </div>
+
+                    {/* Front face */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        backfaceVisibility: "hidden",
+                        WebkitBackfaceVisibility: "hidden",
+                        transform: "rotateY(180deg)",
+                      }}
+                    >
+                      {frontContent}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* ── Intro text — fades out when intro ends ───────────────────── */}
             <AnimatePresence>
               {showIntro && (
                 <motion.div
-                  key="ghost-cards"
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  key="intro-text"
+                  className="flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ delay: 0.6 }}
                 >
-                  {/* Light burst */}
-                  <motion.div
-                    className="absolute pointer-events-none"
+                  <p
+                    className="font-script text-3xl"
                     style={{
-                      inset: -80, borderRadius: "50%",
-                      background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.28) 0%, transparent 70%)",
-                      filter: "blur(28px)",
+                      background:
+                        "linear-gradient(135deg, #FFFDF9 0%, #F4D03F 40%, #E8B4A0 80%, #FFFDF9 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      filter: "drop-shadow(0 2px 14px rgba(244,208,63,0.45))",
                     }}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  {GHOST_CARDS.map((g) => (
-                    <motion.div
-                      key={g.delay}
-                      className="absolute rounded-2xl"
-                      style={{
-                        width: INTRO_W, height: INTRO_H,
-                        background: "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
-                        boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
-                        border: "1.5px solid rgba(255,255,255,0.5)",
-                        zIndex: g.zIndex,
-                      }}
-                      initial={{ y: g.fromY, x: g.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
-                      animate={{ y: -g.zIndex * 3, x: g.toX, rotate: g.toRotate, opacity: 1, scale: g.toScale }}
-                      transition={{ delay: g.delay, type: "spring", stiffness: 220, damping: 20 }}
-                    />
-                  ))}
+                  >
+                    Your cards are ready!
+                  </p>
+                  <p
+                    className="font-sans text-xs tracking-widest uppercase"
+                    style={{ color: "rgba(255,253,249,0.45)" }}
+                  >
+                    {cards.length} cards · click to explore
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* ── Bridge card — always mounted, grows via layout ─────────── */}
-            <div style={{ perspective: "900px", zIndex: 10 }}>
-              <motion.div
-                layout
-                style={{ width: cardW, height: cardH, position: "relative" }}
-                transition={{ type: "spring", stiffness: 200, damping: 28 }}
-              >
-                <motion.div
-                  animate={controls}
-                  style={{
-                    transformStyle: "preserve-3d",
-                    width: "100%", height: "100%",
-                    position: "relative",
-                  }}
-                >
-                  {/* Back face */}
-                  <div
-                    style={{
-                      position: "absolute", inset: 0,
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                    }}
-                  >
-                    <CardBack style={{ width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Front face */}
-                  <div
-                    style={{
-                      position: "absolute", inset: 0,
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                    }}
-                  >
-                    {frontContent}
-                  </div>
-                </motion.div>
-              </motion.div>
-            </div>
           </div>
 
-          {/* ── Intro text — fades out when intro ends ───────────────────── */}
+          {/* ── Skip button — absolute inside portal = viewport bottom-right ── */}
           <AnimatePresence>
-            {showIntro && (
-              <motion.div
-                key="intro-text"
-                className="flex flex-col items-center gap-2"
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ delay: 0.6 }}
+            {onSkip && !skipped && (
+              <motion.button
+                key="skip-btn"
+                type="button"
+                onClick={onSkip}
+                className="absolute bottom-8 right-8 px-4 py-2 rounded-full font-sans text-sm font-bold cursor-pointer"
+                style={{
+                  background: "rgba(255,253,249,0.9)",
+                  color: "#2d2a26",
+                  border: "1px solid rgba(184,169,212,0.3)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  pointerEvents: "auto",
+                }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 0.7, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ opacity: 1 }}
               >
-                <p
-                  className="font-script text-3xl"
-                  style={{
-                    background: "linear-gradient(135deg, #FFFDF9 0%, #F4D03F 40%, #E8B4A0 80%, #FFFDF9 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    filter: "drop-shadow(0 2px 14px rgba(244,208,63,0.45))",
-                  }}
-                >
-                  Your cards are ready!
-                </p>
-                <p
-                  className="font-sans text-xs tracking-widest uppercase"
-                  style={{ color: "rgba(255,253,249,0.45)" }}
-                >
-                  16 cards · click to explore
-                </p>
-              </motion.div>
+                Skip ⏭
+              </motion.button>
             )}
           </AnimatePresence>
-        </div>
+        </Backdrop>
       )}
 
       {/* ── Scattered field ──────────────────────────────────────────────── */}
