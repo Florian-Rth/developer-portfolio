@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
 
 export type SkillCardShimmerCtx = {
-  mouseX: number;   // 0–1, normalised within the card
-  mouseY: number;   // 0–1
+  mouseX: number; // 0–1, normalised within the card
+  mouseY: number; // 0–1
   isHovered: boolean;
 };
 

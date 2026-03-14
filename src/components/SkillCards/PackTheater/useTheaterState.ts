@@ -35,9 +35,7 @@ const debugPhase = new URLSearchParams(window.location.search).get("phase") as T
 
 export const useTheaterState = () => {
   const [phase, setPhase] = useState<TheaterPhase>(debugPhase ?? "idle");
-  const [revealedCount, setRevealedCount] = useState(
-    debugPhase === "scattered" ? 999 : 0,
-  );
+  const [revealedCount, setRevealedCount] = useState(debugPhase === "scattered" ? 999 : 0);
   const [skipped, setSkipped] = useState(debugPhase === "scattered");
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 

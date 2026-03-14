@@ -39,8 +39,8 @@ export const RainbowFoil: React.FC<ShimmerProps> = ({ intensity = "medium" }) =>
             hsla(${200 + hue}deg, 85%, 65%, ${op}) 0%,
             hsla(${260 + hue}deg, 85%, 65%, ${op}) 16%,
             hsla(${320 + hue}deg, 85%, 65%, ${op}) 33%,
-            hsla(${  20 + hue}deg, 85%, 65%, ${op}) 50%,
-            hsla(${  80 + hue}deg, 85%, 65%, ${op}) 67%,
+            hsla(${20 + hue}deg, 85%, 65%, ${op}) 50%,
+            hsla(${80 + hue}deg, 85%, 65%, ${op}) 67%,
             hsla(${140 + hue}deg, 85%, 65%, ${op}) 83%,
             hsla(${200 + hue}deg, 85%, 65%, ${op}) 100%
           )`,

@@ -1,12 +1,15 @@
+import { Projects } from "@components/Projects";
+import { SectionHeader } from "@components/ui/SectionHeader";
 import type React from "react";
 
-export const ProjectsSection: React.FC = () => {
-  return (
-    <section id="projects" className="min-h-screen py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold mb-8">Projekte</h2>
-        <p className="text-muted-foreground">Content coming soon...</p>
-      </div>
-    </section>
-  );
-};
+export const ProjectsSection: React.FC = () => (
+  <Projects>
+    <SectionHeader
+      watermark="projects"
+      title="Projects."
+      subtitle="Things I built ✦ A selection of projects spanning industrial software, logistics, DevOps tooling, and this very portfolio."
+    />
+    <Projects.Grid />
+    <Projects.Detail />
+  </Projects>
+);

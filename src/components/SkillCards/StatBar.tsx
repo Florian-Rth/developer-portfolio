@@ -13,9 +13,9 @@ type StatBarProps = {
 /** Per-stat accent colors — distinct but harmonious with the card palette */
 const STAT_COLORS: Record<string, string> = {
   mastery: "#D4A843", // warm gold
-  speed:   "#E07B72", // coral red
-  range:   "#6BA89A", // teal
-  impact:  "#7B9DD4", // soft blue
+  speed: "#E07B72", // coral red
+  range: "#6BA89A", // teal
+  impact: "#7B9DD4", // soft blue
 };
 
 export const StatBar: React.FC<StatBarProps> = ({ label, value, color, statKey, className }) => {

@@ -21,9 +21,13 @@ type ShimmerConfig = {
  */
 export function rarityShimmer(rarity: SkillRarity): ShimmerConfig {
   switch (rarity) {
-    case "legendary": return { Shimmer: RainbowFoil,  intensity: "max"    };
-    case "epic":      return { Shimmer: SparkleField, intensity: "medium" };
-    case "rare":      return { Shimmer: RainbowFoil,  intensity: "low"    };
-    default:          return null;
+    case "legendary":
+      return { Shimmer: RainbowFoil, intensity: "max" };
+    case "epic":
+      return { Shimmer: SparkleField, intensity: "medium" };
+    case "rare":
+      return { Shimmer: RainbowFoil, intensity: "low" };
+    default:
+      return null;
   }
 }
