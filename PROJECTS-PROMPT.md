@@ -1,626 +1,361 @@
 # Phase 8: Projects Section — Implementation Prompt
 
-**Status:** SPEC FERTIG, IMPLEMENTIERUNG OFFEN (Stand 2026-03-14)
+**Status:** SPEC READY, IMPLEMENTATION OPEN (2026-03-14)
 
 ---
 
-## Kontext
+## Context
 
-Dies ist Phase 8 des Developer Portfolio Projekts. Die vorherigen Phasen (1-7) sind bereits vollständig implementiert und gemerget:
+This is Phase 8 of the Developer Portfolio project. Previous phases (1-7) are fully implemented and merged:
 
-- **Phase 1-4:** Grundlayout, About Section, Skills Section (TCG MVP fertig)
-- **Phase 6:** Skills TCG System (15 Skills, Pack-Opening, Foil/Holo, Mobile Support)
+- **Phase 1-4:** Core layout, About Section, Skills Section (TCG MVP complete)
+- **Phase 6:** Skills TCG System (15 skills, Pack-Opening, Foil/Holo, mobile support)
 - **Phase 7:** TCG MVP Features (Scissor-Tear, Card Reveal, Scattered State)
 
-**Aktuelle Aufgabe:** Implementiere die Projects Section (Bento Grid mit 5 Projekten, Mesh Gradient Artworks, 3D Tilt, FLIP Expand Detail-View).
+**Task:** Implement the Projects Section (Bento Grid with 5 projects, mesh gradient artworks, 3D tilt, FLIP expand detail view).
 
 ---
 
-## Deine Aufgabe
+## Task Overview
 
-Implementiere die Projects Section gemäß der folgenden detaillierten Spec. Achte auf:
+Implement the Projects Section based on this specification. Focus on:
 
-1. **Code-Qualität:** Clean Architecture, Composition Pattern, Type-safe
-2. **Consistency:** Nutze existierende UI Patterns aus Skills Section (Watermarks, Annotations, Theme-aware Styling)
-3. **Performance:** Effiziente Animationen (CSS over JS wo möglich), Lazy Loading für Detail-View Content
-4. **Responsive:** Mobile-first Approach, Breakpoints: Mobile (<768px), Tablet (768-1023px), Desktop (≥1024px)
-5. **Accessibility:** ARIA Labels, Keyboard Navigation, Screen Reader Support, `prefers-reduced-motion` Support
-
----
-
-## Spezifikation
-
-### 1. Section Container (`src/components/Projects/Projects.tsx`)
-
-```tsx
-<section id="projects" className="relative overflow-hidden py-[120px] px-10 max-w-[1200px] mx-auto bg-[var(--background)]">
-  <Projects.Watermark />
-  <Projects.Annotation />
-  <Projects.Grid projects={projects} />
-</section>
-```
-
-- Background: `var(--background)` (#F5F0E8 light, #1A1816 dark)
-- Padding: Desktop 120px/40px, Mobile 60px/20px
-- Max-width: 1200px, zentriert
-- Overflow: hidden (für Watermark)
+1. **Code Quality:** Clean architecture, composition pattern, type-safe
+2. **Consistency:** Follow existing UI patterns from Skills Section (watermarks, annotations, theme-aware styling)
+3. **Performance:** Efficient animations (CSS over JS where possible), lazy loading for detail view content
+4. **Responsive:** Mobile-first approach, breakpoints: mobile (<768px), tablet (768-1023px), desktop (≥1024px)
+5. **Accessibility:** ARIA labels, keyboard navigation, screen reader support, `prefers-reduced-motion` support
 
 ---
 
-### 2. PROJECTS Watermark (`src/components/Projects/Watermark.tsx`)
+## Specification
 
-Identisches Pattern wie About/Skills:
+### Section Layout
 
-- Text: "PROJECTS"
-- Font: DM Sans, weight 800
-- Size: Desktop ~220px, Mobile ~80px
-- Color: `var(--text)`, opacity 0.022 (light) / 0.018 (dark)
-- Position: absolute, top: 40px, left: 50%, translateX(-50%)
-- User-select: none, pointer-events: none, aria-hidden
+Create a section with a "PROJECTS" watermark in the background (similar to About/Skills sections), a Pacifico annotation ("things I built ✦"), and a responsive bento grid layout showing 5 project cards.
 
----
+**Desktop layout (≥1024px):**
+- Row 1: 2 cards, 50% width each, taller height
+- Row 2: 3 cards, 33% width each, shorter height
+- Gap between cards: 16px
 
-### 3. Pacifico Annotation (`src/components/Projects/Annotation.tsx`)
+**Tablet layout (768-1023px):**
+- 2-column grid
+- Cards adapt accordingly
 
-- Text: "things I built ✦"
-- Font: Pacifico, 16px
-- Color: `var(--accent)` (#D4929B)
-- Position: absolute, top-right der Section
-- Rotation: -5deg
-- SVG-Pfeil: curved arrow zeigt zur Grid
-- Scroll Reveal: fade-in + translateY(-10px → 0), 400ms, nach Cards
+**Mobile layout (<768px):**
+- Single column stack
+- All cards same height
+- Smaller gap
 
 ---
 
-### 4. Bento Grid Layout (`src/components/Projects/ProjectsGrid.tsx`)
+### Project Card Design
 
-**Desktop (≥1024px):**
-```
-Row 1: 2 Cards, je 50%, height 320px
-Row 2: 3 Cards, je 33%, height 280px
-Gap: 16px
-Border-radius: 16px
-```
+Each card should have:
 
-**Tablet (768-1023px):**
-- 2-Spalten Grid
-- Row 1: 2 Cards
-- Row 2+3: je 2 + 1 (centered)
+1. **Top half:** Animated mesh gradient artwork with noise/grain overlay
+2. **Category badge:** Top-left floating badge with unique color per category
+3. **Project info below artwork:**
+   - Project title (bold, larger)
+   - One-line tagline/description
+   - Tech stack pills (max 3 shown, "+N" overflow if more)
 
-**Mobile (<768px):**
-- Single Column Stack
-- Alle Cards height: 300px
-- Gap: 12px
+**Visual style:**
+- Background using theme surface color
+- Subtle border that becomes animated gradient on hover
+- Rounded corners (16px)
+- Pointer cursor
 
----
+**Card content categories:**
+- Industrial IoT
+- Scheduling
+- Logistics
+- DevOps
+- Portfolio
 
-### 5. Project Card (`src/components/Projects/ProjectCard.tsx`)
-
-**Structure:**
-```
-┌──────────────────────────────────┐
-│   MESH GRADIENT ARTWORK (45%)    │  ← animiert, grain overlay
-├──────────────────────────────────┤
-│  [Category Badge]                │
-│  Project Title                   │  ← DM Sans 700, 22px
-│  One-line description            │  ← DM Sans 400, 14px, secondary
-│  [React] [.NET] [C#] [+2]        │  ← Tech Pills (max 3)
-└──────────────────────────────────┘
-```
-
-**Styles:**
-- Background: `var(--surface)` (#FFFDF9 light, #252220 dark)
-- Border: 1px solid `var(--muted)` → gradient border on hover
-- Border-radius: 16px
-- Cursor: pointer
-- Overflow: hidden
-- Transition: box-shadow 300ms ease, transform 300ms ease
-
-**Category Badge (`CategoryBadge.tsx`):**
-- Position: absolute, top-left über Artwork
-- Padding: 4px 10px
-- Border-radius: 20px
-- Background: `var(--background)` mit 80% opacity (backdrop-blur)
-- Font: DM Sans 500, 11px, uppercase, letter-spacing 1.5px
-- Farben:
-  - Industrial IoT → Lavender #B8A9D4
-  - Scheduling → Peach #E8B4A0
-  - Logistics → Dusty Rose #D4929B
-  - DevOps → Muted Sage #A8C4B8
-  - Portfolio → Gradient (alle drei)
-
-**Tech Pills (`TechPills.tsx`):**
-- Background: `var(--muted)` (#E8DDD0 light, #3A3533 dark)
-- Font: DM Sans 500, 11px
-- Padding: 3px 10px
-- Border-radius: 20px
-- Max 3 anzeigen + "+N" overflow badge
+Each category gets a unique badge color theme.
 
 ---
 
-### 6. Mesh Gradient Artwork (`src/components/Projects/MeshGradient.tsx`)
+### Mesh Gradient Artworks
 
-**Reusable Component:**
-```tsx
-interface MeshGradientProps {
-  colors: string[]       // 3 Farben pro Projekt
-  seed: number           // für unique animation-delay
-  className?: string
-}
-```
+Each card displays a unique, slowly animated mesh gradient artwork using a blend of colors. The animation should be a slow loop (8-12 seconds) with each card having a different animation delay so they don't all move in sync.
 
-**Implementation Details:**
-- Technik: CSS `@keyframes` + mehrere überlagerte radial Gradienten mit `mix-blend-mode: multiply`
-- Animation: 8–12s loop, `ease-in-out`, unique `animation-delay` per seed
-- Noise Overlay: SVG `<feTurbulence>` + `<feColorMatrix>` als pseudo-element (opacity 0.08–0.12)
-- Dark Mode: Gradienten 30% dunkler, opacity +0.05
-
-**Farben pro Projekt:**
-
-| Projekt | Primär | Sekundär | Akzent |
-|---|---|---|---|
-| Machine-Eye | Lavender #B8A9D4 | Peach #E8B4A0 | #8C9FE0 |
-| CR3-Scheduler | Peach #E8B4A0 | Dusty Rose #D4929B | #F0C8A0 |
-| Yard Logistics | Dusty Rose #D4929B | Lavender #B8A9D4 | #E8A0B0 |
-| CI/CD Platform | Sage #A8C4B8 | Peach #E8B4A0 | #90C4A8 |
-| Developer Portfolio | Alle drei | — | Rainbow subtle |
+**Key features:**
+- Multiple overlapping radial gradients
+- Subtle noise/grain overlay
+- Dark mode: slightly darker colors, slightly higher opacity
+- Each card uses a different color combination (see project list below)
 
 ---
 
-### 7. Hover-Effekte
+### Hover Effects
 
-**7a — 3D Tilt (`useCardTilt.ts`):**
+Implement these interactive hover effects (desktop only):
 
-```tsx
-const handleMouseMove = (e: MouseEvent) => {
-  const rect = card.getBoundingClientRect()
-  const x = (e.clientX - rect.left) / rect.width   // 0–1
-  const y = (e.clientY - rect.top) / rect.height    // 0–1
-  const rotateX = (y - 0.5) * -12  // max ±6deg
-  const rotateY = (x - 0.5) * 12   // max ±6deg
-  card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`
-}
-const handleMouseLeave = () => {
-  card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)'
-}
-```
+1. **3D Tilt:** Card tilts based on mouse position (perspective effect, max ~6 degrees, scales slightly up)
+2. **Gradient Border:** Animated gradient border appears around card on hover
+3. **Artwork Parallax:** Mesh gradient moves slightly opposite to tilt direction
+4. **Section Spotlight:** Subtle radial gradient follows cursor across entire grid area
 
-- Transition: `transform 150ms ease` (enter) / `transform 400ms ease` (leave)
-- Mobile: Tilt deaktiviert (kein Hover)
-
-**7b — Gradient Border:**
-
-```css
-.card::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 17px;
-  background: linear-gradient(135deg, #B8A9D4, #E8B4A0, #D4929B);
-  opacity: 0;
-  transition: opacity 300ms ease;
-  z-index: -1;
-}
-.card:hover::before {
-  opacity: 1;
-}
-```
-
-**7c — Artwork Parallax:**
-- On hover: Mesh-Gradient verschiebt sich leicht gegen Tilt-Richtung
-- Max ±8px Versatz
-
-**7d — Section Spotlight (`useSectionSpotlight.ts`):**
-
-```tsx
-// Radial gradient folgt Cursor über gesamte Grid-Section
-const sectionStyle = {
-  background: `radial-gradient(600px at ${mouseX}px ${mouseY}px,
-    rgba(184,169,212,0.07), transparent 80%)`
-}
-```
-
-- Desktop: ✅ aktiv
-- Mobile: ❌ deaktiviert
+Mobile: Disable tilt and spotlight (no hover), but keep gradient border on touch active state.
 
 ---
 
-### 8. Detail-View FLIP Expand (`src/components/Projects/ProjectDetail.tsx`)
+### Detail View (FLIP Expand)
 
-**Konzept:** Karte expandiert in-place per Framer Motion `layoutId` auf Fullscreen.
+When a card is clicked, it expands to a full-screen detail view using Framer Motion's FLIP technique (layoutId pattern). The card itself grows into the modal—not a separate overlay.
 
-**Implementation:**
+**Detail view content:**
+- Larger mesh gradient artwork at top
+- Project title and category tagline
+- Description text
+- "What I built" section with bullet points highlighting key features
+- Full tech stack list (all items)
+- Links (GitHub, live site) for public projects
+- "Confidential" note for private projects
 
-```tsx
-<AnimatePresence>
-  {selected === project.id ? (
-    <motion.div
-      layoutId={`card-${project.id}`}
-      className="fixed inset-0 z-50 overflow-y-auto"
-    >
-      <ProjectDetail project={project} onClose={() => setSelected(null)} />
-    </motion.div>
-  ) : (
-    <motion.div
-      layoutId={`card-${project.id}`}
-      onClick={() => setSelected(project.id)}
-    >
-      <ProjectCard project={project} />
-    </motion.div>
-  )}
-</AnimatePresence>
-```
-
-- Duration: ~400ms, `spring({ damping: 30, stiffness: 300 })`
-- Background Dim: AnimatePresence fade-in `rgba(0,0,0,0.4)` backdrop (light) / `rgba(0,0,0,0.6)` (dark)
-- Body Scroll: blockieren während offen (`overflow: hidden` auf body)
-- Close: X-Button oben rechts + ESC-Key + Click auf Backdrop
-
-**Detail-View Structure:**
-
-```
-┌─────────────────────────────────────────────────┐
-│  [X]                               [Category]   │
-│                                                  │
-│  ████ MESH GRADIENT ARTWORK (300px) ████        │
-│                                                  │
-│  Project Title (DM Sans 700, 36px)              │
-│  Category Tagline (DM Sans 400, 18px)           │
-│                                                  │
-│  ─────────────────────────────────────────────  │
-│                                                  │
-│  Was ist es?                                     │  ← DM Sans 600, 14px uppercase
-│  [description text]                             │  ← DM Sans 400, 15px, max-w 600px
-│                                                  │
-│  Was ich gebaut habe                             │
-│  • [highlight 1]                                 │
-│  • [highlight 2]                                 │
-│  • [highlight 3]                                 │
-│  • [highlight 4]                                 │
-│  • [highlight 5]                                 │
-│                                                  │
-│  Tech Stack                                      │
-│  [pill] [pill] [pill] [pill] [pill]             │
-│                                                  │
-│  ─────────────────────────────────────────────  │
-│  🔒 Vertraulich · Details gerne im Gespräch     │  ← für private Projekte
-└─────────────────────────────────────────────────┘
-```
-
-- Max-width: 760px, zentriert
-- Scroll: intern scrollbar wenn Inhalt zu lang
-- Artwork: selbe MeshGradient Komponente, aber 300px height
-- Backdrop: onClick → close
-- Public Projekte: GitHub + Live Links im Detail-View
-- Private Projekte: Nur "Vertraulich" Hinweis
+**Interaction:**
+- Click card to expand
+- Click X button, backdrop, or press ESC to close
+- Backdrop dims background
+- Body scroll locked while detail view is open
+- Smooth spring animation (~400ms)
 
 ---
 
-### 9. Scroll-Animationen
+### Scroll Animations
 
-- **Cards:** Stagger fade-in + `translateY(24px → 0)` beim Scroll-in-View
-  - Delays: 0ms, 100ms, 200ms, 300ms, 400ms
-  - IntersectionObserver: threshold 0.15, once: true
-  - Duration: 600ms, ease-out
-- **Annotation:** delay 600ms nach den Cards
+Cards should animate in when they come into view:
 
----
-
-### 10. Projektdaten (`src/data/projects.ts`)
-
-```typescript
-export interface Project {
-  id: string
-  title: string
-  tagline: string        // 1 Satz
-  description: string    // 2-3 Sätze für Detail-View
-  category: string
-  highlights: string[]   // Was ich gebaut habe (Bullet Points)
-  tech: string[]         // Alle Tech Stack Items
-  techPills: string[]    // Max 5 für Card-Anzeige
-  gradient: {
-    primary: string
-    secondary: string
-    accent: string
-  }
-  isPublic?: boolean
-  githubUrl?: string
-  liveUrl?: string
-}
-
-export const projects: Project[] = [
-  // 5 Projekte siehe unten
-]
-```
+- Staggered fade-in with upward translation
+- Each card has slightly different delay
+- Animation only runs once per page load
+- Annotation fades in after cards
 
 ---
 
-### 11. Die 5 Projekte
+### Project Data Structure
 
-#### 1. Machine-Eye
-```typescript
-{
-  id: "machine-eye",
-  title: "Machine-Eye",
-  tagline: "Echtzeit-Monitoring-Plattform für industrielle Maschinenanbindung",
-  category: "Industrial IoT",
-  description: "Verbindet Maschinenequipment (OPC-UA, Siemens S7, Modbus, MQTT) mit einer Web-Oberfläche. Echtzeit-Datenerfassung, Regelwerk, Benachrichtigungen — konfigurierbar ohne Code.",
-  highlights: [
-    "Protocol-agnostic Plugin-System (OPC-UA, S7, Modbus, MQTT)",
-    "Dual-DB Strategie (PostgreSQL + TimescaleDB) für Zeitreihen",
-    "Real-time Updates via SignalR + RabbitMQ Inbox/Outbox Pattern",
-    "Clean Architecture + Result<T> Error Handling",
-    "React Compiler (auto-memoization)"
-  ],
-  tech: [".NET 10", "React 19", "RabbitMQ", "PostgreSQL", "TimescaleDB", "SignalR", "OPC-UA", "Siemens S7", "Modbus", "MQTT", "Docker"],
-  techPills: [".NET 10", "React 19", "RabbitMQ", "TimescaleDB", "+3"],
-  gradient: {
-    primary: "#B8A9D4",
-    secondary: "#E8B4A0",
-    accent: "#8C9FE0"
-  },
-  isPublic: false
-}
-```
-
-#### 2. CR3-Scheduler
-```typescript
-{
-  id: "cr3-scheduler",
-  title: "CR3-Scheduler",
-  tagline: "Graph-basiertes Scheduling-System für Logistik & Produktion",
-  category: "Scheduling",
-  description: "Graph-basierter Algorithmus für komplexe Scheduling-Probleme. Drag-and-Drop Pipeline, Multi-Faktor Optimierung, visuelle Graph-Representation.",
-  highlights: [
-    "Eigener Graph-Algorithmus für Constraint-Satisfaction",
-    "Pipeline Pattern für Task-Execution",
-    "Drag-and-Drop Interface mit dnd-kit",
-    "Multi-Faktor Optimierung (Zeit, Kosten, Ressourcen)",
-    "Graph-Visualisierung mit xyflow"
-  ],
-  tech: [".NET 9", "React 19", "TanStack Query", "dnd-kit", "xyflow", "SQL Server"],
-  techPills: [".NET 9", "React 19", "Graph-Algo", "DnD", "SQL Server"],
-  gradient: {
-    primary: "#E8B4A0",
-    secondary: "#D4929B",
-    accent: "#F0C8A0"
-  },
-  isPublic: false
-}
-```
-
-#### 3. Yard Logistics
-```typescript
-{
-  id: "yard-logistics",
-  title: "Yard Logistics",
-  tagline: "Komplettes Yard-Management-System für LKW-Tracking & Ladeabläufe",
-  category: "Logistics",
-  description: "NX Monorepo mit 3 unabhängigen Apps (Admin, Driver, Gate). SVG Werkshallenplan mit interaktiven Slots, Live Camera Feed Integration, DCS-Simulation.",
-  highlights: [
-    "NX Monorepo mit 3 Apps (Admin, Driver, Gate)",
-    "Interaktiver SVG Werkshallenplan mit Slots",
-    "Live Camera Feed Integration (ffmpeg, OvenPlayer)",
-    "DCS-Simulation für Testing",
-    "Multi-Auth (JWT, Role-based)"
-  ],
-  tech: [".NET 9", "React 19", "NX Monorepo", "JWT", "ffmpeg", "OvenPlayer", "SQLite"],
-  techPills: [".NET 9", "NX Monorepo", "React 19", "Live Camera", "+2"],
-  gradient: {
-    primary: "#D4929B",
-    secondary: "#B8A9D4",
-    accent: "#E8A0B0"
-  },
-  isPublic: false
-}
-```
-
-#### 4. CI/CD Automation
-```typescript
-{
-  id: "cicd-automation",
-  title: "CI/CD Automation",
-  tagline: "GitHub Actions Suite für vollständige Delivery-Automatisierung",
-  category: "DevOps",
-  description: "5 fokussierte GitHub Actions für Version-Extraction, Docker Build/Push, Kubernetes Manifest Patching, Semantic Versioning, und Project Scaffolding via Copier.",
-  highlights: [
-    "5 fokussierte GitHub Actions (Extract, Build, Deploy, Version, Scaffold)",
-    "Multi-Format Version Extraction (package.json, AssemblyInfo, pyproject.toml)",
-    "Semantic Versioning mit Conventional Commits",
-    "Kubernetes Manifest Patching mit yq/jq",
-    "Copier Scaffolding für neue Projekte"
-  ],
-  tech: ["Node.js 20", "GitHub Actions", "Docker Hub API", "Kubernetes", "Copier", "Jinja2", "Jest"],
-  techPills: ["GitHub Actions", "Kubernetes", "Docker", "Node.js", "Copier"],
-  gradient: {
-    primary: "#A8C4B8",
-    secondary: "#E8B4A0",
-    accent: "#90C4A8"
-  },
-  isPublic: true,
-  githubUrl: "https://github.com/Florian-Rth/ci-cd-actions"
-}
-```
-
-#### 5. Developer Portfolio
-```typescript
-{
-  id: "developer-portfolio",
-  title: "Developer Portfolio",
-  tagline: "Dieses Portfolio — React SPA mit TCG-Skill-Section & Pack-Opening-Mechanik",
-  category: "Portfolio",
-  description: "React SPA mit TCG Trading Card System für Skills, Pack-Opening-Animation, Foil/Holo-Effekte, Framer Motion FLIP, Dark/Light Mode, Mobile-first.",
-  highlights: [
-    "TCG Card System mit Pack-Opening-Animation (Scissor-Tear)",
-    "Foil/Holo-Effekte mit CSS Gradients",
-    "Framer Motion FLIP Transitions",
-    "Dark/Light Mode mit theme-aware SVGs",
-    "Mobile-first Design"
-  ],
-  tech: ["React 19", "TypeScript", "Vite", "Tailwind CSS", "Framer Motion", "Biome"],
-  techPills: ["React 19", "TypeScript", "Framer Motion", "Tailwind", "Vite"],
-  gradient: {
-    primary: "#B8A9D4",
-    secondary: "#E8B4A0",
-    accent: "#D4929B"
-  },
-  isPublic: true,
-  githubUrl: "https://github.com/Florian-Rth/developer-portfolio",
-  liveUrl: "https://florian-raetsch.de" // oder die Preview URL
-}
-```
+Create a data structure for projects with these fields:
+- Unique ID
+- Title
+- Tagline (one sentence)
+- Description (2-3 sentences for detail view)
+- Category
+- Highlights (bullet points of key features built)
+- Tech stack (all technologies used)
+- Tech pills display list (max 5 for card)
+- Gradient colors (primary, secondary, accent)
+- Public/private flag
+- Optional GitHub URL
+- Optional live URL
 
 ---
 
-### 12. Komponenten-Struktur
+## The 5 Projects
+
+### 1. Machine-Eye
+- **Category:** Industrial IoT
+- **Tagline:** Real-time monitoring platform for industrial machine connectivity
+- **Description:** Connects industrial equipment (OPC-UA, Siemens S7, Modbus, MQTT) to a web interface. Real-time data capture, rule engine, notifications—configurable without code.
+- **Highlights:**
+  - Protocol-agnostic plugin system (OPC-UA, S7, Modbus, MQTT)
+  - Dual-DB strategy (PostgreSQL + TimescaleDB) for time-series
+  - Real-time updates via SignalR + RabbitMQ inbox/outbox pattern
+  - Clean architecture + Result<T> error handling
+  - React compiler (auto-memoization)
+- **Tech Stack:** .NET 10, React 19, RabbitMQ, PostgreSQL, TimescaleDB, SignalR, OPC-UA, Siemens S7, Modbus, MQTT, Docker
+- **Public:** No
+
+### 2. CR3-Scheduler
+- **Category:** Scheduling
+- **Tagline:** Graph-based scheduling system for logistics and production
+- **Description:** Graph-based algorithm for complex scheduling problems. Drag-and-drop pipeline, multi-factor optimization, visual graph representation.
+- **Highlights:**
+  - Custom graph algorithm for constraint satisfaction
+  - Pipeline pattern for task execution
+  - Drag-and-drop interface with dnd-kit
+  - Multi-factor optimization (time, cost, resources)
+  - Graph visualization with xyflow
+- **Tech Stack:** .NET 9, React 19, TanStack Query, dnd-kit, xyflow, SQL Server
+- **Public:** No
+
+### 3. Yard Logistics
+- **Category:** Logistics
+- **Tagline:** Complete yard management system for truck tracking and loading operations
+- **Description:** NX monorepo with 3 independent apps (Admin, Driver, Gate). Interactive SVG warehouse floor plan with slots, live camera feed integration, DCS simulation.
+- **Highlights:**
+  - NX monorepo with 3 apps (Admin, Driver, Gate)
+  - Interactive SVG warehouse floor plan with slots
+  - Live camera feed integration (ffmpeg, OvenPlayer)
+  - DCS simulation for testing
+  - Multi-auth (JWT, role-based)
+- **Tech Stack:** .NET 9, React 19, NX Monorepo, JWT, ffmpeg, OvenPlayer, SQLite
+- **Public:** No
+
+### 4. CI/CD Automation
+- **Category:** DevOps
+- **Tagline:** GitHub Actions suite for complete delivery automation
+- **Description:** 5 focused GitHub Actions for version extraction, Docker build/push, Kubernetes manifest patching, semantic versioning, and project scaffolding via Copier.
+- **Highlights:**
+  - 5 focused GitHub Actions (Extract, Build, Deploy, Version, Scaffold)
+  - Multi-format version extraction (package.json, AssemblyInfo, pyproject.toml)
+  - Semantic versioning with conventional commits
+  - Kubernetes manifest patching with yq/jq
+  - Copier scaffolding for new projects
+- **Tech Stack:** Node.js 20, GitHub Actions, Docker Hub API, Kubernetes, Copier, Jinja2, Jest
+- **Public:** Yes
+- **GitHub:** https://github.com/Florian-Rth/ci-cd-actions
+
+### 5. Developer Portfolio
+- **Category:** Portfolio
+- **Tagline:** This portfolio—React SPA with TCG skill section and pack-opening mechanics
+- **Description:** React SPA with TCG trading card system for skills, pack-opening animation, foil/holo effects, Framer Motion FLIP, dark/light mode, mobile-first.
+- **Highlights:**
+  - TCG card system with pack-opening animation (scissor-tear)
+  - Foil/holo effects with CSS gradients
+  - Framer Motion FLIP transitions
+  - Dark/light mode with theme-aware SVGs
+  - Mobile-first design
+- **Tech Stack:** React 19, TypeScript, Vite, Tailwind CSS, Framer Motion, Biome
+- **Public:** Yes
+- **GitHub:** https://github.com/Florian-Rth/developer-portfolio
+- **Live:** This portfolio itself
+
+---
+
+## Component Structure
+
+Recommended structure:
 
 ```
 src/
 ├── data/
-│   └── projects.ts                    # Projektdaten + Interface
+│   └── projects.ts                    # Project data + interface
 │
 └── components/
     └── Projects/
-        ├── Projects.tsx               # Section Container
-        ├── Watermark.tsx              # "PROJECTS" Hintergrundtext
+        ├── Projects.tsx               # Section container
+        ├── Watermark.tsx              # "PROJECTS" background text
         ├── Annotation.tsx            # "things I built ✦"
-        ├── ProjectsGrid.tsx           # Bento Grid Layout
-        ├── ProjectCard.tsx            # Einzelne Card (Idle)
-        ├── ProjectDetail.tsx          # Expanded Detail-View
-        ├── MeshGradient.tsx           # Animierter Gradient (reusable)
-        ├── CategoryBadge.tsx          # Badge oben-links
-        ├── TechPills.tsx              # Tech Stack Pills
-        ├── useCardTilt.ts             # Hook: Mouse-Tracking für 3D Tilt
-        ├── useSectionSpotlight.ts     # Hook: Cursor-Spotlight über Grid
-        ├── useProjectExpand.ts        # Hook: FLIP Expand State
+        ├── ProjectsGrid.tsx           # Bento grid layout
+        ├── ProjectCard.tsx            # Individual card (idle state)
+        ├── ProjectDetail.tsx          # Expanded detail view
+        ├── MeshGradient.tsx           # Animated gradient (reusable)
+        ├── CategoryBadge.tsx          # Badge top-left
+        ├── TechPills.tsx              # Tech stack pills
+        ├── useCardTilt.ts             # Hook: mouse tracking for 3D tilt
+        ├── useSectionSpotlight.ts     # Hook: cursor spotlight over grid
+        ├── useProjectExpand.ts        # Hook: FLIP expand state
         ├── __tests__/
         │   └── Projects.test.tsx
-        └── index.ts                   # Composition Pattern Exports
+        └── index.ts                   # Composition pattern exports
 ```
 
-**Composition Pattern Usage:**
-
-```tsx
-// In App.tsx oder main.tsx
-<Projects>
-  <Projects.Watermark />
-  <Projects.Annotation />
-  <Projects.Grid projects={projects} />
-</Projects>
-```
+Use the composition pattern similar to the Skills section.
 
 ---
 
-### 13. Responsive Breakpoints Summary
+## Responsive Behavior Summary
 
 | Element | Desktop (≥1024px) | Mobile (<768px) |
 |---|---|---|
-| Grid | 2+3 Bento | Single Column |
-| Card Height (Row 1) | 320px | 300px |
-| Card Height (Row 2) | 280px | 300px |
-| Artwork Height | 45% | 45% |
-| 3D Tilt | ✅ | ❌ (deaktiviert) |
-| Gradient Border | ✅ | ✅ (touch: active state) |
-| Section Spotlight | ✅ | ❌ |
-| Tech Pills Max | 3 + "+N" | 3 + "+N" |
-| Detail-View | FLIP Fullscreen | FLIP Fullscreen (volle Breite) |
+| Grid layout | 2+3 bento | Single column |
+| Card heights | Different by row | All same |
+| 3D tilt | Enabled | Disabled |
+| Gradient border | On hover | On touch active |
+| Section spotlight | Enabled | Disabled |
+| Detail view | FLIP fullscreen | FLIP fullscreen |
 
 ---
 
-### 14. Dark Mode Support
+## Dark Mode Support
 
-- **Mesh Gradient:** Gradienten 30% dunkler, opacity +0.05
-- **Noise Overlay:** opacity +0.04
-- **Gradient Border:** `opacity: 0.85` statt 1.0 (etwa dezenter)
-- **Detail Backdrop:** `rgba(0,0,0,0.6)` statt 0.4
-- **Category Badge Background:** `var(--surface)` mit 90% opacity
+- Mesh gradients: slightly darker colors, higher opacity
+- Noise overlay: slightly higher opacity
+- Gradient border: more subtle (lower opacity)
+- Detail backdrop: darker overlay
+- Category badge: uses surface color with higher opacity
 
-Nutze `var(--card)` für theme-aware SVGs (best practice aus vorherigen Phasen).
-
----
-
-### 15. Accessibility Requirements
-
-- `<article>` Element für jede Card
-- `aria-label={project.title}`
-- `role="button"` + `tabIndex={0}` + `onKeyDown` (Enter/Space → expand)
-- Detail-View: `role="dialog"`, `aria-modal="true"`, Focus Trap
-- ESC schließt Detail-View
-- `prefers-reduced-motion`: Tilt, Spotlight und Gradient-Animation deaktivieren; FLIP auf 150ms reduzieren
+Use `var(--card)` for theme-aware SVGs (consistent with previous phases).
 
 ---
 
-### 16. Testing
+## Accessibility Requirements
 
-Füge Tests hinzu in `__tests__/Projects.test.tsx`:
+- Use `<article>` element for each card
+- Include `aria-label` with project title
+- Add `role="button"` + keyboard navigation (Enter/Space to expand)
+- Detail view: `role="dialog"`, `aria-modal="true"`, focus trap
+- ESC key closes detail view
+- `prefers-reduced-motion`: Disable tilt, spotlight, and gradient animations; reduce FLIP duration to 150ms
 
-- Component Rendering
-- Props Validation
-- User Interactions (Click to expand, ESC to close)
-- Responsive Behavior (mock viewport)
+---
+
+## Testing
+
+Add tests for:
+
+- Component rendering
+- Props validation
+- User interactions (click to expand, ESC to close)
+- Responsive behavior (mock viewport)
 - Accessibility (ARIA attributes)
 
 ---
 
-### 17. Integration mit existentem Code
+## Integration with Existing Code
 
-- Nutze existierende UI Patterns aus Skills Section (Watermark, Annotation)
-- Nutze existierende Theme CSS Variables (`var(--background)`, `var(--surface)`, `var(--muted)`, `var(--accent)`, `var(--text)`, `var(--card)`)
-- Nutze Framer Motion für alle Animationen (bereits installiert)
-- Nutze IntersectionObserver Pattern aus vorherigen Sections für Scroll-Animationen
-- Nutze useIsMobile Hook falls existent (ansonsten neu erstellen)
+- Follow existing UI patterns from Skills Section (watermarks, annotations)
+- Use existing theme CSS variables (background, surface, muted, accent, text, card)
+- Use Framer Motion for all animations (already installed)
+- Use IntersectionObserver pattern from previous sections for scroll animations
+- Create/use `useIsMobile` hook if needed
 
 ---
 
-### 18. Performance Optimierungen
+## Performance Optimizations
 
-- Lazy Load Detail-View Content (nur laden wenn expanded)
-- `will-change` Properties für Tilt Animation
-- GPU-accelerated Transforms statt Layout-Affecting Properties
-- Debounce Mouse Events für Spotlight (throttle zu 16ms)
-- CSS Animation für Mesh Gradient statt JS Loop
+- Lazy load detail view content (only load when expanded)
+- Use `will-change` for tilt animation properties
+- Prefer GPU-accelerated transforms over layout-affecting properties
+- Debounce mouse events for spotlight
+- Use CSS animation for mesh gradient instead of JS loop
 
 ---
 
 ## Deliverables
 
-1. **Alle Komponenten** implementiert in `src/components/Projects/`
-2. **Projektdaten** in `src/data/projects.ts` mit allen 5 Projekten
-3. **Hooks** für Tilt, Spotlight, Expand State
-4. **Responsive Design** getestet auf Desktop, Tablet, Mobile
-5. **Dark Mode** support mit theme-aware Variablen
-6. **Accessibility** fully implemented (ARIA, Keyboard, Screen Reader)
-7. **Tests** für Core Components
-8. **TypeScript** strict mode, keine any
-9. **Linting** mit Biome (wie restliches Projekt)
+1. All components implemented in `src/components/Projects/`
+2. Project data in `src/data/projects.ts` with all 5 projects
+3. Hooks for tilt, spotlight, expand state
+4. Responsive design tested on desktop, tablet, mobile
+5. Dark mode support with theme-aware variables
+6. Accessibility fully implemented (ARIA, keyboard, screen reader)
+7. Tests for core components
+8. TypeScript strict mode, no `any`
+9. Linting with Biome (consistent with project)
 
 ---
 
-## Next Steps nach Implementierung
+## Next Steps After Implementation
 
-1. Lokal testen: `npm run dev`
-2. Preview auf Port 8090 bereitstellen
-3. Code Review durchführen
-4. Merge auf main
-5. Deployment vorbereiten
-
----
-
-## Referenzen
-
-- **Spec Details:** `PROJECTS-SPEC.md` (diese Datei enthält die komplette Spec)
-- **Existierender Code:** `src/components/Skills/` für Patterns (Watermark, Annotations)
-- **Theme Variables:** `src/styles/globals.css` oder `tailwind.config.ts`
-- **Preview URL:** `http://100.80.222.85:8090` (mit `?nosplash` für direkten Zugriff)
+1. Test locally: `npm run dev`
+2. Deploy preview on port 8090
+3. Conduct code review
+4. Merge to main
+5. Prepare for deployment
 
 ---
 
 ## Notes
 
-- **Kreativität erwünscht:** Wenn du Ideen für zusätzliche Annotationen oder Micro-Interactions hast, setze sie um!
-- **Iterative Verbesserung:** Start mit MVP, dann feilen (Animation timing, Colors, Spacing)
-- **Feedback Loops:** Frag nach Feedback wenn du unsicher bist (z.B. Gradient Colors, Card Layout)
+- Be creative: If you have ideas for additional annotations or micro-interactions, implement them
+- Iterate: Start with MVP, then refine (animation timing, colors, spacing)
+- Ask for feedback: If unsure about design choices (gradient colors, card layout), ask for input
 
 ---
 
-**Viel Spaß beim Implementieren! 🚀**
+**Happy coding! 🚀**
