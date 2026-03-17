@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 
 type UseProjectExpandResult = {
   expandedProject: Project | null;
+  renderedProject: Project | null;
   closingProjectId: Project["id"] | null;
   originRect: DOMRect | null;
   expand: (project: Project, sourceEl?: HTMLElement | null) => void;
@@ -12,22 +13,26 @@ type UseProjectExpandResult = {
 
 export const useProjectExpand = (): UseProjectExpandResult => {
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
+  const [renderedProject, setRenderedProject] = useState<Project | null>(null);
   const [closingProjectId, setClosingProjectId] = useState<Project["id"] | null>(null);
   const [originRect, setOriginRect] = useState<DOMRect | null>(null);
 
   const expand = useCallback((project: Project, sourceEl?: HTMLElement | null) => {
     setClosingProjectId(null);
     setOriginRect(sourceEl ? sourceEl.getBoundingClientRect() : null);
+    setRenderedProject(project);
     setExpandedProject(project);
   }, []);
 
   const close = useCallback(() => {
-    setClosingProjectId(expandedProject?.id ?? null);
+    const projectToClose = expandedProject ?? renderedProject;
+    setClosingProjectId(projectToClose?.id ?? null);
     setExpandedProject(null);
-  }, [expandedProject]);
+  }, [expandedProject, renderedProject]);
 
   const finishClose = useCallback(() => {
     setClosingProjectId(null);
+    setRenderedProject(null);
   }, []);
 
   useEffect(() => {
@@ -49,5 +54,5 @@ export const useProjectExpand = (): UseProjectExpandResult => {
     };
   }, [expandedProject, close]);
 
-  return { expandedProject, closingProjectId, originRect, expand, close, finishClose };
+  return { expandedProject, renderedProject, closingProjectId, originRect, expand, close, finishClose };
 };

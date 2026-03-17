@@ -2,7 +2,7 @@ import type { Project } from "@/data/projects";
 import { categoryLabels } from "@/data/projects";
 import { Backdrop } from "@components/ui/Backdrop";
 import { LAYERS } from "@lib/layers";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { CategoryBadge } from "./CategoryBadge";
@@ -13,13 +13,21 @@ import { useProjectsContext } from "./ProjectsProvider";
 const REDUCED_MOTION =
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+const CLOSE_DURATION_MS = REDUCED_MOTION ? 180 : 420;
+
 type ProjectDetailProps = {
   project: Project;
   originRect: DOMRect | null;
+  isOpen: boolean;
   onClose: () => void;
 };
 
-export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRect, onClose }) => {
+export const ProjectDetail: React.FC<ProjectDetailProps> = ({
+  project,
+  originRect,
+  isOpen,
+  onClose,
+}) => {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -95,7 +103,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
 
   return (
     <Backdrop
-      visible
+      visible={isOpen}
       blockScroll
       onDismiss={onClose}
       zIndex={LAYERS.theater + 1}
@@ -105,14 +113,17 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
       <motion.div
         key={project.id}
         initial={cardMetrics}
-        animate={{
-          left: targetMetrics.left,
-          top: targetMetrics.top,
-          width: targetMetrics.width,
-          height: targetMetrics.height,
-          borderRadius: targetMetrics.borderRadius,
-        }}
-        exit={cardMetrics}
+        animate={
+          isOpen
+            ? {
+                left: targetMetrics.left,
+                top: targetMetrics.top,
+                width: targetMetrics.width,
+                height: targetMetrics.height,
+                borderRadius: targetMetrics.borderRadius,
+              }
+            : cardMetrics
+        }
         transition={shellTransition}
         role="dialog"
         aria-modal="true"
@@ -146,9 +157,16 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20, transition: { duration: REDUCED_MOTION ? 0.1 : 0.14 } }}
-          transition={REDUCED_MOTION ? { duration: 0.12 } : { duration: 0.24, delay: 0.08 }}
+          animate={isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={
+            isOpen
+              ? REDUCED_MOTION
+                ? { duration: 0.12 }
+                : { duration: 0.24, delay: 0.08 }
+              : REDUCED_MOTION
+                ? { duration: 0.1 }
+                : { duration: 0.14 }
+          }
           className="overflow-y-auto flex-1 p-5 sm:p-6 flex flex-col gap-5"
         >
           <div>
@@ -246,18 +264,27 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
 };
 
 export const ProjectDetailWrapper: React.FC = () => {
-  const { expandedProject, originRect, close, finishClose } = useProjectsContext();
+  const { expandedProject, renderedProject, originRect, close, finishClose } = useProjectsContext();
+
+  useEffect(() => {
+    if (!renderedProject || expandedProject) return;
+
+    const timeout = window.setTimeout(() => {
+      finishClose();
+    }, CLOSE_DURATION_MS);
+
+    return () => window.clearTimeout(timeout);
+  }, [expandedProject, renderedProject, finishClose]);
+
+  if (!renderedProject) return null;
 
   return (
-    <AnimatePresence onExitComplete={finishClose}>
-      {expandedProject && (
-        <ProjectDetail
-          key={expandedProject.id}
-          project={expandedProject}
-          originRect={originRect}
-          onClose={close}
-        />
-      )}
-    </AnimatePresence>
+    <ProjectDetail
+      key={renderedProject.id}
+      project={renderedProject}
+      originRect={originRect}
+      isOpen={expandedProject !== null}
+      onClose={close}
+    />
   );
 };

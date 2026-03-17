@@ -5,6 +5,10 @@ import { describe, expect, it, vi } from "vitest";
 import { Projects } from "..";
 
 // Mock framer-motion to avoid animation issues in tests (same pattern as SkillCards)
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
