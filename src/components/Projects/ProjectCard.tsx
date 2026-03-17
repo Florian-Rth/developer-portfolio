@@ -21,8 +21,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
 
   const handleClick = useCallback(() => {
     resetTilt();
-    expand(project);
-  }, [expand, project, resetTilt]);
+    expand(project, cardRef.current);
+  }, [cardRef, expand, project, resetTilt]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

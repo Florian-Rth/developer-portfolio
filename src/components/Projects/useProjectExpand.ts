@@ -3,14 +3,17 @@ import { useCallback, useEffect, useState } from "react";
 
 type UseProjectExpandResult = {
   expandedProject: Project | null;
-  expand: (project: Project) => void;
+  originRect: DOMRect | null;
+  expand: (project: Project, sourceEl?: HTMLElement | null) => void;
   close: () => void;
 };
 
 export const useProjectExpand = (): UseProjectExpandResult => {
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null);
 
-  const expand = useCallback((project: Project) => {
+  const expand = useCallback((project: Project, sourceEl?: HTMLElement | null) => {
+    setOriginRect(sourceEl ? sourceEl.getBoundingClientRect() : null);
     setExpandedProject(project);
   }, []);
 
@@ -18,7 +21,6 @@ export const useProjectExpand = (): UseProjectExpandResult => {
     setExpandedProject(null);
   }, []);
 
-  // ESC key closes the detail view
   useEffect(() => {
     if (!expandedProject) return;
 
@@ -26,9 +28,17 @@ export const useProjectExpand = (): UseProjectExpandResult => {
       if (e.key === "Escape") close();
     };
 
+    const handleResize = () => {
+      setOriginRect(null);
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [expandedProject, close]);
 
-  return { expandedProject, expand, close };
+  return { expandedProject, originRect, expand, close };
 };

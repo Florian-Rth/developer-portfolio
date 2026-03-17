@@ -3,7 +3,8 @@ import { createContext } from "react";
 
 export type ProjectsContextValue = {
   expandedProject: Project | null;
-  expand: (project: Project) => void;
+  originRect: DOMRect | null;
+  expand: (project: Project, sourceEl?: HTMLElement | null) => void;
   close: () => void;
 };
 
