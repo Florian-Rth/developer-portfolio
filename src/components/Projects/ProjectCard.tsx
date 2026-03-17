@@ -5,6 +5,7 @@ import type React from "react";
 import { useCallback } from "react";
 import { CategoryBadge } from "./CategoryBadge";
 import { MeshGradient } from "./MeshGradient";
+import { ProjectArtwork } from "./ProjectArtwork";
 import { TechPills } from "./TechPills";
 import { useCardTilt } from "./useCardTilt";
 import { useProjectsContext } from "./ProjectsProvider";
@@ -58,12 +59,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
       {/* Artwork: top half */}
-      <div className="relative flex-shrink-0 h-44 sm:h-52">
+      <div className="relative flex-shrink-0 h-44 sm:h-52 overflow-hidden">
         <MeshGradient
           colors={project.gradientColors}
           animationDelay={meshDelay}
           className="w-full h-full"
         />
+        <ProjectArtwork project={project} className="absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/70 to-transparent" />
         {/* Category badge: top-left absolute */}
         <div className="absolute top-3 left-3">
           <CategoryBadge category={project.category} />

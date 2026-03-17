@@ -21,7 +21,14 @@ export const Projects: React.FC<ProjectsProps> = ({ children, className }) => {
           className,
         )}
       >
-        <div className="relative z-10 max-w-[1200px] mx-auto px-5 md:px-10">{children}</div>
+        <div className="relative z-10 max-w-[1200px] mx-auto px-5 md:px-10">
+          <div className="mb-6 sm:mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground/80">
+              Things I built
+            </p>
+          </div>
+          {children}
+        </div>
       </section>
     </ProjectsProvider>
   );

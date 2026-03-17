@@ -7,6 +7,7 @@ import type React from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { CategoryBadge } from "./CategoryBadge";
 import { MeshGradient } from "./MeshGradient";
+import { ProjectArtwork } from "./ProjectArtwork";
 import { useProjectsContext } from "./ProjectsProvider";
 
 const REDUCED_MOTION =
@@ -86,12 +87,14 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
         style={{ pointerEvents: "auto" }}
       >
         {/* ── Header artwork ───────────────────────────────────────── */}
-        <div className="relative flex-shrink-0 h-48 sm:h-56">
+        <div className="relative flex-shrink-0 h-48 sm:h-56 overflow-hidden">
           <MeshGradient
             colors={project.gradientColors}
             animationDuration={10}
             className="w-full h-full"
           />
+          <ProjectArtwork project={project} className="absolute inset-0" />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card/60 to-transparent" />
           {/* Category badge */}
           <div className="absolute top-4 left-4">
             <CategoryBadge category={project.category} />

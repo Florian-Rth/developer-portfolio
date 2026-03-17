@@ -1,5 +1,6 @@
 import { CategoryBadge } from "./CategoryBadge";
 import { MeshGradient } from "./MeshGradient";
+import { ProjectArtwork } from "./ProjectArtwork";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectDetailWrapper } from "./ProjectDetail";
 import { Projects as ProjectsComponent } from "./Projects";
@@ -11,6 +12,7 @@ type ProjectsType = typeof ProjectsComponent & {
   Card: typeof ProjectCard;
   Detail: typeof ProjectDetailWrapper;
   MeshGradient: typeof MeshGradient;
+  Artwork: typeof ProjectArtwork;
   CategoryBadge: typeof CategoryBadge;
   TechPills: typeof TechPills;
 };
@@ -20,6 +22,7 @@ Projects.Grid = ProjectsGrid;
 Projects.Card = ProjectCard;
 Projects.Detail = ProjectDetailWrapper;
 Projects.MeshGradient = MeshGradient;
+Projects.Artwork = ProjectArtwork;
 Projects.CategoryBadge = CategoryBadge;
 Projects.TechPills = TechPills;
 
