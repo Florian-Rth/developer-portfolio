@@ -17,7 +17,7 @@ type ProjectCardProps = {
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
   const { cardRef, resetTilt } = useCardTilt();
-  const { expand } = useProjectsContext();
+  const { expand, expandedProject, closingProjectId } = useProjectsContext();
 
   const handleClick = useCallback(() => {
     resetTilt();
@@ -34,8 +34,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
     [handleClick],
   );
 
-  // Stagger animation delays so cards don't all move in sync
   const meshDelay = index * 2.4;
+  const isAnimatingGhost = expandedProject?.id === project.id || closingProjectId === project.id;
 
   return (
     <motion.article
@@ -48,6 +48,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
         "cursor-pointer outline-none",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "h-full",
+        isAnimatingGhost && "opacity-0 pointer-events-none",
       )}
       style={{ willChange: "transform" }}
       aria-label={project.title}
@@ -58,7 +59,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
       whileHover={{ scale: 1.0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      {/* Artwork: top half */}
       <div className="relative flex-shrink-0 h-44 sm:h-52 overflow-hidden">
         <MeshGradient
           colors={project.gradientColors}
@@ -67,13 +67,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
         />
         <ProjectArtwork project={project} className="absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/70 to-transparent" />
-        {/* Category badge: top-left absolute */}
         <div className="absolute top-3 left-3">
           <CategoryBadge category={project.category} />
         </div>
       </div>
 
-      {/* Info: bottom half */}
       <div className="flex flex-col gap-2 p-4 flex-1">
         <h3 className="text-base font-bold text-card-foreground leading-tight">{project.title}</h3>
         <p className="text-sm text-muted-foreground leading-snug line-clamp-2">{project.tagline}</p>

@@ -57,9 +57,9 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
     [onClose],
   );
 
-  const springTransition = REDUCED_MOTION
+  const shellTransition = REDUCED_MOTION
     ? { type: "tween" as const, duration: 0.18 }
-    : { type: "spring" as const, stiffness: 240, damping: 30, mass: 0.95 };
+    : { type: "spring" as const, stiffness: 250, damping: 32, mass: 0.96 };
 
   const viewport = typeof window !== "undefined" ? window : null;
   const targetMetrics = useMemo(() => {
@@ -77,7 +77,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
     };
   }, [viewport]);
 
-  const initialMetrics = originRect
+  const cardMetrics = originRect
     ? {
         left: originRect.left,
         top: originRect.top,
@@ -100,11 +100,11 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
       onDismiss={onClose}
       zIndex={LAYERS.theater + 1}
       dimColor="rgba(10, 8, 12, 0.72)"
-      fadeDuration={REDUCED_MOTION ? 0.12 : 0.28}
+      fadeDuration={REDUCED_MOTION ? 0.12 : 0.24}
     >
       <motion.div
         key={project.id}
-        initial={initialMetrics}
+        initial={cardMetrics}
         animate={{
           left: targetMetrics.left,
           top: targetMetrics.top,
@@ -112,8 +112,8 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
           height: targetMetrics.height,
           borderRadius: targetMetrics.borderRadius,
         }}
-        exit={initialMetrics}
-        transition={springTransition}
+        exit={cardMetrics}
+        transition={shellTransition}
         role="dialog"
         aria-modal="true"
         aria-label={project.title}
@@ -147,7 +147,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 8 }}
+          exit={{ opacity: 0, y: 20, transition: { duration: REDUCED_MOTION ? 0.1 : 0.14 } }}
           transition={REDUCED_MOTION ? { duration: 0.12 } : { duration: 0.24, delay: 0.08 }}
           className="overflow-y-auto flex-1 p-5 sm:p-6 flex flex-col gap-5"
         >
@@ -246,10 +246,10 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, originRec
 };
 
 export const ProjectDetailWrapper: React.FC = () => {
-  const { expandedProject, originRect, close } = useProjectsContext();
+  const { expandedProject, originRect, close, finishClose } = useProjectsContext();
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={finishClose}>
       {expandedProject && (
         <ProjectDetail
           key={expandedProject.id}
