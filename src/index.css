@@ -166,7 +166,6 @@
     line-height: 1.7;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
-
   }
 
   code,
@@ -320,30 +319,67 @@
 
 /* ── Pack Theater animations ─────────────────────────────────────────────── */
 @keyframes floatBob {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 @keyframes ctaFloat {
-  0%, 100% { transform: translateY(0px); opacity: 0.85; }
-  50%       { transform: translateY(-4px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
 }
 @keyframes ctaHand {
-  0%, 100% { transform: translateX(0px) rotate(0deg); }
-  50%       { transform: translateX(6px) rotate(-10deg); }
+  0%,
+  100% {
+    transform: translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateX(6px) rotate(-10deg);
+  }
 }
 @keyframes tearFlash {
-  0%   { opacity: 0; }
-  40%  { opacity: 0.7; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes swipeUp {
-  0%, 100% { transform: translateY(0px); opacity: 0.8; }
-  50%       { transform: translateY(-7px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-7px);
+    opacity: 1;
+  }
 }
 @keyframes sparkleFloat {
-  0%, 100% { opacity: 0.3; transform: translateY(0px) scale(1); }
-  50%       { opacity: 1; transform: translateY(-8px) scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.2);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -378,10 +414,448 @@
       transform: none;
     }
   }
-  @keyframes floatBob  { from, to { transform: none; } }
-  @keyframes ctaFloat  { from, to { transform: none; opacity: 1; } }
-  @keyframes ctaHand   { from, to { transform: none; } }
-  @keyframes tearFlash { from, to { opacity: 0; } }
-  @keyframes swipeUp   { from, to { transform: none; opacity: 1; } }
-  @keyframes sparkleFloat { from, to { opacity: 0.5; transform: none; } }
+  @keyframes floatBob {
+    from,
+    to {
+      transform: none;
+    }
+  }
+  @keyframes ctaFloat {
+    from,
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes ctaHand {
+    from,
+    to {
+      transform: none;
+    }
+  }
+  @keyframes tearFlash {
+    from,
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes swipeUp {
+    from,
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes sparkleFloat {
+    from,
+    to {
+      opacity: 0.5;
+      transform: none;
+    }
+  }
+}
+
+/* ── Project Card Artwork Animations ─────────────────────────────────── */
+
+@keyframes artPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes artFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes artFloatReverse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes artRotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes artRotateSlowReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes artDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@keyframes artScan {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes artGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px var(--art-glow, #8c9fe0));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--art-glow, #8c9fe0));
+  }
+}
+
+@keyframes artMorph {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes artDrift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes artBlink {
+  0%,
+  90%,
+  100% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes artTruck {
+  0% {
+    transform: translateX(-20px);
+  }
+  100% {
+    transform: translateX(20px);
+  }
+}
+
+@keyframes artSignal {
+  0%,
+  100% {
+    fill-opacity: 0.3;
+  }
+  50% {
+    fill-opacity: 1;
+  }
+}
+
+@keyframes artSparkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes artFlowPulse {
+  0% {
+    stroke-dashoffset: 24;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes artRibbonFlow {
+  0% {
+    transform: translateX(-10%) skewX(-2deg);
+  }
+  50% {
+    transform: translateX(10%) skewX(2deg);
+  }
+  100% {
+    transform: translateX(-10%) skewX(-2deg);
+  }
+}
+
+/* Artwork animation utility classes */
+.art-pulse {
+  animation: artPulse 3s ease-in-out infinite;
+}
+
+.art-pulse-slow {
+  animation: artPulse 4s ease-in-out infinite;
+}
+
+.art-float {
+  animation: artFloat 4s ease-in-out infinite;
+}
+
+.art-float-delayed {
+  animation: artFloat 5s ease-in-out 1s infinite;
+}
+
+.art-float-slow {
+  animation: artFloat 7s ease-in-out 0.5s infinite;
+}
+
+.art-float-reverse {
+  animation: artFloatReverse 5s ease-in-out infinite;
+}
+
+.art-rotate-slow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artRotateSlow 20s linear infinite;
+}
+
+.art-rotate-slow-reverse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artRotateSlowReverse 16s linear infinite;
+}
+
+.art-flow {
+  animation: artDash 2s linear infinite;
+}
+
+.art-scan {
+  animation: artScan 4s ease-in-out infinite;
+}
+
+.art-glow {
+  animation: artGlow 3s ease-in-out infinite;
+}
+
+.art-glow-strong {
+  animation: artGlowStrong 2.5s ease-in-out infinite;
+}
+
+.art-morph {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artMorph 6s ease-in-out infinite;
+}
+
+.art-drift {
+  animation: artDrift 8s ease-in-out infinite;
+}
+
+.art-blink {
+  animation: artBlink 5s ease-in-out infinite;
+}
+
+.art-truck {
+  animation: artTruck 6s ease-in-out infinite alternate;
+}
+
+.art-signal {
+  animation: artSignal 2s ease-in-out infinite;
+}
+
+.art-signal-delayed {
+  animation: artSignal 2s ease-in-out 0.7s infinite;
+}
+
+.art-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artSparkle 2.5s ease-in-out infinite;
+}
+
+.art-sparkle-delayed {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artSparkle 3s ease-in-out 0.8s infinite;
+}
+
+.art-sparkle-slow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: artSparkle 4s ease-in-out 1.5s infinite;
+}
+
+.art-flow-pulse {
+  animation: artFlowPulse 3s ease-in-out infinite;
+}
+
+.art-ribbon {
+  animation: artRibbonFlow 12s ease-in-out infinite;
+}
+
+/* Parallax layer styles — move based on mouse position via CSS variables */
+.parallax-layer-1 {
+  transform: translateX(calc(var(--parallax-x) * -1)) translateY(calc(var(--parallax-y) * -1));
+  transition: transform 100ms ease-out;
+}
+
+.parallax-layer-2 {
+  transform: translateX(calc(var(--parallax-x) * -0.6)) translateY(calc(var(--parallax-y) * -0.6));
+  transition: transform 100ms ease-out;
+}
+
+.parallax-layer-3 {
+  transform: translateX(calc(var(--parallax-x) * -0.3)) translateY(calc(var(--parallax-y) * -0.3));
+  transition: transform 100ms ease-out;
+}
+
+/* Project card container enables parallax */
+.project-card {
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+}
+
+/* Hover boost — parent .project-card triggers faster/brighter animations */
+.project-card:hover .art-pulse {
+  animation-duration: 1.5s;
+}
+
+.project-card:hover .art-pulse-slow {
+  animation-duration: 2s;
+}
+
+.project-card:hover .art-float,
+.project-card:hover .art-float-delayed,
+.project-card:hover .art-float-slow {
+  animation-duration: 2s;
+}
+
+.project-card:hover .art-glow {
+  animation-duration: 1.5s;
+}
+
+.project-card:hover .art-glow-strong {
+  animation-duration: 1s;
+}
+
+/* Parallax hover effects — different layers move at different speeds */
+.project-card:hover .parallax-layer-1 {
+  transform: translateY(-12px);
+}
+
+.project-card:hover .parallax-layer-2 {
+  transform: translateY(-8px);
+}
+
+.project-card:hover .parallax-layer-3 {
+  transform: translateY(-4px);
+}
+
+/* Enhanced scale effect on hover */
+.project-card:hover .art-morph {
+  animation: artMorphHover 0.3s ease-out forwards;
+}
+
+@keyframes artPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes artPulseSlow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes artGlowStrong {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--art-glow-strong, #8c9fe0));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--art-glow-strong, #8c9fe0));
+  }
+}
+
+@keyframes artMorphHover {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .art-pulse,
+  .art-float,
+  .art-float-delayed,
+  .art-float-slow,
+  .art-float-reverse,
+  .art-rotate-slow,
+  .art-rotate-slow-reverse,
+  .art-flow,
+  .art-scan,
+  .art-glow,
+  .art-morph,
+  .art-drift,
+  .art-blink,
+  .art-truck,
+  .art-signal,
+  .art-signal-delayed,
+  .art-sparkle,
+  .art-sparkle-delayed,
+  .art-sparkle-slow,
+  .art-flow-pulse,
+  .art-ribbon {
+    animation: none !important;
+  }
 }
