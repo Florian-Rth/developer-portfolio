@@ -1,5 +1,5 @@
 import { projects } from "@/data/projects";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import type React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Projects } from "..";
@@ -168,6 +168,7 @@ describe("Projects", () => {
     });
 
     it("should close detail view when close button is clicked", () => {
+      vi.useFakeTimers();
       render(
         <Projects>
           <Projects.Grid />
@@ -176,11 +177,18 @@ describe("Projects", () => {
       );
       fireEvent.click(screen.getByLabelText(projects[0].title));
       expect(screen.getByRole("dialog")).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: /close/i }));
+      act(() => {
+        fireEvent.click(screen.getByRole("button", { name: /close/i }));
+      });
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("should close detail view on ESC key", () => {
+      vi.useFakeTimers();
       render(
         <Projects>
           <Projects.Grid />
@@ -189,7 +197,13 @@ describe("Projects", () => {
       );
       fireEvent.click(screen.getByLabelText(projects[0].title));
       expect(screen.getByRole("dialog")).toBeInTheDocument();
-      fireEvent.keyDown(document, { key: "Escape" });
+      act(() => {
+        fireEvent.keyDown(document, { key: "Escape" });
+      });
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 

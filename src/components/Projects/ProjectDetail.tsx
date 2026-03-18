@@ -103,13 +103,22 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
   return (
     <Backdrop
-      visible={isOpen}
+      visible
       blockScroll
       onDismiss={onClose}
       zIndex={LAYERS.theater + 1}
-      dimColor="rgba(10, 8, 12, 0.72)"
-      fadeDuration={REDUCED_MOTION ? 0.12 : 0.24}
+      dimColor="rgba(10, 8, 12, 0)"
+      fadeDuration={0}
     >
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0"
+        initial={false}
+        animate={{ opacity: isOpen ? 1 : 0 }}
+        transition={REDUCED_MOTION ? { duration: 0.12 } : { duration: 0.22 }}
+        style={{ background: "rgba(10, 8, 12, 0.72)", pointerEvents: "none" }}
+      />
+
       <motion.div
         key={project.id}
         initial={cardMetrics}
@@ -157,7 +166,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
-          animate={isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={isOpen ? { opacity: 1, y: 0 } : { opacity: 0.92, y: 10 }}
           transition={
             isOpen
               ? REDUCED_MOTION
@@ -165,7 +174,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                 : { duration: 0.24, delay: 0.08 }
               : REDUCED_MOTION
                 ? { duration: 0.1 }
-                : { duration: 0.14 }
+                : { duration: 0.18 }
           }
           className="overflow-y-auto flex-1 p-5 sm:p-6 flex flex-col gap-5"
         >
