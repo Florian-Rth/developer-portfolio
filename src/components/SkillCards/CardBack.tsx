@@ -56,13 +56,21 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
 
       {/* Inner frame */}
       <rect
-        x="10" y="10" width="200" height="300" rx="7"
+        x="10"
+        y="10"
+        width="200"
+        height="300"
+        rx="7"
         fill="none"
         stroke="rgba(184,169,212,0.2)"
         strokeWidth="1"
       />
       <rect
-        x="14" y="14" width="192" height="292" rx="5"
+        x="14"
+        y="14"
+        width="192"
+        height="292"
+        rx="5"
         fill="none"
         stroke="rgba(232,180,160,0.12)"
         strokeWidth="0.6"
@@ -70,17 +78,51 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
 
       {/* Corner ornaments */}
       {/* Top-left */}
-      <path d="M18 18 L30 18 M18 18 L18 30" stroke="rgba(244,208,63,0.5)" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+      <path
+        d="M18 18 L30 18 M18 18 L18 30"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+      />
       {/* Top-right */}
-      <path d="M202 18 L190 18 M202 18 L202 30" stroke="rgba(244,208,63,0.5)" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+      <path
+        d="M202 18 L190 18 M202 18 L202 30"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+      />
       {/* Bottom-left */}
-      <path d="M18 302 L30 302 M18 302 L18 290" stroke="rgba(244,208,63,0.5)" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+      <path
+        d="M18 302 L30 302 M18 302 L18 290"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+      />
       {/* Bottom-right */}
-      <path d="M202 302 L190 302 M202 302 L202 290" stroke="rgba(244,208,63,0.5)" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+      <path
+        d="M202 302 L190 302 M202 302 L202 290"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+      />
 
       {/* Top & bottom center diamonds */}
-      <path d="M110 20 L116 26 L110 32 L104 26 Z" fill="rgba(244,208,63,0.3)" stroke="rgba(244,208,63,0.5)" strokeWidth="0.6"/>
-      <path d="M110 288 L116 294 L110 300 L104 294 Z" fill="rgba(244,208,63,0.3)" stroke="rgba(244,208,63,0.5)" strokeWidth="0.6"/>
+      <path
+        d="M110 20 L116 26 L110 32 L104 26 Z"
+        fill="rgba(244,208,63,0.3)"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="0.6"
+      />
+      <path
+        d="M110 288 L116 294 L110 300 L104 294 Z"
+        fill="rgba(244,208,63,0.3)"
+        stroke="rgba(244,208,63,0.5)"
+        strokeWidth="0.6"
+      />
     </svg>
 
     {/* ── Shimmer sweep ───────────────────────────────────────────────── */}
@@ -108,8 +150,7 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
         <div
           className="absolute inset-0 rounded-full"
           style={{
-            background:
-              "radial-gradient(circle, rgba(184,169,212,0.18) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(184,169,212,0.18) 0%, transparent 70%)",
           }}
         />
         <span
@@ -131,7 +172,9 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
       {/* Decorative separator */}
       <div className="flex items-center gap-2" style={{ marginTop: 4 }}>
         <div style={{ width: 24, height: 1, background: "rgba(244,208,63,0.3)" }} />
-        <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(244,208,63,0.5)" }} />
+        <div
+          style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(244,208,63,0.5)" }}
+        />
         <div style={{ width: 24, height: 1, background: "rgba(244,208,63,0.3)" }} />
       </div>
     </div>
@@ -140,8 +183,7 @@ export const CardBack: React.FC<CardBackProps> = ({ className, style }) => (
     <div
       className="absolute inset-0 rounded-xl pointer-events-none"
       style={{
-        boxShadow:
-          "inset 0 0 0 1px rgba(184,169,212,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+        boxShadow: "inset 0 0 0 1px rgba(184,169,212,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
       }}
     />
   </div>

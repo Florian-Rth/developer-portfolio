@@ -11,17 +11,17 @@
  *   4. Last card → onAllDone()
  */
 
-import type { Skill } from "@/data/skills";
 import { Backdrop } from "@/components/ui/Backdrop";
+import type { Skill } from "@/data/skills";
 import { LAYERS } from "@/lib/layers";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CardBack } from "./CardBack";
 import { HireMeCard } from "./HireMeCard";
-import { rarityShimmer } from "./shimmers";
-import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
 import type { HireMeSkill, RevealCard } from "./PackTheater/useTheaterState";
+import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
+import { rarityShimmer } from "./shimmers";
 
 // ─── Sizing ───────────────────────────────────────────────────────────────────
 const INTRO_CARD_W = 200;
@@ -41,10 +41,10 @@ const BRIDGE_SETTLE_MS = 550;
 
 // ─── Ghost card configs ───────────────────────────────────────────────────────
 const GHOST_CARDS = [
-  { delay: 0,    fromY: -220, fromX: -90, toRotate: -13, toX: -38, zIndex: 1, toScale: 0.93 },
-  { delay: 0.07, fromY: -240, fromX:  70, toRotate:   9, toX:  34, zIndex: 2, toScale: 0.91 },
-  { delay: 0.14, fromY: -200, fromX: -35, toRotate:  -4, toX: -14, zIndex: 3, toScale: 0.96 },
-  { delay: 0.21, fromY: -260, fromX:  25, toRotate:   3, toX:  10, zIndex: 4, toScale: 0.97 },
+  { delay: 0, fromY: -220, fromX: -90, toRotate: -13, toX: -38, zIndex: 1, toScale: 0.93 },
+  { delay: 0.07, fromY: -240, fromX: 70, toRotate: 9, toX: 34, zIndex: 2, toScale: 0.91 },
+  { delay: 0.14, fromY: -200, fromX: -35, toRotate: -4, toX: -14, zIndex: 3, toScale: 0.96 },
+  { delay: 0.21, fromY: -260, fromX: 25, toRotate: 3, toX: 10, zIndex: 4, toScale: 0.97 },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -88,49 +88,52 @@ export const MobileRevealPipeline: React.FC<Props> = ({
   const [currentCard, setCurrentCard] = useState<RevealCard | null>(null);
 
   // ── Flip one card ──────────────────────────────────────────────────────────
-  const revealOne = useCallback(async (card: RevealCard) => {
-    const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
-    const base = rotBase.current;
-    const sh = rarityShimmer(card.rarity);
+  const revealOne = useCallback(
+    async (card: RevealCard) => {
+      const holdMs = isHireMe(card) ? HIRE_ME_HOLD_MS : HOLD_MS;
+      const base = rotBase.current;
+      const sh = rarityShimmer(card.rarity);
 
-    setCurrentCard(card);
-    setFrontContent(
-      isHireMe(card) ? (
-        <HireMeCard scale={SPOTLIGHT_SCALE} />
-      ) : (
-        <SkillCard
-          skill={card as Skill}
-          scale={SPOTLIGHT_SCALE}
-          Shimmer={sh?.Shimmer}
-          shimmerIntensity={sh?.intensity}
-          onSelect={() => onCardSelect(card as Skill)}
-        />
-      ),
-    );
+      setCurrentCard(card);
+      setFrontContent(
+        isHireMe(card) ? (
+          <HireMeCard scale={SPOTLIGHT_SCALE} />
+        ) : (
+          <SkillCard
+            skill={card as Skill}
+            scale={SPOTLIGHT_SCALE}
+            Shimmer={sh?.Shimmer}
+            shimmerIntensity={sh?.intensity}
+            onSelect={() => onCardSelect(card as Skill)}
+          />
+        ),
+      );
 
-    await controls.start({
-      rotateY: base - 180,
-      transition: { duration: FLIP_IN_S, ease: [0.645, 0.045, 0.355, 1.0] },
-    });
-    await wait(holdMs);
-    await controls.start({
-      rotateY: base - 270,
-      transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
-    });
+      await controls.start({
+        rotateY: base - 180,
+        transition: { duration: FLIP_IN_S, ease: [0.645, 0.045, 0.355, 1.0] },
+      });
+      await wait(holdMs);
+      await controls.start({
+        rotateY: base - 270,
+        transition: { duration: FLIP_OUT_HALF_S, ease: "easeIn" },
+      });
 
-    shownCount.current += 1;
-    if (shownCount.current === cards.length) {
-      setOverlayVisible(false);
-      await wait(600);
-      onAllDone();
-    }
+      shownCount.current += 1;
+      if (shownCount.current === cards.length) {
+        setOverlayVisible(false);
+        await wait(600);
+        onAllDone();
+      }
 
-    await controls.start({
-      rotateY: base - 360,
-      transition: { duration: FLIP_OUT_HALF_S, ease: "easeOut" },
-    });
-    rotBase.current = base - 360;
-  }, [cards.length, controls, onAllDone, onCardSelect]);
+      await controls.start({
+        rotateY: base - 360,
+        transition: { duration: FLIP_OUT_HALF_S, ease: "easeOut" },
+      });
+      rotBase.current = base - 360;
+    },
+    [cards.length, controls, onAllDone, onCardSelect],
+  );
 
   // ── Queue processor ───────────────────────────────────────────────────────
   const processQueue = useCallback(async () => {
@@ -182,16 +185,21 @@ export const MobileRevealPipeline: React.FC<Props> = ({
   const isHireMeCard = currentCard && isHireMe(currentCard);
 
   // ── Glow color based on current card rarity ───────────────────────────────
-  const glowColor = showIntro || !currentCard
-    ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
-    : isHireMeCard
-      ? "radial-gradient(ellipse, rgba(244,208,63,0.32) 0%, transparent 70%)"
-      : "radial-gradient(ellipse, rgba(184,169,212,0.26) 0%, transparent 70%)";
+  const glowColor =
+    showIntro || !currentCard
+      ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
+      : isHireMeCard
+        ? "radial-gradient(ellipse, rgba(244,208,63,0.32) 0%, transparent 70%)"
+        : "radial-gradient(ellipse, rgba(184,169,212,0.26) 0%, transparent 70%)";
 
   return (
     <>
-      <Backdrop visible={overlayVisible} zIndex={LAYERS.theater} dimColor="rgba(10,8,12,0.55)" fadeDuration={0.45}>
-
+      <Backdrop
+        visible={overlayVisible}
+        zIndex={LAYERS.theater}
+        dimColor="rgba(10,8,12,0.55)"
+        fadeDuration={0.45}
+      >
         {/* ── Glow — absolute, centered in viewport ──────────────────────── */}
         <motion.div
           className="absolute pointer-events-none"
@@ -211,102 +219,101 @@ export const MobileRevealPipeline: React.FC<Props> = ({
           className="relative z-10 flex items-center justify-center"
           style={{ width: SPOTLIGHT_W + 80, height: SPOTLIGHT_H + 60, pointerEvents: "auto" }}
         >
-            {/* Ghost cards + light burst — visible during intro */}
-            <AnimatePresence>
-              {showIntro && (
-                <motion.div
-                  key="ghost-cards"
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Light burst */}
-                  <motion.div
-                    className="absolute pointer-events-none"
-                    style={{
-                      inset: -60,
-                      borderRadius: "50%",
-                      background:
-                        "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.3) 0%, transparent 70%)",
-                      filter: "blur(24px)",
-                    }}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  {GHOST_CARDS.map((g) => (
-                    <motion.div
-                      key={g.delay}
-                      className="absolute rounded-2xl"
-                      style={{
-                        width: INTRO_CARD_W,
-                        height: INTRO_CARD_H,
-                        background:
-                          "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
-                        boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
-                        border: "1.5px solid rgba(255,255,255,0.5)",
-                        zIndex: g.zIndex,
-                      }}
-                      initial={{ y: g.fromY, x: g.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
-                      animate={{
-                        y: -g.zIndex * 3,
-                        x: g.toX,
-                        rotate: g.toRotate,
-                        opacity: 1,
-                        scale: g.toScale,
-                      }}
-                      transition={{ delay: g.delay, type: "spring", stiffness: 220, damping: 20 }}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* ── Bridge card — always mounted, size changes via layout ──── */}
-            <div style={{ perspective: "900px", zIndex: 10 }}>
+          {/* Ghost cards + light burst — visible during intro */}
+          <AnimatePresence>
+            {showIntro && (
               <motion.div
-                layout
-                style={{ width: cardW, height: cardH, position: "relative" }}
-                transition={{ type: "spring", stiffness: 200, damping: 28 }}
+                key="ghost-cards"
+                className="absolute inset-0 flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
               >
+                {/* Light burst */}
                 <motion.div
-                  animate={controls}
+                  className="absolute pointer-events-none"
                   style={{
-                    transformStyle: "preserve-3d",
-                    width: "100%",
-                    height: "100%",
-                    position: "relative",
+                    inset: -60,
+                    borderRadius: "50%",
+                    background:
+                      "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(244,208,63,0.3) 0%, transparent 70%)",
+                    filter: "blur(24px)",
+                  }}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+                {GHOST_CARDS.map((g) => (
+                  <motion.div
+                    key={g.delay}
+                    className="absolute rounded-2xl"
+                    style={{
+                      width: INTRO_CARD_W,
+                      height: INTRO_CARD_H,
+                      background: "linear-gradient(145deg, #9B7FC9 0%, #D4A0B8 55%, #E8907A 100%)",
+                      boxShadow: "0 14px 45px rgba(120,90,160,0.4)",
+                      border: "1.5px solid rgba(255,255,255,0.5)",
+                      zIndex: g.zIndex,
+                    }}
+                    initial={{ y: g.fromY, x: g.fromX, rotate: -25, opacity: 0, scale: 0.65 }}
+                    animate={{
+                      y: -g.zIndex * 3,
+                      x: g.toX,
+                      rotate: g.toRotate,
+                      opacity: 1,
+                      scale: g.toScale,
+                    }}
+                    transition={{ delay: g.delay, type: "spring", stiffness: 220, damping: 20 }}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── Bridge card — always mounted, size changes via layout ──── */}
+          <div style={{ perspective: "900px", zIndex: 10 }}>
+            <motion.div
+              layout
+              style={{ width: cardW, height: cardH, position: "relative" }}
+              transition={{ type: "spring", stiffness: 200, damping: 28 }}
+            >
+              <motion.div
+                animate={controls}
+                style={{
+                  transformStyle: "preserve-3d",
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                }}
+              >
+                {/* Back face */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
                   }}
                 >
-                  {/* Back face */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                    }}
-                  >
-                    <CardBack style={{ width: "100%", height: "100%" }} />
-                  </div>
+                  <CardBack style={{ width: "100%", height: "100%" }} />
+                </div>
 
-                  {/* Front face */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                    }}
-                  >
-                    {frontContent}
-                  </div>
-                </motion.div>
+                {/* Front face */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                  }}
+                >
+                  {frontContent}
+                </div>
               </motion.div>
-            </div>
+            </motion.div>
+          </div>
 
           {/* ── Intro text — absolute below card area, no layout impact ──── */}
           {/* Positioned via top:100% relative to card stack area (position:relative) */}

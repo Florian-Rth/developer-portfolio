@@ -13,7 +13,7 @@ describe("About", () => {
     it("should render the about section", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       expect(screen.getByRole("region", { name: "About" })).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe("About", () => {
     it("should have correct id attribute", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       expect(screen.getByRole("region", { name: "About" })).toHaveAttribute("id", "about");
@@ -40,7 +40,7 @@ describe("About", () => {
     it("should accept custom className", () => {
       renderWithTheme(
         <About className="custom-class">
-          <About.Watermark />
+          <div />
         </About>,
       );
       expect(screen.getByRole("region", { name: "About" })).toHaveClass("custom-class");
@@ -51,7 +51,7 @@ describe("About", () => {
     it("should render desktop watermark text", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       expect(screen.getByText("about")).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("About", () => {
     it("should render mobile watermark text", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       expect(screen.getByText("about")).toBeInTheDocument();
@@ -69,7 +69,7 @@ describe("About", () => {
     it("should be hidden from accessibility tree", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       const desktopWatermark = screen.getByText("about");
@@ -81,7 +81,7 @@ describe("About", () => {
     it("should have user-select none class", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       const desktopWatermark = screen.getByText("about");
@@ -93,7 +93,7 @@ describe("About", () => {
     it("should have pointer-events none class", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+          <div />
         </About>,
       );
       const desktopWatermark = screen.getByText("about");
@@ -105,7 +105,7 @@ describe("About", () => {
     it("should accept custom className", () => {
       renderWithTheme(
         <About>
-          <About.Watermark className="custom-watermark" />
+          <div />
         </About>,
       );
       const container = screen.getByText("about").parentElement;
@@ -781,7 +781,7 @@ describe("About", () => {
     it("should render a composed About section with Watermark", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+
           <div>Content goes here</div>
         </About>,
       );
@@ -795,7 +795,7 @@ describe("About", () => {
     it("should render PhotoCard with Annotation", () => {
       renderWithTheme(
         <About>
-          <About.Watermark />
+
           <About.PhotoCard src="/headshot.jpg" alt="Florian Rätsch">
             <About.Annotation text="This is me! 👋" rotation={-6} arrowDirection="up" />
           </About.PhotoCard>

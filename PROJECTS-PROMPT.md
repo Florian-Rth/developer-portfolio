@@ -294,18 +294,6 @@ Use `var(--card)` for theme-aware SVGs (consistent with previous phases).
 
 ---
 
-## Testing
-
-Add tests for:
-
-- Component rendering
-- Props validation
-- User interactions (click to expand, ESC to close)
-- Responsive behavior (mock viewport)
-- Accessibility (ARIA attributes)
-
----
-
 ## Integration with Existing Code
 
 - Follow existing UI patterns from Skills Section (watermarks, annotations)
@@ -340,22 +328,8 @@ Add tests for:
 
 ---
 
-## Next Steps After Implementation
-
-1. Test locally: `npm run dev`
-2. Deploy preview on port 8090
-3. Conduct code review
-4. Merge to main
-5. Prepare for deployment
-
----
-
 ## Notes
 
 - Be creative: If you have ideas for additional annotations or micro-interactions, implement them
 - Iterate: Start with MVP, then refine (animation timing, colors, spacing)
 - Ask for feedback: If unsure about design choices (gradient colors, card layout), ask for input
-
----
-
-**Happy coding! 🚀**
