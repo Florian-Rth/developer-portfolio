@@ -12,11 +12,12 @@ export const Headline: React.FC<HeadlineProps> = ({ children, className }) => {
       className={cn("font-script", className)}
       style={{
         fontSize: "clamp(3rem, 6vw, 5rem)",
-        lineHeight: 1.3,
+        lineHeight: 1.4,
         background: "linear-gradient(to right, #e8b4a0, #d4929b, #b8a9d4)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
-        padding: "0.1em 0.05em",
+        padding: "0.2em",
+        margin: "-0.2em",
       }}
     >
       {children}
