@@ -6,9 +6,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardArtwork } from "./CardArtwork";
 import { CategoryBadge } from "./CategoryBadge";
 import { RarityBadge } from "./RarityBadge";
+import { SkillStatsList } from "./SkillStatsList";
 import { SkillCardShimmerContext } from "./shimmers/SkillCardShimmerContext";
 import type { ShimmerProps } from "./shimmers/types";
-import { SkillStatsList } from "./SkillStatsList";
 
 // Native design size — zoom handles all scaling externally
 const CARD_W = 220;

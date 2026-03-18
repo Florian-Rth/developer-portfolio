@@ -10,7 +10,10 @@ type PackTearInteractiveProps = {
   mobileMode?: boolean;
 };
 
-export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTearComplete, mobileMode = false }) => {
+export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({
+  onTearComplete,
+  mobileMode = false,
+}) => {
   const packRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
   const [tearProgress, setTearProgress] = useState(0);
@@ -21,7 +24,6 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
   const tiltX = (mouse.y - 0.5) * -15;
   const tiltY = (mouse.x - 0.5) * 15;
   const shimmerAngle = mouse.x * 360;
-
 
   const completeTear = useCallback(() => {
     setIsTearing(false);
@@ -112,8 +114,7 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
         <div
           className="absolute inset-0 rounded-2xl"
           style={{
-            background:
-              PACK_GRADIENT,
+            background: PACK_GRADIENT,
           }}
         />
 
@@ -345,7 +346,6 @@ export const PackTearInteractive: React.FC<PackTearInteractiveProps> = ({ onTear
           />
         </div>
       )}
-
     </div>
   );
 };

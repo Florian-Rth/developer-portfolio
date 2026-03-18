@@ -166,7 +166,6 @@
     line-height: 1.7;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
-
   }
 
   code,
@@ -320,30 +319,67 @@
 
 /* ── Pack Theater animations ─────────────────────────────────────────────── */
 @keyframes floatBob {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 @keyframes ctaFloat {
-  0%, 100% { transform: translateY(0px); opacity: 0.85; }
-  50%       { transform: translateY(-4px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
 }
 @keyframes ctaHand {
-  0%, 100% { transform: translateX(0px) rotate(0deg); }
-  50%       { transform: translateX(6px) rotate(-10deg); }
+  0%,
+  100% {
+    transform: translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateX(6px) rotate(-10deg);
+  }
 }
 @keyframes tearFlash {
-  0%   { opacity: 0; }
-  40%  { opacity: 0.7; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes swipeUp {
-  0%, 100% { transform: translateY(0px); opacity: 0.8; }
-  50%       { transform: translateY(-7px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-7px);
+    opacity: 1;
+  }
 }
 @keyframes sparkleFloat {
-  0%, 100% { opacity: 0.3; transform: translateY(0px) scale(1); }
-  50%       { opacity: 1; transform: translateY(-8px) scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.2);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -378,10 +414,97 @@
       transform: none;
     }
   }
-  @keyframes floatBob  { from, to { transform: none; } }
-  @keyframes ctaFloat  { from, to { transform: none; opacity: 1; } }
-  @keyframes ctaHand   { from, to { transform: none; } }
-  @keyframes tearFlash { from, to { opacity: 0; } }
-  @keyframes swipeUp   { from, to { transform: none; opacity: 1; } }
-  @keyframes sparkleFloat { from, to { opacity: 0.5; transform: none; } }
+  @keyframes floatBob {
+    from,
+    to {
+      transform: none;
+    }
+  }
+  @keyframes ctaFloat {
+    from,
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes ctaHand {
+    from,
+    to {
+      transform: none;
+    }
+  }
+  @keyframes tearFlash {
+    from,
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes swipeUp {
+    from,
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes sparkleFloat {
+    from,
+    to {
+      opacity: 0.5;
+      transform: none;
+    }
+  }
+  @keyframes meshFloat {
+    0%,
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+/* ── Projects Section ─────────────────────────────────────────────────────── */
+
+/* Mesh gradient slow drift */
+@keyframes meshFloat {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 0%;
+  }
+  33% {
+    background-position: 30% 40%, 70% 60%, 20% 80%;
+  }
+  66% {
+    background-position: 70% 60%, 20% 30%, 80% 20%;
+  }
+  100% {
+    background-position: 0% 0%, 100% 100%, 50% 0%;
+  }
+}
+
+/* Section spotlight overlay */
+.projects-spotlight {
+  position: relative;
+}
+
+.projects-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: radial-gradient(
+    600px circle at var(--sx, 50%) var(--sy, 50%),
+    rgba(212, 146, 155, 0.06) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--spotlight-active, 0);
+  transition: opacity 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes meshFloat {
+    from,
+    to {
+      background-position: 0% 0%, 100% 100%, 50% 0%;
+    }
+  }
 }

@@ -3,8 +3,8 @@ import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { CARD_H, CARD_W, SkillCard } from "./SkillCard";
-import { rarityShimmer } from "./shimmers";
 import { useSkillCards } from "./SkillCardsProvider";
+import { rarityShimmer } from "./shimmers";
 
 const SWIPE_THRESHOLD = 80;
 const STACK_SIZE = 3;

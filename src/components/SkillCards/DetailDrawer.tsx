@@ -1,5 +1,5 @@
-import { categoryColors } from "@/data/skills";
 import { Backdrop } from "@/components/ui/Backdrop";
+import { categoryColors } from "@/data/skills";
 import { LAYERS } from "@/lib/layers";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -64,9 +64,7 @@ export const DetailDrawer: React.FC = () => {
             )}
             style={{
               pointerEvents: "auto",
-              boxShadow: isMobile
-                ? "0 -4px 40px rgba(0,0,0,0.12)"
-                : "-4px 0 40px rgba(0,0,0,0.12)",
+              boxShadow: isMobile ? "0 -4px 40px rgba(0,0,0,0.12)" : "-4px 0 40px rgba(0,0,0,0.12)",
             }}
             {...drawerAnimation}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}

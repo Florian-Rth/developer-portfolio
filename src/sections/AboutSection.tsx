@@ -1,12 +1,18 @@
 import { About } from "@components/About";
 import { ScrollReveal } from "@components/ui/ScrollReveal";
+import { SectionHeader } from "@components/ui/SectionHeader";
 import type React from "react";
 
 export const AboutSection: React.FC = () => {
   return (
     <About>
-      {/* Watermark is position: absolute, not in grid flow */}
-      <About.Watermark />
+      {/* Section Header */}
+      <SectionHeader
+        watermark="about"
+        title="About."
+        subtitle="Passionate Developer & Designer"
+        className="col-span-full"
+      />
 
       {/* Row 1, Column 1: PhotoCard */}
       <ScrollReveal delay={0} className="relative justify-self-center lg:justify-self-start">

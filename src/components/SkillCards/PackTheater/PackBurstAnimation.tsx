@@ -43,8 +43,7 @@ export const PackBurstAnimation: React.FC<PackBurstAnimationProps> = ({ onBurstC
           className="w-full rounded-t-2xl"
           style={{
             height: PACK_H,
-            background:
-              PACK_GRADIENT,
+            background: PACK_GRADIENT,
           }}
         />
       </motion.div>
@@ -62,8 +61,7 @@ export const PackBurstAnimation: React.FC<PackBurstAnimationProps> = ({ onBurstC
           style={{
             height: PACK_H,
             marginTop: -TEAR_Y,
-            background:
-              PACK_GRADIENT,
+            background: PACK_GRADIENT,
           }}
         />
       </motion.div>

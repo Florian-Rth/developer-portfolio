@@ -8,12 +8,8 @@
  * (MobileRevealPipeline), then the Tinder-swipe stack appears.
  */
 
-import {
-  AnimatePresence,
-  motion,
-} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
-import { useSkillCards } from "./SkillCardsProvider";
 import { MobileCardStack } from "./MobileCardStack";
 import { MobileRevealPipeline } from "./MobileRevealPipeline";
 import { GhostCards } from "./PackTheater/GhostCards";
@@ -21,6 +17,7 @@ import { PackBurstAnimation } from "./PackTheater/PackBurstAnimation";
 import { PackTearInteractive } from "./PackTheater/PackTearInteractive";
 import { SectionHeading } from "./PackTheater/SectionHeading";
 import { useTheaterState } from "./PackTheater/useTheaterState";
+import { useSkillCards } from "./SkillCardsProvider";
 
 // ─── Mobile-specific CTA ──────────────────────────────────────────────────────
 const MobilePackCTA: React.FC = () => (
@@ -34,7 +31,10 @@ const MobilePackCTA: React.FC = () => (
         animation: "ctaFloat 2.5s ease-in-out infinite",
       }}
     >
-      <span className="font-sans text-sm font-semibold tracking-wider uppercase" style={{ color: "#7B5FC7" }}>
+      <span
+        className="font-sans text-sm font-semibold tracking-wider uppercase"
+        style={{ color: "#7B5FC7" }}
+      >
         ← Hold left edge &amp; rip →
       </span>
     </div>
@@ -92,7 +92,6 @@ export const MobilePackTheater: React.FC = () => {
   return (
     <div className="relative">
       <AnimatePresence mode="wait">
-
         {/* ── IDLE ──────────────────────────────────────────────────────── */}
         {phase === "idle" && (
           <motion.div
@@ -102,9 +101,7 @@ export const MobilePackTheater: React.FC = () => {
           >
             <SectionHeading />
 
-            <div
-              className="relative flex items-center justify-center p-3 [@media(max-height:680px)]:p-1"
-            >
+            <div className="relative flex items-center justify-center p-3 [@media(max-height:680px)]:p-1">
               {/* Floating sparkles */}
               <IdleSparkles />
 
@@ -189,7 +186,6 @@ export const MobilePackTheater: React.FC = () => {
             </div>
           </motion.div>
         )}
-
       </AnimatePresence>
     </div>
   );

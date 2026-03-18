@@ -41,7 +41,10 @@ function starPath(cx: number, cy: number, outer: number, rot: number): string {
     const r = k % 2 === 0 ? outer : inner;
     pts.push([cx + r * Math.cos(angle - Math.PI / 2), cy + r * Math.sin(angle - Math.PI / 2)]);
   }
-  return pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ") + " Z";
+  return (
+    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ") +
+    " Z"
+  );
 }
 
 export const SparkleField: React.FC<ShimmerProps> = ({ intensity = "medium" }) => {

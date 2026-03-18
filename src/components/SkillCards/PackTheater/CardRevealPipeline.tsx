@@ -16,8 +16,8 @@
  *   After 550ms settle → first card flip starts
  */
 
-import type { Skill } from "@/data/skills";
 import { Backdrop } from "@/components/ui/Backdrop";
+import type { Skill } from "@/data/skills";
 import { LAYERS } from "@/lib/layers";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
@@ -25,8 +25,8 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardBack } from "../CardBack";
 import { HireMeCard } from "../HireMeCard";
-import { rarityShimmer } from "../shimmers";
 import { CARD_H, CARD_W, SkillCard } from "../SkillCard";
+import { rarityShimmer } from "../shimmers";
 import type { HireMeSkill, RevealCard } from "./useTheaterState";
 
 // ─── Spotlight dimensions ─────────────────────────────────────────────────────
@@ -48,10 +48,10 @@ const BRIDGE_SETTLE_MS = 550;
 
 // ─── Ghost card configs ───────────────────────────────────────────────────────
 const GHOST_CARDS = [
-  { delay: 0,    fromY: -220, fromX: -90, toRotate: -13, toX: -42, zIndex: 1, toScale: 0.93 },
-  { delay: 0.07, fromY: -240, fromX:  70, toRotate:   9, toX:  38, zIndex: 2, toScale: 0.91 },
-  { delay: 0.14, fromY: -200, fromX: -35, toRotate:  -4, toX: -16, zIndex: 3, toScale: 0.96 },
-  { delay: 0.21, fromY: -260, fromX:  25, toRotate:   3, toX:  12, zIndex: 4, toScale: 0.97 },
+  { delay: 0, fromY: -220, fromX: -90, toRotate: -13, toX: -42, zIndex: 1, toScale: 0.93 },
+  { delay: 0.07, fromY: -240, fromX: 70, toRotate: 9, toX: 38, zIndex: 2, toScale: 0.91 },
+  { delay: 0.14, fromY: -200, fromX: -35, toRotate: -4, toX: -16, zIndex: 3, toScale: 0.96 },
+  { delay: 0.21, fromY: -260, fromX: 25, toRotate: 3, toX: 12, zIndex: 4, toScale: 0.97 },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -231,18 +231,23 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
   const halfH = CARD_H / 2;
   const isHireMeCard = currentCard && isHireMe(currentCard);
 
-  const glowColor = showIntro || !currentCard
-    ? "radial-gradient(ellipse, rgba(244,208,63,0.26) 0%, transparent 70%)"
-    : isHireMeCard
-      ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
-      : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)";
+  const glowColor =
+    showIntro || !currentCard
+      ? "radial-gradient(ellipse, rgba(244,208,63,0.26) 0%, transparent 70%)"
+      : isHireMeCard
+        ? "radial-gradient(ellipse, rgba(244,208,63,0.28) 0%, transparent 70%)"
+        : "radial-gradient(ellipse, rgba(184,169,212,0.22) 0%, transparent 70%)";
 
   return (
     <>
       {/* ── Spotlight overlay (Portal) ──────────────────────────────────── */}
       {!skipped && (
-        <Backdrop visible={overlayVisible} zIndex={LAYERS.theater} dimColor="rgba(0,0,0,0.22)" fadeDuration={0.6}>
-
+        <Backdrop
+          visible={overlayVisible}
+          zIndex={LAYERS.theater}
+          dimColor="rgba(0,0,0,0.22)"
+          fadeDuration={0.6}
+        >
           {/* ── Glow — absolute, centered in viewport ────────────────────── */}
           <motion.div
             className="absolute pointer-events-none rounded-full"
@@ -252,9 +257,7 @@ export const CardRevealPipeline: React.FC<CardRevealPipelineProps> = ({
           />
 
           {/* ── Centre column ──────────────────────────────────────────────── */}
-          <div
-            className="relative z-10 flex flex-col items-center justify-center gap-6 pointer-events-none"
-          >
+          <div className="relative z-10 flex flex-col items-center justify-center gap-6 pointer-events-none">
             {/* ── Card stack area ──────────────────────────────────────────── */}
             <div
               className="relative flex items-center justify-center"

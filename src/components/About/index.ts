@@ -9,10 +9,8 @@ import { PhotoCard } from "./PhotoCard";
 import { PullQuote } from "./PullQuote";
 import { Story } from "./Story";
 import { TextHighlight } from "./TextHighlight";
-import { Watermark } from "./Watermark";
 
 type AboutType = typeof AboutComponent & {
-  Watermark: typeof Watermark;
   PhotoCard: typeof PhotoCard;
   Annotation: typeof Annotation;
   PullQuote: typeof PullQuote;
@@ -26,7 +24,6 @@ type AboutType = typeof AboutComponent & {
 };
 
 const About = AboutComponent as AboutType;
-About.Watermark = Watermark;
 About.PhotoCard = PhotoCard;
 About.Annotation = Annotation;
 About.PullQuote = PullQuote;
