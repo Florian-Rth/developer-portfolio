@@ -222,8 +222,7 @@
   z-index: 100;
   opacity: 1;
   transform: scale(1);
-  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms
-    cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .splash-screen-exit-active {
@@ -265,10 +264,12 @@
 /* ── Pack Theater Animations ───────────────────────────────────────── */
 
 @keyframes cardBackShimmer {
+
   0%,
   100% {
     background-position: 200% 0;
   }
+
   50% {
     background-position: -200% 0;
   }
@@ -278,26 +279,31 @@
   from {
     filter: hue-rotate(0deg);
   }
+
   to {
     filter: hue-rotate(360deg);
   }
 }
 
 @keyframes holoSweep {
+
   0%,
   100% {
     background-position: 200% 0;
   }
+
   50% {
     background-position: -200% 0;
   }
 }
 
 @keyframes hireMeGlow {
+
   0%,
   100% {
     box-shadow: 0 4px 20px rgba(244, 208, 63, 0.25), 0 0 40px rgba(244, 208, 63, 0.1);
   }
+
   50% {
     box-shadow: 0 4px 30px rgba(244, 208, 63, 0.4), 0 0 60px rgba(244, 208, 63, 0.2);
   }
@@ -308,9 +314,11 @@
     opacity: 0;
     transform: translateY(0) scale(0.5);
   }
+
   20% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
     transform: translateY(-200px) scale(0);
@@ -319,63 +327,79 @@
 
 /* ── Pack Theater animations ─────────────────────────────────────────────── */
 @keyframes floatBob {
+
   0%,
   100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-8px);
   }
 }
+
 @keyframes ctaFloat {
+
   0%,
   100% {
     transform: translateY(0px);
     opacity: 0.85;
   }
+
   50% {
     transform: translateY(-4px);
     opacity: 1;
   }
 }
+
 @keyframes ctaHand {
+
   0%,
   100% {
     transform: translateX(0px) rotate(0deg);
   }
+
   50% {
     transform: translateX(6px) rotate(-10deg);
   }
 }
+
 @keyframes tearFlash {
   0% {
     opacity: 0;
   }
+
   40% {
     opacity: 0.7;
   }
+
   100% {
     opacity: 0;
   }
 }
 
 @keyframes swipeUp {
+
   0%,
   100% {
     transform: translateY(0px);
     opacity: 0.8;
   }
+
   50% {
     transform: translateY(-7px);
     opacity: 1;
   }
 }
+
 @keyframes sparkleFloat {
+
   0%,
   100% {
     opacity: 0.3;
     transform: translateY(0px) scale(1);
   }
+
   50% {
     opacity: 1;
     transform: translateY(-8px) scale(1.2);
@@ -384,76 +408,99 @@
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes cardBackShimmer {
+
     from,
     to {
       background-position: 0 0;
     }
   }
+
   @keyframes holoSpin {
+
     from,
     to {
       filter: none;
     }
   }
+
   @keyframes holoSweep {
+
     from,
     to {
       background-position: 0 0;
     }
   }
+
   @keyframes hireMeGlow {
+
     from,
     to {
       box-shadow: 0 4px 20px rgba(244, 208, 63, 0.25);
     }
   }
+
   @keyframes goldParticleRise {
+
     from,
     to {
       opacity: 0;
       transform: none;
     }
   }
+
   @keyframes floatBob {
+
     from,
     to {
       transform: none;
     }
   }
+
   @keyframes ctaFloat {
+
     from,
     to {
       transform: none;
       opacity: 1;
     }
   }
+
   @keyframes ctaHand {
+
     from,
     to {
       transform: none;
     }
   }
+
   @keyframes tearFlash {
+
     from,
     to {
       opacity: 0;
     }
   }
+
   @keyframes swipeUp {
+
     from,
     to {
       transform: none;
       opacity: 1;
     }
   }
+
   @keyframes sparkleFloat {
+
     from,
     to {
       opacity: 0.5;
       transform: none;
     }
   }
+
   @keyframes meshFloat {
+
     0%,
     100% {
       opacity: 1;
@@ -468,12 +515,15 @@
   0% {
     background-position: 0% 0%, 100% 100%, 50% 0%;
   }
+
   33% {
     background-position: 30% 40%, 70% 60%, 20% 80%;
   }
+
   66% {
     background-position: 70% 60%, 20% 30%, 80% 20%;
   }
+
   100% {
     background-position: 0% 0%, 100% 100%, 50% 0%;
   }
@@ -489,11 +539,9 @@
   position: absolute;
   inset: 0;
   border-radius: 24px;
-  background: radial-gradient(
-    600px circle at var(--sx, 50%) var(--sy, 50%),
-    rgba(212, 146, 155, 0.06) 0%,
-    transparent 60%
-  );
+  background: radial-gradient(600px circle at var(--sx, 50%) var(--sy, 50%),
+      rgba(212, 146, 155, 0.06) 0%,
+      transparent 60%);
   pointer-events: none;
   z-index: 1;
   opacity: var(--spotlight-active, 0);
@@ -502,6 +550,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes meshFloat {
+
     from,
     to {
       background-position: 0% 0%, 100% 100%, 50% 0%;
