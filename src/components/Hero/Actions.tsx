@@ -7,5 +7,5 @@ type ActionsProps = {
 };
 
 export const Actions: React.FC<ActionsProps> = ({ children, className }) => {
-  return <div className={cn("flex flex-col sm:flex-row gap-3 mt-6", className)}>{children}</div>;
+  return <div className={cn("mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap", className)}>{children}</div>;
 };

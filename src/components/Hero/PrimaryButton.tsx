@@ -12,7 +12,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({ children, href, cl
     <a
       href={href}
       className={cn(
-        "inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-gradient-peach via-gradient-dusty-rose to-gradient-lavender text-white font-medium text-sm md:text-base shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200",
+        "inline-flex items-center justify-center rounded-full bg-gradient-to-r from-gradient-peach via-gradient-dusty-rose to-gradient-lavender px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(212,146,155,0.28)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_18px_42px_rgba(212,146,155,0.34)] md:px-8 md:py-4 md:text-base",
         className,
       )}
     >

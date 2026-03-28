@@ -12,7 +12,7 @@ export const OutlineButton: React.FC<OutlineButtonProps> = ({ children, href, cl
     <a
       href={href}
       className={cn(
-        "inline-flex items-center justify-center px-6 py-3 rounded-full border-2 border-foreground/20 text-foreground font-medium text-sm md:text-base hover:border-foreground/40 hover:bg-foreground/5 transition-all duration-200",
+        "inline-flex items-center justify-center rounded-full border border-foreground/15 bg-background/55 px-7 py-3.5 text-sm font-semibold text-foreground shadow-[0_10px_30px_rgba(45,42,38,0.04)] backdrop-blur-sm transition-all duration-200 hover:border-foreground/30 hover:bg-foreground/5 md:px-8 md:py-4 md:text-base",
         className,
       )}
     >

@@ -8,7 +8,12 @@ type TaglineProps = {
 
 export const Tagline: React.FC<TaglineProps> = ({ children, className }) => {
   return (
-    <p className={cn("text-muted-foreground text-base md:text-lg mt-4 max-w-md", className)}>
+    <p
+      className={cn(
+        "mt-6 max-w-xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8",
+        className,
+      )}
+    >
       {children}
     </p>
   );

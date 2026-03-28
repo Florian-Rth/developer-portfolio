@@ -10,7 +10,7 @@ export const Desktop: React.FC<DesktopProps> = ({ children, className }) => {
   return (
     <div
       className={cn(
-        "relative hidden md:flex flex-col items-center text-center min-h-screen px-4 pt-[38vh]",
+        "relative z-10 hidden min-h-screen md:flex items-stretch px-6 lg:px-10 pt-[calc(var(--appbar-height-desktop)+3rem)] pb-20",
         className,
       )}
     >

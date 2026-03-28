@@ -10,8 +10,7 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({ className }) => 
     <div
       data-testid="section-divider"
       aria-hidden="true"
-      className={cn("absolute left-0 right-0 w-full z-10", className)}
-      style={{ top: "calc(100vh - 10rem)", pointerEvents: "none" }}
+      className={cn("pointer-events-none absolute bottom-0 left-0 right-0 z-10 w-full", className)}
     >
       <svg
         viewBox="0 0 1440 260"

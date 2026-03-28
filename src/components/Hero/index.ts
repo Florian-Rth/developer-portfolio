@@ -3,6 +3,7 @@ import { Card } from "./Card";
 import { Desktop } from "./Desktop";
 import { Greeting } from "./Greeting";
 import { Hero as HeroComponent } from "./Hero";
+import { HeroMonogram } from "./HeroMonogram";
 import { Mobile } from "./Mobile";
 import { Name } from "./Name";
 import { OutlineButton } from "./OutlineButton";
@@ -27,6 +28,7 @@ type HeroType = typeof HeroComponent & {
   SectionDivider: typeof SectionDivider;
   Desktop: typeof Desktop;
   Mobile: typeof Mobile;
+  Monogram: typeof HeroMonogram;
 };
 
 const Hero = HeroComponent as HeroType;
@@ -43,5 +45,6 @@ Hero.OutlineButton = OutlineButton;
 Hero.SectionDivider = SectionDivider;
 Hero.Desktop = Desktop;
 Hero.Mobile = Mobile;
+Hero.Monogram = HeroMonogram;
 
 export { Hero };

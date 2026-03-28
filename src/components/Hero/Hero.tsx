@@ -11,7 +11,7 @@ export const Hero: React.FC<HeroProps> = ({ children, className }) => {
     <section
       id="home"
       aria-label="Hero"
-      className={cn("relative min-h-screen bg-background overflow-visible", className)}
+      className={cn("relative min-h-screen bg-background overflow-hidden", className)}
     >
       {children}
     </section>
