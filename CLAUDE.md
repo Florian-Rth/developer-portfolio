@@ -67,11 +67,34 @@ export const Button = () => { ... };
 export default function Button() { ... }
 ```
 
-### 5. Error Handling
+### 5. Type Assertions
+
+- Never use `as unknown` or `as any`
+- Avoid the `as` keyword — prefer letting TypeScript infer types or use runtime narrowing (`instanceof`, type guards)
+- Only use `as` as an absolute last resort when there is no other way
+
+```typescript
+// Good - let TypeScript infer
+const value = getSomething();
+
+// Good - runtime narrowing
+if (node instanceof Mesh) {
+  node.geometry; // TypeScript knows it's a Mesh
+}
+
+// Bad - type assertion
+const value = getSomething() as MyType;
+
+// Forbidden
+const value = getSomething() as unknown as MyType;
+const value = getSomething() as any;
+```
+
+### 6. Error Handling
 
 Treat compiler warnings as errors. The build must fail on any warning.
 
-### 6. Development Methodology
+### 7. Development Methodology
 
 Spec and Test Driven Development (TDD):
 
@@ -79,7 +102,7 @@ Spec and Test Driven Development (TDD):
 - Then implement to make tests pass
 - Tests cover all critical functionality
 
-### 7. Code Quality Workflow
+### 8. Code Quality Workflow
 
 **Before implementing new code:**
 
@@ -94,7 +117,7 @@ Spec and Test Driven Development (TDD):
 
 This workflow ensures code quality and catches issues early.
 
-### 8. Storybook
+### 9. Storybook
 
 Storybook is configured for component development and documentation.
 
@@ -120,7 +143,7 @@ npm run build-storybook
 - **Tags**: Add `autodocs` tag for automatic documentation generation
 - **Layout**: Use `layout: "centered"` for UI components
 
-### 8.1 UI Component Development Workflow
+### 9.1 UI Component Development Workflow
 
 When implementing new UI components, follow this workflow for visual inspection and testing:
 
@@ -158,7 +181,7 @@ When implementing new UI components, follow this workflow for visual inspection 
 - `browser_evaluate` - Run JavaScript in browser
 - `browser_close` - Clean up browser session
 
-### 9. Code Quality
+### 10. Code Quality
 
 Clean Code principles and best practices are paramount:
 
@@ -167,11 +190,11 @@ Clean Code principles and best practices are paramount:
 - Single responsibility principle
 - DRY (Don't Repeat Yourself)
 
-### 10. Composition Pattern (STRICT)
+### 11. Composition Pattern (STRICT)
 
 **True Composition is mandatory.** The consumer always composes the layout from atomic building blocks. Components NEVER render default layouts internally or use `children || (fallback)` patterns.
 
-#### 10.1 Core Rules
+#### 11.1 Core Rules
 
 1. **Consumer composes everything** — the parent decides what goes where
 2. **No config props that control layout** — no `position="left"`, no `variant="mobile"`
@@ -181,7 +204,7 @@ Clean Code principles and best practices are paramount:
 6. **One component per file** — no exceptions (except index.ts for assembly)
 7. **Arrow functions only, named exports only**
 
-#### 10.2 File Structure
+#### 11.2 File Structure
 
 ```
 Dialog/
@@ -197,7 +220,7 @@ Dialog/
     └── Dialog.test.tsx  # Tests for all parts
 ```
 
-#### 10.3 Naming Convention
+#### 11.3 Naming Convention
 
 ```typescript
 // File names: PascalCase, matching the exported component
@@ -252,7 +275,7 @@ export const AppBar = ({ children }) => {
 };
 ```
 
-#### 10.4 File Content Structure
+#### 11.4 File Content Structure
 
 **Main Component (Dialog.tsx)**
 
@@ -360,7 +383,7 @@ Dialog.Close = Close;
 export { Dialog };
 ```
 
-#### 10.5 Common Sub-Component Names
+#### 11.5 Common Sub-Component Names
 
 Establish consistent naming for common patterns:
 
@@ -371,7 +394,7 @@ Establish consistent naming for common patterns:
 | Form      | Field, Label, Input, Error     | Field.tsx, Label.tsx, ...    |
 | Tabs      | List, Tab, Panels, Panel       | List.tsx, Tab.tsx, ...       |
 
-#### 10.6 Testing Strategy
+#### 11.6 Testing Strategy
 
 **Location:** `Dialog/__tests__/Dialog.test.tsx`
 
@@ -415,7 +438,7 @@ describe("Dialog", () => {
 
 **Coverage:** Rendering, styles, context consumption, integration, edge cases.
 
-#### 10.7 Best Practices
+#### 11.7 Best Practices
 
 **DO:**
 

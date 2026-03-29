@@ -13,6 +13,8 @@ export const HeroSection: React.FC = () => {
         <div className="absolute inset-x-[-6%] top-[44%] h-[28rem] rounded-[50%] border border-white/15 bg-[linear-gradient(90deg,rgba(232,180,160,0.12),rgba(212,146,155,0.07),rgba(184,169,212,0.12))] blur-3xl dark:border-white/6 dark:bg-[linear-gradient(90deg,rgba(232,180,160,0.05),rgba(212,146,155,0.04),rgba(184,169,212,0.07))]" />
       </div>
 
+      <Hero.Background3D />
+
       <Hero.Desktop>
         <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] items-center gap-12 lg:gap-16 xl:gap-20">
           <div className="relative max-w-2xl text-left">
@@ -42,9 +44,8 @@ export const HeroSection: React.FC = () => {
             </Hero.Actions>
           </div>
 
-          <div className="relative flex min-h-[34rem] items-center justify-center">
-            <Hero.Monogram />
-          </div>
+          {/* Grid spacer — 3D model is rendered via Hero.Background3D */}
+          <div aria-hidden="true" />
         </div>
       </Hero.Desktop>
 

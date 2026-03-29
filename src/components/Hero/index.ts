@@ -1,4 +1,5 @@
 import { Actions } from "./Actions";
+import { Background3D } from "./Background3D";
 import { Card } from "./Card";
 import { Desktop } from "./Desktop";
 import { Greeting } from "./Greeting";
@@ -29,6 +30,7 @@ type HeroType = typeof HeroComponent & {
   Desktop: typeof Desktop;
   Mobile: typeof Mobile;
   Monogram: typeof HeroMonogram;
+  Background3D: typeof Background3D;
 };
 
 const Hero = HeroComponent as HeroType;
@@ -46,5 +48,6 @@ Hero.SectionDivider = SectionDivider;
 Hero.Desktop = Desktop;
 Hero.Mobile = Mobile;
 Hero.Monogram = HeroMonogram;
+Hero.Background3D = Background3D;
 
 export { Hero };
